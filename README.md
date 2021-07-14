@@ -30,7 +30,7 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 | Project | Status | Description |
 |---------|--------|-------------|
 | [@bytegem/totp](https://github.com/bytegem/totp/typescript) | [![npm version](https://badge.fury.io/js/%40bytegem%2Ftotp.svg)](https://www.npmjs.com/package/@bytegem/totp) | TypeScript implementation of TOTP |
-｜ totp | `TODO` | Dart implementation of TOTP |
+| totp | `TODO` | Dart implementation of TOTP |
 | Open Authenticator | `TODO` | A 100% open source Authenticator |
 
 > More tooling and libraries are being added to the project.
