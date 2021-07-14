@@ -1,26 +1,34 @@
 {
-  "name": "@bytegem/totp",
+  "name": "@bytegem/notp",
   "version": "0.0.1",
-  "description": "Time-based One-time Password (TOTP) is a computer algorithm that generates a one-time password (OTP) which uses the current time as a source of uniqueness.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "NOTP (Node.js One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!",
+  "main": "dist/notp.js",
+  "types": "dist/notp.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bytegem/totp.git",
     "directory": "typescript"
   },
   "keywords": [
-    "js",
-    "ts",
-    "totp",
-    "rfc6238"
+    "JS",
+    "TS",
+    "HTOP",
+    "TOTP",
+    "NOTP",
+    "RFC6238",
+    "RFC4226"
   ],
   "author": "ByteGem, Inc. <service@bytegem.net>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/bytegem/totp/issues"
   },
-  "homepage": "https://github.com/bytegem/totp#readme"
+  "homepage": "https://github.com/bytegem/totp#readme",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "@types/node": "^16.3.2",
+    "typescript": "^4.3.5"
+  }
 }
