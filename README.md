@@ -1,6 +1,6 @@
-# ootp
+# OOTP
 
-OOTP (Open One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
+OOTP (Open One-Time Password) is a zero-dependency, object-oriented, and supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
 
 ## Introduction
 

@@ -1,7 +1,7 @@
 {
   "name": "ootp",
-  "version": "0.0.4",
-  "description": "OOTP (Open One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!",
+  "version": "0.0.5",
+  "description": "OOTP (Open One-Time Password) is a zero-dependency, object-oriented, and supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!",
   "main": "dist/ootp.js",
   "types": "dist/ootp.d.ts",
   "files": [
