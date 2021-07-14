@@ -1,10 +1,10 @@
-# NOTP
+# ootp
 
-NOTP (Node.js One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
+OOTP (Open One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
 
 ## Introduction
 
-The one-time password produced by NOTP(Node.js One-Time Password) is fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). You can use Google Authenticator, Microsoft Authenticator or other Authenticator To verify!
+The one-time password produced by ootp(Node.js One-Time Password) is fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). You can use Google Authenticator, Microsoft Authenticator or other Authenticator To verify!
 
 ## Features
 
@@ -31,8 +31,8 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 
 | Project | Status | Description |
 |---------|--------|-------------|
-| [@bytegem/notp](https://github.com/bytegem/notp/typescript) | [![npm version](https://badge.fury.io/js/%40bytegem%2Fnotp.svg)](https://www.npmjs.com/package/@bytegem/totp) | TypeScript implementation of TOTP |
-| dnotp | `TODO` | Dart implementation of TOTP |
+| [OOTP for Node.js](https://github.com/bytegem/ootp/typescript) | [![npm version](https://badge.fury.io/js/%40bytegem%2Footp.svg)](https://www.npmjs.com/package/@bytegem/totp) | TypeScript implementation of TOTP |
+| OOTP for Dart | `TODO` | Dart implementation of TOTP |
 | Open Authenticator | `TODO` | A 100% open source Authenticator |
 
 > More tooling and libraries are being added to the project.

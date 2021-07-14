@@ -1,5 +1,5 @@
 import base32 from 'thirty-two';
-import { TOTP } from '@bytegem/notp';
+import { TOTP } from 'ootp';
 
 const sceret = base32.decode('MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q');
 const totp = new TOTP({
@@ -20,7 +20,7 @@ export function createOtpAuthUri(secret: string | Buffer, options: {
     const period = totp.period;
     const encodedSceret = base32.encode(secret).toString("utf-8").replace(/=/g, '');
 
-    return `otpauth://totp/${encodedIssuer}:${encodedAccount}?secret=${encodedSceret}&issuer=${encodedIssuer}&counter=${period}&digits=${digits}`;
+    return `otpauth://totp/${encodedIssuer}:${encodedAccount}?secret=${encodedSceret}&issuer=${encodedIssuer}&period=${period}&digits=${digits}`;
 }
 
 
@@ -30,7 +30,7 @@ const otp = '344592';
 console.log(`
 SHA1:
     otp: ${totp.make()}
-    uri: ${createOtpAuthUri(sceret, { issuer: 'NOTP', account: "Tester" })}
+    uri: ${createOtpAuthUri(sceret, { issuer: 'OOTP', account: "Tester" })}
     valid: ${totp.check(otp)}
 `);
 
