@@ -1,10 +1,10 @@
 {
+  "private": true,
   "name": "notp-example",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node main.ts"
   },
   "author": "",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "@bytegem/notp": "^0.0.2",
     "thirty-two": "github:chrisumbel/thirty-two"
   }
 }
