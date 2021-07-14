@@ -1,0 +1,26 @@
+{
+  "name": "@bytegem/totp",
+  "version": "0.0.1",
+  "description": "Time-based One-time Password (TOTP) is a computer algorithm that generates a one-time password (OTP) which uses the current time as a source of uniqueness.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bytegem/totp.git",
+    "directory": "typescript"
+  },
+  "keywords": [
+    "js",
+    "ts",
+    "totp",
+    "rfc6238"
+  ],
+  "author": "ByteGem, Inc. <service@bytegem.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bytegem/totp/issues"
+  },
+  "homepage": "https://github.com/bytegem/totp#readme"
+}
