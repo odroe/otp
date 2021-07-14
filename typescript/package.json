@@ -1,9 +1,12 @@
 {
   "name": "@bytegem/notp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "NOTP (Node.js One-Time Password) is a zero-dependency, object-oriented, TypeScript support, and the generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!",
   "main": "dist/notp.js",
   "types": "dist/notp.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bytegem/totp.git",
