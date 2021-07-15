@@ -24,7 +24,7 @@ export function createOtpAuthUri(secret: string | Buffer, options: {
 }
 
 
-const otp = '344592';
+const otp = '405436';
 
 // TOTP debug info,
 console.log(`
