@@ -11,30 +11,30 @@ export class HTOP {
     public constructor(public readonly secret: Buffer) {}
 
     // Int to bytes, reurn a number array.
-    protected int2bytes(input: number): number[] {
+    protected int2bytes(input: number): Buffer {
         const bytes = [];
-        for (let i = 7; i >= 0; --i) {
-            bytes[i] = input & 0xff;
+        for (let i = 0; i < 8; i++) {
+            bytes.push(input & 0xff);
             input >>= 8;
         }
 
-        return bytes;
+        return Buffer.from(bytes.reverse());
     }
 
     // hex to bytes, return a number array.
-    protected hex2bytes(input: string): number[] {
+    protected hex2bytes(input: string): Buffer {
         const bytes = [];
         for (let i = 0; i < input.length; i += 2) {
             bytes.push(parseInt(input.substr(i, 2), 16));
         }
-        return bytes;
+        return Buffer.from(bytes);
     }
 
     // Make a OTP.
     public make(digits: number = 6, counter: number = 0): string {
-        const counterBuffer = Buffer.from(this.int2bytes(counter));
+        const counterBytes = this.int2bytes(counter);
         const hmac = crypto.createHmac(algorithm, this.secret);
-        const digestHex = hmac.update(counterBuffer).digest("hex");
+        const digestHex = hmac.update(counterBytes).digest("hex");
         const digestBytes = this.hex2bytes(digestHex);
         const offset = digestBytes[19] & 0xf;
         const value = (digestBytes[offset] & 0x7f) << 24 |
