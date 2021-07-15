@@ -1,0 +1,16 @@
+name: ootp
+description: >-
+  OOTP (Open One-Time Password) is a zero-dependency, object-oriented, and supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
+
+version: 0.0.1
+homepage: https://github.com/bytegem/ootp#readme
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+# dependencies:
+#   path: ^1.8.0
+
+dev_dependencies:
+  pedantic: ^1.10.0
+  test: ^1.16.0
