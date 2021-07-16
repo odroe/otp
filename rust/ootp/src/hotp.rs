@@ -1,9 +1,9 @@
 use hmacsha1::hmac_sha1;
 
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
-    let mut bytes = [0u8; 8];
-    for i in 0..7 {
-        bytes[i] = (input >> (i * 8)) as u8;
+    let mut bytes = [0_u8; 8];
+    for (i, item) in bytes.iter_mut().enumerate().take(7) {
+        *item = (input >> (i * 8)) as u8;
     }
     bytes.reverse();
     bytes
@@ -25,21 +25,18 @@ impl Clone for HOTP {
 
 impl HOTP {
     pub fn new(secret: String, counter: u64) -> HOTP {
-        HOTP {
-            secret,
-            counter,
-        }
+        HOTP { secret, counter }
     }
 
     pub fn make(&self, digits: u32) -> String {
         let counter_bytes = u64_to_8_length_u8_array(self.counter);
         let digest = hmac_sha1(self.secret.as_bytes(), &counter_bytes);
         let offset = digest[19] as usize & 0x0f;
-        let value = ((digest[offset] as u32) & 0x7f) << 24 |
-            ((digest[offset + 1] as u32) & 0xff) << 16 |
-            ((digest[offset + 2] as u32) & 0xff) << 8 |
-            (digest[offset + 3] as u32) & 0xff;
-        let mut code = (value % 10u32.pow(digits)).to_string();
+        let value = (u32::from(digest[offset]) & 0x7f) << 24
+            | (u32::from(digest[offset + 1]) & 0xff) << 16
+            | (u32::from(digest[offset + 2]) & 0xff) << 8
+            | u32::from(digest[offset + 3]) & 0xff;
+        let mut code = (value % 10_u32.pow(digits)).to_string();
 
         // Check whether the code is digits bits long, if not, use "0" to fill in the front
         if code.len() != (digits as usize) {
@@ -49,7 +46,7 @@ impl HOTP {
         code
     }
 
-    pub fn check(&mut self, otp: String, window: u64) -> bool {
+    pub fn check(&mut self, otp: &str, window: u64) -> bool {
         self.counter -= window;
         let count = self.counter + window;
         loop {

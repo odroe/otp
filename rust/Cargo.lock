@@ -30,6 +30,7 @@ dependencies = [
 name = "ootp"
 version = "0.0.2"
 dependencies = [
+ "base32",
  "hmac-sha1",
 ]
 
