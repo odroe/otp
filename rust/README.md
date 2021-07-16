@@ -19,27 +19,32 @@ The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://w
 
 Add the following line to your Cargo.toml file:
 
-    [dependencies]
-    ootp = "0.2"
+```toml
+[dependencies]
+ootp = "0.2"
+```
 
-Or use the following command:
+or use the following command:
 
-    $ cargo install ootp
+```bash
+$ cargo install ootp
+```
 
 ## Get started
+```rust
+use ootp::TOTP
 
-    use ootp::TOTP
+fn main() {
+    let secret = String::from("Base32 decoded secret");
+    let period = 30; // 30 seconds
+    let digits = 6; // 6 digits
 
-    main() {
-        let secret = String::from("Base32 decoded secret");
-        let period = 30; // 30 seconds
-        let digits = 6; // 6 digits
+    let totp = TOTP::new(secret, digits, period);
 
-        let totp = TOTP::new(secret, digits, period);
-
-        let otp = totp.make(); // Generate a one-time password
-        println!("{}", otp); // Print the one-time password
-    }
+    let otp = totp.make(); // Generate a one-time password
+    println!("{}", otp); // Print the one-time password
+}
+```
 
 ## Examples
 
