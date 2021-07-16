@@ -1,0 +1,12 @@
+name: ootp_example
+description: A simple command-line application for OOTP
+version: 1.0.0
+homepage: https://www.example.com
+publish_to: none
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+dependencies: 
+  base32: ^2.0.0
+  ootp:
+    path: ../
