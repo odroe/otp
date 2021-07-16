@@ -20,15 +20,15 @@ dependencies = [
 [[package]]
 name = "ootp"
 version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "865e7117490df3a8e4187b24d5e0f76496506934f51f285b3dfc0a100654fccc"
 dependencies = [
  "hmac-sha1",
 ]
 
 [[package]]
 name = "ootp"
-version = "0.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "865e7117490df3a8e4187b24d5e0f76496506934f51f285b3dfc0a100654fccc"
+version = "0.0.2"
 dependencies = [
  "hmac-sha1",
 ]
@@ -38,7 +38,7 @@ name = "ootp-example"
 version = "0.1.0"
 dependencies = [
  "base32",
- "ootp 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ootp 0.0.1",
 ]
 
 [[package]]
