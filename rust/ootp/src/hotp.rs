@@ -1,7 +1,7 @@
 use hmacsha1::hmac_sha1;
 
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
-    let mut bytes = [0u8; 8];
+    let mut bytes = [0_u8; 8];
     for i in 0..7 {
         bytes[i] = (input >> (i * 8)) as u8;
     }
@@ -39,7 +39,7 @@ impl HOTP {
             ((digest[offset + 1] as u32) & 0xff) << 16 |
             ((digest[offset + 2] as u32) & 0xff) << 8 |
             (digest[offset + 3] as u32) & 0xff;
-        let mut code = (value % 10u32.pow(digits)).to_string();
+        let mut code = (value % 10_u32.pow(digits)).to_string();
 
         // Check whether the code is digits bits long, if not, use "0" to fill in the front
         if code.len() != (digits as usize) {
