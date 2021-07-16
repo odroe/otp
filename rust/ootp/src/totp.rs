@@ -1,7 +1,7 @@
 use crate::hotp::HOTP;
 use std::time::SystemTime;
 
-fn create_counter(period: &u64) -> u64 {
+fn create_counter(period: u64) -> u64 {
     SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() / period
 }
 
@@ -21,12 +21,12 @@ impl TOTP {
     }
 
     pub fn make(&mut self) -> String {
-        self.hotp.counter = create_counter(&self.period);
+        self.hotp.counter = create_counter(self.period);
         self.hotp.make(self.digits)
     }
 
-    pub fn check(&mut self, otp: String, window: u64) -> bool {
-        self.hotp.counter = create_counter(&self.period);
+    pub fn check(&mut self, otp: &str, window: u64) -> bool {
+        self.hotp.counter = create_counter(self.period);
         self.hotp.check(otp, window)
     }
 }
