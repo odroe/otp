@@ -1,2 +1,18 @@
-[workspace]
-members = ["ootp", "ootp-example"]
+[package]
+name = "ootp"
+version = "0.0.2"
+edition = "2018"
+authors = ["Byte, Inc. <service@bytegem.net>"]
+description = "OOTP (Open One-time Password) is a supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!"
+homepage = "https://github.com/bytegem/ootp"
+repository = "https://github.com/bytegem/ootp"
+license = "MIT"
+keywords = ["ootp", "totp", "hotp", "rust", "rfc6238"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hmac-sha1 = "0.1"
+
+[dev-dependencies]
+base32 = "0.4"
