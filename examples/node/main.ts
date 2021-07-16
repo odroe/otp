@@ -1,7 +1,8 @@
 import base32 from 'thirty-two';
 import { TOTP } from 'ootp';
 
-const sceret = base32.decode('MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q');
+const sceret = base32.decode('MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q'); // The secret key is a base32 encoded string
+
 const totp = new TOTP({
     secret: sceret,
     digits: 6,
