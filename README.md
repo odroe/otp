@@ -32,9 +32,9 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 
 | Project | Status | Description |
 |---------|--------|-------------|
-| [OOTP for Node.js](https://www.npmjs.com/package/ootp) | [![npm version](https://badge.fury.io/js/ootp.svg)](https://www.npmjs.com/package/ootp) | TypeScript implementation of OOTP |
-| [OOTP for Rust](https://crates.io/crates/ootp) | `0.0.1` | Rust implementation of OOTP |
-| [OOTP for Dart](https://pub.dev/packages/ootp) | `0.0.2` | Dart implementation of OOTP |
+| [OOTP for Node.js](https://www.npmjs.com/package/ootp) | ![npm](https://img.shields.io/npm/v/ootp?style=flat-square) | TypeScript implementation of OOTP |
+| [OOTP for Rust](https://crates.io/crates/ootp) | ![crates.io version](https://img.shields.io/crates/v/ootp?style=flat-square) | Rust implementation of OOTP |
+| [OOTP for Dart](https://pub.dev/packages/ootp) | ![Pub Version](https://img.shields.io/pub/v/ootp?label=pub.dev&style=flat-square) | Dart implementation of OOTP |
 | Open Authenticator | `TODO` | A 100% open source Authenticator |
 
 > More tooling and libraries are being added to the project.
