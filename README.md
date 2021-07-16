@@ -4,7 +4,7 @@ OOTP (Open One-time Password) is a supports multiple programming languages. The 
 
 ## Introduction
 
-The one-time password produced by ootp(Node.js One-Time Password) is fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). You can use Google Authenticator, Microsoft Authenticator or other Authenticator To verify!
+The One-time password produced by OOTP(Open One-Time Password) is fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). You can use Google Authenticator, Microsoft Authenticator or other Authenticator To verify!
 
 ## Features
 
@@ -34,7 +34,7 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 |---------|--------|-------------|
 | [OOTP for Node.js](https://www.npmjs.com/package/ootp) | [![npm version](https://badge.fury.io/js/ootp.svg)](https://www.npmjs.com/package/ootp) | TypeScript implementation of OOTP |
 | [OOTP for Rust](https://crates.io/crates/ootp) | `0.0.1` | Rust implementation of OOTP |
-| OOTP for Dart | `TODO` | Dart implementation of OOTP |
+| [OOTP for Dart](https://pub.dev/packages/ootp) | `0.0.2` | Dart implementation of OOTP |
 | Open Authenticator | `TODO` | A 100% open source Authenticator |
 
 > More tooling and libraries are being added to the project.
