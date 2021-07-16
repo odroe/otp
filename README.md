@@ -18,6 +18,7 @@ The one-time password produced by ootp(Node.js One-Time Password) is fully compl
  * JavaScript/TypeScript
  * Node.js
  * Dart
+ * Rust
  * Flutter
 
 ### Open Authenticator
@@ -31,7 +32,8 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 
 | Project | Status | Description |
 |---------|--------|-------------|
-| [OOTP for Node.js](https://github.com/bytegem/ootp/typescript) | [![npm version](https://badge.fury.io/js/%40bytegem%2Footp.svg)](https://www.npmjs.com/package/@bytegem/totp) | TypeScript implementation of TOTP |
+| [OOTP for Node.js](https://www.npmjs.com/package/ootp) | [![npm version](https://badge.fury.io/js/ootp.svg)](https://www.npmjs.com/package/ootp) | TypeScript implementation of TOTP |
+| [OOTP for Rust](https://crates.io/crates/ootp) | `0.0.1` ｜ Rust implementation of TOTP |
 | OOTP for Dart | `TODO` | Dart implementation of TOTP |
 | Open Authenticator | `TODO` | A 100% open source Authenticator |
 
