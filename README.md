@@ -1,6 +1,6 @@
 # OOTP
 
-OOTP (Open One-Time Password) is a zero-dependency, object-oriented, and supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
+OOTP (Open One-time Password) is a zero-dependency, object-oriented, and supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
 
 ## Introduction
 
@@ -39,4 +39,4 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 
 ## License
 
-The TOTP project uses the [MIT license](LICENSE) to open source.
+The OOTP project uses the [MIT license](LICENSE) to open source.
