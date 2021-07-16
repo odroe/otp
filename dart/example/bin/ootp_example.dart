@@ -6,5 +6,8 @@ void main(List<String> arguments) {
   final secret = base32.decode(encodedSecret);
   final totp = TOTP.secret(secret);
 
+  final otpAuthUri = "otpauth://totp/OOTP:Tester?secret=${encodedSecret}&issuer=OOTP&period=${totp.period}&digits=${totp.digits}";
+
   print("otp: ${totp.make()}");
+  print("uri: ${otpAuthUri}");
 }
