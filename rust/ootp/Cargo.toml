@@ -7,7 +7,7 @@ description = "OOTP (Open One-time Password) is a zero-dependency, object-orient
 homepage = "https://github.com/bytegem/ootp"
 repository = "https://github.com/bytegem/ootp"
 license = "MIT"
-keywords = ["ootp", "totp", "hotp", "rust", "rfc6238", "RFC4226"]
+keywords = ["ootp", "totp", "hotp", "rust", "rfc6238"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
