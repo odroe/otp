@@ -6,9 +6,9 @@ import 'package:crypto/crypto.dart';
 const String OTP_ALGORITHM = 'sha1';
 
 /// The RFC 4226 implentation of HOTP algorithm.
-/// 
+///
 /// @see https://tools.ietf.org/html/rfc4226
-/// 
+///
 /// Example
 /// ```dart
 /// final hotp = HOTP(secret);
@@ -18,14 +18,13 @@ const String OTP_ALGORITHM = 'sha1';
 /// );
 /// ```
 class HOTP {
-
   /// The HOTP use HMAC-SHA1 secret.
   final List<int> secret;
 
   /// Create a HOTP instance.
-  /// 
+  ///
   /// @param `secret` The HOTP secret.
-  /// 
+  ///
   /// ```dart
   /// final hotp = HOTP(secret);
   /// ```
@@ -35,7 +34,7 @@ class HOTP {
   Hmac get hmac => new Hmac(sha1, secret);
 
   /// Make a OTP code.
-  /// 
+  ///
   /// @param `counter` The counter value.
   /// @param `digits` The OTP code length.
   String make({
@@ -59,7 +58,7 @@ class HOTP {
   }
 
   /// Chack a OTP code.
-  /// 
+  ///
   /// @param `otp` The OTP code.
   /// @param `counter` The counter value.
   /// @param `digits` The OTP code length.

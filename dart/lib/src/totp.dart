@@ -1,7 +1,7 @@
 import 'hotp.dart';
 
 /// The RFC 6238 algorithm implementation.
-/// 
+///
 /// @see https://tools.ietf.org/html/rfc6238
 ///
 /// Example 1:
@@ -24,7 +24,6 @@ import 'hotp.dart';
 /// final value = totp.make();
 /// ```
 class TOTP {
-
   /// The REC 4226 algorithm implementation.
   final HOTP hotp;
 
@@ -35,7 +34,7 @@ class TOTP {
   final int period;
 
   /// Create a new TOTP instance.
-  /// 
+  ///
   /// @param `hotp` - The HOTP instance.
   /// @param `digits` - The number of digits in the code.
   /// @param `period` - The number of seconds in the time period.
@@ -46,7 +45,7 @@ class TOTP {
   });
 
   /// Create a new TOTP instance for a given secret.
-  /// 
+  ///
   /// @param `secret` - The secret.
   /// @param `digits` - The number of digits in the code.
   /// @param `period` - The number of seconds in the time period.
@@ -77,7 +76,7 @@ class TOTP {
       );
 
   /// Chack a OTP value.
-  /// 
+  ///
   /// @param `otp` - The OTP value.
   /// @param `breadth` - The number of OTP values to check.
   bool check(String otp, [int breadth = 0]) => hotp.check(
