@@ -7,5 +7,5 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ootp = "^0.0.2"
+ootp = "^0.0.4"
 base32 = "^0.4.0"
