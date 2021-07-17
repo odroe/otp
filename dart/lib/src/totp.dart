@@ -26,7 +26,7 @@ class TOTP {
   int _create_counter() {
     final now = DateTime.now();
     final value = now.millisecondsSinceEpoch / 1000 / period;
-    
+
     return value.floor();
   }
 

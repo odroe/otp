@@ -50,6 +50,8 @@ class HOTP {
 
   List<int> _int_to_8_bytes(int input) {
     final bit = 8;
-    return List<int>.generate(bit, (index) => (input >> (bit * index)) & 0xff).reversed.toList();
+    return List<int>.generate(bit, (index) => (input >> (bit * index)) & 0xff)
+        .reversed
+        .toList();
   }
 }
