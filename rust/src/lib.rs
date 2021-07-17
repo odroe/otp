@@ -1,5 +1,7 @@
+mod constants;
 mod hotp;
 mod totp;
 
-pub use hotp::HOTP;
-pub use totp::TOTP;
+pub use constants::*;
+pub use hotp::*;
+pub use totp::*;

@@ -1,4 +1,7 @@
-use crate::hotp::HOTP;
+use crate::{
+    constants:: { DEFAULT_DIGITS, DEFAULT_PERIOD },
+    hotp::{ Hotp, HotpMakeOption, HotpCheckOption },
+};
 use std::time::SystemTime;
 
 fn create_counter(period: u64) -> u64 {
@@ -9,29 +12,49 @@ fn create_counter(period: u64) -> u64 {
         / period
 }
 
-pub struct TOTP {
-    pub hotp: HOTP,
+pub struct Totp {
+    pub hotp: Hotp,
     pub digits: u32,
     pub period: u64,
 }
 
-impl TOTP {
-    pub fn new(secret: String, digits: u32, period: u64) -> TOTP {
-        TOTP {
-            hotp: HOTP::new(secret, 0),
-            digits,
-            period,
-        }
+pub enum TotpWithSecretCreateOption {
+    Default,
+    Digits(u32),
+    Period(u64),
+    Full {
+        digits: u32,
+        period: u64,
+    },
+}
+
+impl Totp {
+    pub fn secret(secret: String, option: TotpWithSecretCreateOption) -> Totp {
+        let hotp = Hotp(secret);
+        let (digits, period) = match option {
+            TotpWithSecretCreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
+            TotpWithSecretCreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
+            TotpWithSecretCreateOption::Period(period) => (DEFAULT_DIGITS, period),
+            TotpWithSecretCreateOption::Full {
+                digits,
+                period,
+            } => (digits, period),
+        };
+        Totp { hotp, digits, period }
     }
 
-    pub fn make(&mut self) -> String {
-        self.hotp.counter = create_counter(self.period);
-        self.hotp.make(self.digits)
+    pub fn make(&self) -> String {
+        self.hotp.make(HotpMakeOption::Full {
+            counter: create_counter(self.period),
+            digits: self.digits,
+        })
     }
 
-    pub fn check(&mut self, otp: &str, window: u64) -> bool {
-        self.hotp.counter = create_counter(self.period);
-        self.hotp.check(otp, window)
+    pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
+        self.hotp.check(otp, HotpCheckOption::Full {
+            counter: create_counter(self.period),
+            breadth: breadth.unwrap_or(DEFAULT_PERIOD),
+        })
     }
 }
 
@@ -39,33 +62,14 @@ impl TOTP {
 mod tests {
     #[test]
     fn it_works() {
-        let encoded_secret = "MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q"; // The secret key is a base32 encoded string
+        let secret = String::from("test");
+        let totp = super::Totp::secret(
+            secret,
+            super::TotpWithSecretCreateOption::Default,
+        );
 
-        let secret_vec =
-            base32::decode(base32::Alphabet::RFC4648 { padding: false }, encoded_secret).unwrap();
-        let secret = String::from_utf8(secret_vec).unwrap();
-
-        let period = 30; // 30 seconds
-        let digits = 6; // 6 digits
-
-        let mut totp = crate::totp::TOTP::new(secret, digits, period);
-
-        assert_eq!(totp.make().len(), digits as usize);
-    }
-
-    #[test]
-    fn token_is_the_same_when_called_twice_quickly() {
-        let encoded_secret = "MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q"; // The secret key is a base32 encoded string
-
-        let secret_vec =
-            base32::decode(base32::Alphabet::RFC4648 { padding: false }, encoded_secret).unwrap();
-        let secret = String::from_utf8(secret_vec).unwrap();
-
-        let period = 30; // 30 seconds
-        let digits = 6; // 6 digits
-
-        let mut totp1 = crate::totp::TOTP::new(secret.clone(), digits, period);
-        let mut totp2 = crate::totp::TOTP::new(secret, digits, period);
-        assert_eq!(totp1.make(), totp2.make());
+        let otp = totp.make();
+        
+        assert_eq!(otp.len(), super::DEFAULT_DIGITS as usize);
     }
 }
