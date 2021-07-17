@@ -19,9 +19,9 @@ dependencies = [
 
 [[package]]
 name = "ootp"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee28e7ffc580f54e369fa8f41ae483acc07f27d977517ce89cf3ea059756d146"
+checksum = "eaf213dfce26d9b005809597a734a3469276d890738091d202ec1dee371a98c7"
 dependencies = [
  "hmac-sha1",
 ]
