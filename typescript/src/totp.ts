@@ -25,9 +25,9 @@ export class TOTP implements Required<Pick<TOTPOptions, "digits" | "period">> {
         return this.hotp.make(this.digits, this.createCounter());
     }
 
-    public check(otp: string, margin?: number): boolean {
+    public check(otp: string, breadth?: number): boolean {
         return this.hotp.check(otp, {
-            margin,
+            breadth,
             counter: this.createCounter(),
         });
     }

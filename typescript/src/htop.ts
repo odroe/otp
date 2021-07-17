@@ -49,13 +49,13 @@ export class HTOP {
 
     // Check a OPT.
     public check(otp: string, options: {
-        margin?: number;
+        breadth?: number;
         counter?: number;
     }): boolean {
         const counter = options && options.counter ? options.counter : 0;
-        const margin = options && options.margin ? options.margin : 0;
+        const breadth = options && options.breadth ? options.breadth : 0;
 
-        for (let i = counter - margin; i <= counter + margin; ++i) {
+        for (let i = counter - breadth; i <= counter + breadth; ++i) {
             if (otp === this.make(otp.length, i)) {
                 return true;
             }
