@@ -22,7 +22,6 @@ The HOTP is a HMAC-based one-time password algorithm.
  * Parameters:
    * `counter` - The counter, a non-negative integer, defaults to 0.
    * `digits` - The number of digits of the one-time password, a non-negative integer, defaults to 6.
-   * `breadth` - The degree of password looseness to check, a non-negative integer, defaults to 0.
  * Returns: a string of the one-time password.
 
 ### check
