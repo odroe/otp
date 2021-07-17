@@ -32,14 +32,14 @@ $ cargo install ootp
 
 ## Get started
 ```rust
-use ootp::TOTP
+use ootp::*;
 
 fn main() {
     let secret = String::from("Base32 decoded secret");
-    let period = 30; // 30 seconds
-    let digits = 6; // 6 digits
-
-    let totp = TOTP::new(secret, digits, period);
+    let totp = Totp::secret(
+        secret,
+        TotpWithSecretCreateOption::Default
+    );
 
     let otp = totp.make(); // Generate a one-time password
     println!("{}", otp); // Print the one-time password
