@@ -1,6 +1,6 @@
 use crate::{
-    constants:: { DEFAULT_DIGITS, DEFAULT_PERIOD },
-    hotp::{ Hotp, HotpMakeOption, HotpCheckOption },
+    constants::{DEFAULT_DIGITS, DEFAULT_PERIOD},
+    hotp::{Hotp, HotpCheckOption, HotpMakeOption},
 };
 use std::time::SystemTime;
 
@@ -22,10 +22,7 @@ pub enum TotpWithSecretCreateOption {
     Default,
     Digits(u32),
     Period(u64),
-    Full {
-        digits: u32,
-        period: u64,
-    },
+    Full { digits: u32, period: u64 },
 }
 
 impl Totp {
@@ -35,12 +32,13 @@ impl Totp {
             TotpWithSecretCreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
             TotpWithSecretCreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
             TotpWithSecretCreateOption::Period(period) => (DEFAULT_DIGITS, period),
-            TotpWithSecretCreateOption::Full {
-                digits,
-                period,
-            } => (digits, period),
+            TotpWithSecretCreateOption::Full { digits, period } => (digits, period),
         };
-        Totp { hotp, digits, period }
+        Totp {
+            hotp,
+            digits,
+            period,
+        }
     }
 
     pub fn make(&self) -> String {
@@ -51,10 +49,13 @@ impl Totp {
     }
 
     pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
-        self.hotp.check(otp, HotpCheckOption::Full {
-            counter: create_counter(self.period),
-            breadth: breadth.unwrap_or(DEFAULT_PERIOD),
-        })
+        self.hotp.check(
+            otp,
+            HotpCheckOption::Full {
+                counter: create_counter(self.period),
+                breadth: breadth.unwrap_or(DEFAULT_PERIOD),
+            },
+        )
     }
 }
 
@@ -63,13 +64,10 @@ mod tests {
     #[test]
     fn it_works() {
         let secret = String::from("test");
-        let totp = super::Totp::secret(
-            secret,
-            super::TotpWithSecretCreateOption::Default,
-        );
+        let totp = super::Totp::secret(secret, super::TotpWithSecretCreateOption::Default);
 
         let otp = totp.make();
-        
+
         assert_eq!(otp.len(), super::DEFAULT_DIGITS as usize);
     }
 }
