@@ -1,4 +1,4 @@
-# open_authenticator
+# authenticator
 
 A new Flutter project.
 
