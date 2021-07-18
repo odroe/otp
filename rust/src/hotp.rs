@@ -28,6 +28,7 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     code
 }
 
+/// Make Option
 pub enum MakeOption {
     Default,
     Counter(u64),
@@ -35,6 +36,7 @@ pub enum MakeOption {
     Full { counter: u64, digits: u32 },
 }
 
+/// Check Options
 pub enum CheckOption {
     Default,
     Counter(u64),
@@ -42,26 +44,28 @@ pub enum CheckOption {
     Full { counter: u64, breadth: u64 },
 }
 /// The HOTP is a HMAC-based one-time password algorithm.
+///
+/// It takes one parameter, the shared secret between client and server.
 pub struct Hotp<'a>(pub &'a str);
 
 impl Hotp<'_> {
-    /// This function returns a string of the one-time password
+    /// Returns the one-time password as a `String`
     ///
     /// # Example #1
     ///
     /// ```
-    /// use ootp::{Hotp, MakeOption};
+    /// use ootp::hotp::{Hotp, MakeOption};
     ///
-    /// let hotp = Hotp("test");
+    /// let hotp = Hotp("A strong shared secret");
     /// let code = hotp.make(MakeOption::Default);
     /// ```
     ///
     /// # Example #2
     ///
     /// ```
-    /// use ootp::{Hotp, MakeOption};
-    /// let hotp = Hotp("test");
-    /// let code = hotp.make(MakeOption::Default);
+    /// use ootp::hotp::{Hotp, MakeOption};
+    /// let hotp = Hotp("A strong shared secret");
+    /// let code = hotp.make(MakeOption::Digits(8));
     /// ```
     pub fn make(&self, options: MakeOption) -> String {
         match options {
@@ -71,6 +75,26 @@ impl Hotp<'_> {
             MakeOption::Full { counter, digits } => make_opt(self.0.as_bytes(), digits, counter),
         }
     }
+    /// Returns a boolean indicating if the one-time password is valid.
+    ///
+    /// # Example #1
+    ///
+    /// ```
+    /// use ootp::hotp::{Hotp, MakeOption};
+    ///
+    /// let hotp = Hotp("A strong shared secret");
+    /// let code = hotp.make(MakeOption::Default);
+    /// let check = hotp.check(code.as_str(), CheckOption::Default);
+    /// ```
+    ///
+    /// # Example #2
+    ///
+    /// ```
+    /// use ootp::hotp::{Hotp, MakeOption};
+    /// let hotp = Hotp("A strong shared secret");
+    /// let code = hotp.make(MakeOption::Digits(8));
+    /// let check = hotp.check(code.as_str(), CheckOption::Default);
+    /// ```
     pub fn check(&self, otp: &str, options: CheckOption) -> bool {
         let (counter, breadth) = match options {
             CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH),
@@ -93,14 +117,84 @@ impl Hotp<'_> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Hotp, MakeOption};
+    use super::{CheckOption, Hotp, MakeOption};
 
     #[test]
-    fn make() {
-        let hotp = Hotp("test");
+    fn make_test() {
+        let hotp = Hotp("A strong shared secret");
         let code1 = hotp.make(MakeOption::Default);
         let code2 = hotp.make(MakeOption::Default);
-
         assert_eq!(code1, code2);
+    }
+    /// Taken from [RFC 4226](https://datatracker.ietf.org/doc/html/rfc4226#appendix-D)
+    #[test]
+    fn make_test_correcteness() {
+        use hex;
+
+        let secret = "12345678901234567890";
+        let hotp = Hotp(secret);
+        let hex_string = hex::encode(secret);
+        assert_eq!(
+            format!("0x{}", hex_string),
+            "0x3132333435363738393031323334353637383930"
+        );
+        let code = hotp.make(MakeOption::Counter(0));
+        assert_eq!(code, "755224");
+        let code = hotp.make(MakeOption::Counter(1));
+        assert_eq!(code, "287082");
+        let code = hotp.make(MakeOption::Counter(2));
+        assert_eq!(code, "359152");
+        let code = hotp.make(MakeOption::Counter(3));
+        assert_eq!(code, "969429");
+        let code = hotp.make(MakeOption::Counter(4));
+        assert_eq!(code, "338314");
+        let code = hotp.make(MakeOption::Counter(5));
+        assert_eq!(code, "254676");
+        let code = hotp.make(MakeOption::Counter(6));
+        assert_eq!(code, "287922");
+        let code = hotp.make(MakeOption::Counter(7));
+        assert_eq!(code, "162583");
+        let code = hotp.make(MakeOption::Counter(8));
+        assert_eq!(code, "399871");
+        let code = hotp.make(MakeOption::Counter(9));
+        assert_eq!(code, "520489");
+    }
+
+    #[test]
+    fn check_test() {
+        let hotp = Hotp("A strong shared secret");
+        let code = hotp.make(MakeOption::Default);
+        let check = hotp.check(code.as_str(), CheckOption::Default);
+        assert!(check);
+    }
+
+    #[test]
+    fn check_test_counter() {
+        let hotp = Hotp("A strong shared secret");
+        let code = hotp.make(MakeOption::Counter(42));
+        let check = hotp.check(code.as_str(), CheckOption::Counter(42));
+        assert!(check);
+    }
+
+    #[test]
+    fn check_test_breadth() {
+        let hotp = Hotp("A strong shared secret");
+        let code = hotp.make(MakeOption::Counter(42));
+        let check = hotp.check(code.as_str(), CheckOption::Breadth(6));
+        assert!(check);
+    }
+
+    #[test]
+    fn check_test_counter_and_breadth() {
+        let hotp = Hotp("A strong shared secret");
+        let code = hotp.make(MakeOption::Counter(42));
+        let check = hotp.check(
+            code.as_str(),
+            CheckOption::Full {
+                counter: 42,
+                breadth: 6,
+            },
+        );
+        assert!(check);
     }
 }

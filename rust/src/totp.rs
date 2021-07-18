@@ -1,7 +1,5 @@
-use crate::{
-    constants::{DEFAULT_DIGITS, DEFAULT_PERIOD},
-    hotp::{CheckOption, Hotp, MakeOption},
-};
+use crate::constants::{DEFAULT_DIGITS, DEFAULT_PERIOD};
+use crate::hotp::{CheckOption, Hotp, MakeOption};
 use std::time::SystemTime;
 
 fn create_counter(period: u64) -> u64 {
@@ -44,8 +42,8 @@ impl Totp<'_> {
     ///
     /// # Example
     ///
-    /// ```
-    /// use ootp::{Totp, CreateOption};
+    /// ```rust
+    /// use ootp::totp::{Totp, CreateOption};
     ///
     /// let secret = "Base32 decoded secret";
     /// let totp = Totp::secret(
