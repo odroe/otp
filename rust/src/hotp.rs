@@ -28,19 +28,27 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     code
 }
 
-/// Make Option
+/// The Options for the `make` function.
 pub enum MakeOption {
+    /// The default case. `Counter = 0` and `Digits = 6`.
     Default,
+    /// Specify the `Counter`.
     Counter(u64),
+    /// Specify the desired number of `Digits`.
     Digits(u32),
+    /// Specify both the `Counter` and the desired number of `Digits`.
     Full { counter: u64, digits: u32 },
 }
 
-/// Check Options
+/// The Options for the `check` function.
 pub enum CheckOption {
+    /// The default case. `Counter = 0` and `Breadth = 0`.
     Default,
+    /// Specify the `Counter`.
     Counter(u64),
+    /// Specify the desired number of digits.
     Breadth(u64),
+    /// Specify both the `Counter` and the desired `Breadth`.
     Full { counter: u64, breadth: u64 },
 }
 /// The HOTP is a HMAC-based one-time password algorithm.
@@ -49,24 +57,26 @@ pub enum CheckOption {
 pub struct Hotp<'a>(pub &'a str);
 
 impl Hotp<'_> {
-    /// Returns the one-time password as a `String`
-    ///
-    /// # Example #1
-    ///
-    /// ```
-    /// use ootp::hotp::{Hotp, MakeOption};
-    ///
-    /// let hotp = Hotp("A strong shared secret");
-    /// let code = hotp.make(MakeOption::Default);
-    /// ```
-    ///
-    /// # Example #2
-    ///
-    /// ```
-    /// use ootp::hotp::{Hotp, MakeOption};
-    /// let hotp = Hotp("A strong shared secret");
-    /// let code = hotp.make(MakeOption::Digits(8));
-    /// ```
+    /**
+    Returns the one-time password as a `String`
+
+    # Example #1
+
+    ```
+    use ootp::hotp::{Hotp, MakeOption};
+
+    let hotp = Hotp("A strong shared secret");
+    let code = hotp.make(MakeOption::Default);
+    ```
+
+    # Example #2
+
+    ```
+    use ootp::hotp::{Hotp, MakeOption};
+    let hotp = Hotp("A strong shared secret");
+    let code = hotp.make(MakeOption::Digits(8));
+    ```
+    */
     pub fn make(&self, options: MakeOption) -> String {
         match options {
             MakeOption::Default => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER),
@@ -75,26 +85,28 @@ impl Hotp<'_> {
             MakeOption::Full { counter, digits } => make_opt(self.0.as_bytes(), digits, counter),
         }
     }
-    /// Returns a boolean indicating if the one-time password is valid.
-    ///
-    /// # Example #1
-    ///
-    /// ```
-    /// use ootp::hotp::{Hotp, MakeOption};
-    ///
-    /// let hotp = Hotp("A strong shared secret");
-    /// let code = hotp.make(MakeOption::Default);
-    /// let check = hotp.check(code.as_str(), CheckOption::Default);
-    /// ```
-    ///
-    /// # Example #2
-    ///
-    /// ```
-    /// use ootp::hotp::{Hotp, MakeOption};
-    /// let hotp = Hotp("A strong shared secret");
-    /// let code = hotp.make(MakeOption::Digits(8));
-    /// let check = hotp.check(code.as_str(), CheckOption::Default);
-    /// ```
+    /**
+    Returns a boolean indicating if the one-time password is valid.
+
+    # Example #1
+
+    ```
+    use ootp::hotp::{Hotp, MakeOption, CheckOption};
+
+    let hotp = Hotp("A strong shared secret");
+    let code = hotp.make(MakeOption::Default);
+    let check = hotp.check(code.as_str(), CheckOption::Default);
+    ```
+
+    # Example #2
+
+    ```
+    use ootp::hotp::{Hotp, MakeOption, CheckOption};
+    let hotp = Hotp("A strong shared secret");
+    let code = hotp.make(MakeOption::Counter(2));
+    let check = hotp.check(code.as_str(), CheckOption::Counter(2));
+    ```
+    */
     pub fn check(&self, otp: &str, options: CheckOption) -> bool {
         let (counter, breadth) = match options {
             CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH),
@@ -180,7 +192,13 @@ mod tests {
     fn check_test_breadth() {
         let hotp = Hotp("A strong shared secret");
         let code = hotp.make(MakeOption::Counter(42));
-        let check = hotp.check(code.as_str(), CheckOption::Breadth(6));
+        let check = hotp.check(
+            code.as_str(),
+            CheckOption::Full {
+                counter: 42,
+                breadth: 6,
+            },
+        );
         assert!(check);
     }
 

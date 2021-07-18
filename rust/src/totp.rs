@@ -38,23 +38,25 @@ impl Totp<'_> {
             period,
         }
     }
-    /// This function returns a string of the one-time password
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use ootp::totp::{Totp, CreateOption};
-    ///
-    /// let secret = "Base32 decoded secret";
-    /// let totp = Totp::secret(
-    ///     secret,
-    ///     CreateOption::Default
-    /// );
-    ///
-    /// let otp = totp.make(); // Generate a one-time password
-    /// println!("{}", otp); // Print the one-time password
-    /// ```
-    ///
+    /**
+    This function returns a string of the one-time password
+
+    # Example
+
+    ```rust
+    use ootp::totp::{Totp, CreateOption};
+
+    let secret = "Base32 decoded secret";
+    let totp = Totp::secret(
+        secret,
+        CreateOption::Default
+    );
+
+    let otp = totp.make(); // Generate a one-time password
+    println!("{}", otp); // Print the one-time password
+    ```
+
+    */
     pub fn make(&self) -> String {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
