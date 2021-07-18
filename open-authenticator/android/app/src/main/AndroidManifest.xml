@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="bytegem.ootp.authenticator">
    <application
-        android:label="authenticator"
+        android:label="Authenticator"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
