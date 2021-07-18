@@ -1,6 +1,7 @@
 use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
 use hmacsha1::hmac_sha1;
 
+/// Convert a `u64` value to an array of 8 elements of 8-bit.
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
     let mut bytes = [0_u8; 8];
     for (i, item) in bytes.iter_mut().enumerate().take(7) {
@@ -27,45 +28,58 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     code
 }
 
-pub enum HotpMakeOption {
+pub enum MakeOption {
     Default,
     Counter(u64),
     Digits(u32),
     Full { counter: u64, digits: u32 },
 }
 
-pub enum HotpCheckOption {
+pub enum CheckOption {
     Default,
     Counter(u64),
     Breadth(u64),
     Full { counter: u64, breadth: u64 },
 }
+/// The HOTP is a HMAC-based one-time password algorithm.
+pub struct Hotp<'a>(pub &'a str);
 
-pub struct Hotp(pub String);
-
-impl Hotp {
-    pub fn make(&self, options: HotpMakeOption) -> String {
+impl Hotp<'_> {
+    /// This function returns a string of the one-time password
+    ///
+    /// # Example #1
+    ///
+    /// ```
+    /// use ootp::{Hotp, MakeOption};
+    ///
+    /// let hotp = Hotp("test");
+    /// let code = hotp.make(MakeOption::Default);
+    /// ```
+    ///
+    /// # Example #2
+    ///
+    /// ```
+    /// use ootp::{Hotp, MakeOption};
+    /// let hotp = Hotp("test");
+    /// let code = hotp.make(MakeOption::Default);
+    /// ```
+    pub fn make(&self, options: MakeOption) -> String {
         match options {
-            HotpMakeOption::Default => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER),
-            HotpMakeOption::Counter(counter) => {
-                make_opt(self.0.as_bytes(), DEFAULT_DIGITS, counter)
-            }
-            HotpMakeOption::Digits(digits) => make_opt(self.0.as_bytes(), digits, DEFAULT_COUNTER),
-            HotpMakeOption::Full { counter, digits } => {
-                make_opt(self.0.as_bytes(), digits, counter)
-            }
+            MakeOption::Default => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER),
+            MakeOption::Counter(counter) => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, counter),
+            MakeOption::Digits(digits) => make_opt(self.0.as_bytes(), digits, DEFAULT_COUNTER),
+            MakeOption::Full { counter, digits } => make_opt(self.0.as_bytes(), digits, counter),
         }
     }
-
-    pub fn check(&self, otp: &str, options: HotpCheckOption) -> bool {
+    pub fn check(&self, otp: &str, options: CheckOption) -> bool {
         let (counter, breadth) = match options {
-            HotpCheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH),
-            HotpCheckOption::Counter(counter) => (counter, DEFAULT_BREADTH),
-            HotpCheckOption::Breadth(breadth) => (DEFAULT_COUNTER, breadth),
-            HotpCheckOption::Full { counter, breadth } => (counter, breadth),
+            CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH),
+            CheckOption::Counter(counter) => (counter, DEFAULT_BREADTH),
+            CheckOption::Breadth(breadth) => (DEFAULT_COUNTER, breadth),
+            CheckOption::Full { counter, breadth } => (counter, breadth),
         };
         for i in (counter - breadth)..=(counter + breadth) {
-            let code = self.make(HotpMakeOption::Full {
+            let code = self.make(MakeOption::Full {
                 counter: i,
                 digits: otp.len() as u32,
             });
@@ -79,13 +93,13 @@ impl Hotp {
 
 #[cfg(test)]
 mod tests {
-    use super::{Hotp, HotpMakeOption};
+    use super::{Hotp, MakeOption};
 
     #[test]
     fn make() {
-        let hotp = Hotp(String::from("test"));
-        let code1 = hotp.make(HotpMakeOption::Default);
-        let code2 = hotp.make(HotpMakeOption::Default);
+        let hotp = Hotp("test");
+        let code1 = hotp.make(MakeOption::Default);
+        let code2 = hotp.make(MakeOption::Default);
 
         assert_eq!(code1, code2);
     }
