@@ -10,16 +10,23 @@ fn create_counter(period: u64) -> u64 {
         / period
 }
 
+/// The TOTP is a HOTP-based one-time password algorithm, with a time value as moving factor.
+///
+/// It takes three parameter. Am `Hotp` istance, the desired number of digits and a time period.
 pub struct Totp<'a> {
     pub hotp: Hotp<'a>,
     pub digits: u32,
     pub period: u64,
 }
-
+/// The Options for the TOTP's `make` function.
 pub enum CreateOption {
+    /// The default case. `Period = 30` seconds and `Digits = 6`.
     Default,
+    /// Specify the desired number of `Digits`.
     Digits(u32),
+    /// Specify the desired time `Period`.
     Period(u64),
+    /// Specify both the desired time `Period` and the number of `Digits`.
     Full { digits: u32, period: u64 },
 }
 
@@ -57,13 +64,44 @@ impl Totp<'_> {
     ```
 
     */
+
     pub fn make(&self) -> String {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
             digits: self.digits,
         })
     }
+    /**
+    Returns a boolean indicating if the one-time password is valid.
 
+    # Example #1
+
+    ```
+    use ootp::totp::{Totp, CreateOption};
+
+    let secret = "A strong shared secret";
+    let totp = Totp::secret(
+        secret,
+        CreateOption::Default
+    );
+    let otp = totp.make(); // Generate a one-time password
+    let check = totp.check(otp.as_str(), None);
+    ```
+
+    # Example #2
+
+    ```
+    use ootp::totp::{Totp, CreateOption};
+
+    let secret = "A strong shared secret";
+    let totp = Totp::secret(
+        secret,
+        CreateOption::Digits(8)
+    );
+    let otp = totp.make(); // Generate a one-time password
+    let check = totp.check(otp.as_str(), Some(42));
+    ```
+    */
     pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
         self.hotp.check(
             otp,
@@ -77,13 +115,21 @@ impl Totp<'_> {
 
 #[cfg(test)]
 mod tests {
+    use super::{CreateOption, Totp};
+    use crate::constants::DEFAULT_DIGITS;
+
     #[test]
     fn it_works() {
-        let secret = "test";
-        let totp = super::Totp::secret(secret, super::CreateOption::Default);
+        let secret = "A strong shared secret";
+        let totp = Totp::secret(secret, CreateOption::Default);
+        let code = totp.make();
+        assert_eq!(code.len(), DEFAULT_DIGITS as usize);
+    }
 
-        let otp = totp.make();
-
-        assert_eq!(otp.len(), super::DEFAULT_DIGITS as usize);
+    /// Taken from [RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238#appendix-B)
+    #[test]
+    #[ignore = "Still To-do"]
+    fn make_test_correcteness() {
+        todo!()
     }
 }

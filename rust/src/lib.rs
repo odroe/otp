@@ -7,7 +7,7 @@ The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://w
 
 /// Constants module.
 mod constants;
-/// HOTP module.
+/// HOTP is a HMAC-based one-time password algorithm.
 pub mod hotp;
-/// TOTP module.
+/// TOTP is a HOTP-based one-time password algorithm, with a time value as moving factor.
 pub mod totp;
