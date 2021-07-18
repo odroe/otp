@@ -1,6 +1,6 @@
 use crate::{
     constants::{DEFAULT_DIGITS, DEFAULT_PERIOD},
-    hotp::{Hotp, HotpCheckOption, HotpMakeOption},
+    hotp::{CheckOption, Hotp, MakeOption},
 };
 use std::time::SystemTime;
 
@@ -12,27 +12,27 @@ fn create_counter(period: u64) -> u64 {
         / period
 }
 
-pub struct Totp {
-    pub hotp: Hotp,
+pub struct Totp<'a> {
+    pub hotp: Hotp<'a>,
     pub digits: u32,
     pub period: u64,
 }
 
-pub enum TotpWithSecretCreateOption {
+pub enum CreateOption {
     Default,
     Digits(u32),
     Period(u64),
     Full { digits: u32, period: u64 },
 }
 
-impl Totp {
-    pub fn secret(secret: String, option: TotpWithSecretCreateOption) -> Totp {
+impl Totp<'_> {
+    pub fn secret(secret: &'static str, option: CreateOption) -> Totp<'static> {
         let hotp = Hotp(secret);
         let (digits, period) = match option {
-            TotpWithSecretCreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
-            TotpWithSecretCreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
-            TotpWithSecretCreateOption::Period(period) => (DEFAULT_DIGITS, period),
-            TotpWithSecretCreateOption::Full { digits, period } => (digits, period),
+            CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
+            CreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
+            CreateOption::Period(period) => (DEFAULT_DIGITS, period),
+            CreateOption::Full { digits, period } => (digits, period),
         };
         Totp {
             hotp,
@@ -40,9 +40,25 @@ impl Totp {
             period,
         }
     }
-
+    /// This function returns a string of the one-time password
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use ootp::{Totp, CreateOption};
+    ///
+    /// let secret = "Base32 decoded secret";
+    /// let totp = Totp::secret(
+    ///     secret,
+    ///     CreateOption::Default
+    /// );
+    ///
+    /// let otp = totp.make(); // Generate a one-time password
+    /// println!("{}", otp); // Print the one-time password
+    /// ```
+    ///
     pub fn make(&self) -> String {
-        self.hotp.make(HotpMakeOption::Full {
+        self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
             digits: self.digits,
         })
@@ -51,7 +67,7 @@ impl Totp {
     pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
         self.hotp.check(
             otp,
-            HotpCheckOption::Full {
+            CheckOption::Full {
                 counter: create_counter(self.period),
                 breadth: breadth.unwrap_or(DEFAULT_PERIOD),
             },
@@ -63,8 +79,8 @@ impl Totp {
 mod tests {
     #[test]
     fn it_works() {
-        let secret = String::from("test");
-        let totp = super::Totp::secret(secret, super::TotpWithSecretCreateOption::Default);
+        let secret = "test";
+        let totp = super::Totp::secret(secret, super::CreateOption::Default);
 
         let otp = totp.make();
 

@@ -8,12 +8,12 @@ The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://w
 
 ## Features
 
- * Generate one-time passwords for multiple languages
- * 100% Open source
- * HOTP
- * TOTP
- * [RFC 4226](https://tools.ietf.org/html/rfc4226)
- * [RFC 6238](https://tools.ietf.org/html/rfc6238)
+- Generate one-time passwords for multiple languages
+- 100% Open source
+- HOTP
+- TOTP
+- [RFC 4226](https://tools.ietf.org/html/rfc4226)
+- [RFC 6238](https://tools.ietf.org/html/rfc6238)
 
 ## Installation
 
@@ -21,38 +21,32 @@ Add the following line to your Cargo.toml file:
 
 ```toml
 [dependencies]
-ootp = "0.2"
-```
-
-or use the following command:
-
-```bash
-$ cargo install ootp
+ootp = "0.0.5"
 ```
 
 ## Get started
+
 ```rust
 use ootp::*;
 
 fn main() {
-    let secret = String::from("Base32 decoded secret");
-    let totp = Totp::secret(
-        secret,
-        TotpWithSecretCreateOption::Default
-    );
-
-    let otp = totp.make(); // Generate a one-time password
-    println!("{}", otp); // Print the one-time password
+   let secret = "Base32 decoded secret";
+   let totp = Totp::secret(
+       secret,
+       CreateOption::Default
+   );
+   let otp = totp.make(); // Generate a one-time password
+   println!("{}", otp); // Print the one-time password
 }
 ```
 
 ## Examples
 
- * [OOTP for Rust example](https://github.com/bytegem/ootp/tree/main/examples/rust-example)
+- [OOTP for Rust example](https://github.com/bytegem/ootp/tree/main/examples/rust-example)
 
 ## Documentation
 
- * [Rust docs.rs page](https://docs.rs/ootp)
+- [Rust docs.rs page](https://docs.rs/ootp)
 
 ## License
 
