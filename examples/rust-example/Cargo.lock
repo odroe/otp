@@ -20,8 +20,7 @@ dependencies = [
 [[package]]
 name = "ootp"
 version = "0.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eaf213dfce26d9b005809597a734a3469276d890738091d202ec1dee371a98c7"
+source = "git+https://github.com/bytegem/ootp#75dede123ffbb85698c68fee04de3dcb26ec0071"
 dependencies = [
  "hmac-sha1",
 ]
