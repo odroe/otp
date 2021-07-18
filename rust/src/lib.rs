@@ -1,7 +1,11 @@
-mod constants;
-mod hotp;
-mod totp;
+//! ## ootp
+//! Fast and easy HOTP and TOTP implementation.
+//!
+//! The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://www.rust-lang.org/) implementation of the [OOTP](https://github.com/bytegem/ootp) library.
 
-pub use constants::*;
-pub use hotp::*;
-pub use totp::*;
+/// Constants module.
+mod constants;
+/// HOTP module.
+pub mod hotp;
+/// TOTP module.
+pub mod totp;
