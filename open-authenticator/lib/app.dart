@@ -7,13 +7,12 @@ class Application extends StatelessWidget {
       theme: CupertinoThemeData(
         primaryColor: CupertinoColors.systemBlue,
         barBackgroundColor: CupertinoDynamicColor.withBrightness(
-            color: CupertinoColors.white,
-            darkColor: CupertinoColors.black,
+          color: CupertinoColors.white,
+          darkColor: CupertinoColors.black,
         ),
         scaffoldBackgroundColor: CupertinoDynamicColor.withBrightness(
             color: CupertinoColors.white.withAlpha(240),
-            darkColor: CupertinoColors.black
-        ),
+            darkColor: CupertinoColors.black),
       ),
       home: HomeScreen(),
     );
@@ -27,10 +26,7 @@ class HomeScreen extends StatelessWidget {
       child: ListView(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: 12.0,
-              vertical: 6.0
-            ),
+            margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
             padding: EdgeInsets.symmetric(
               horizontal: 12.0,
               vertical: 8.0,
@@ -42,20 +38,121 @@ class HomeScreen extends StatelessWidget {
               ).resolveFrom(context),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text("GitHub", style: CupertinoTheme.of(context).textTheme.navTitleTextStyle,),
-                Text("medz", style: CupertinoTheme.of(context).textTheme.textStyle),
-                Text("123 456")
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "GitHub",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .navTitleTextStyle,
+                      ),
+                      Text(
+                        "medz",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(
+                              color: CupertinoColors.systemGrey,
+                            ),
+                      ),
+                      Text(
+                        "123 856",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(
+                              color: CupertinoTheme.of(context).primaryColor,
+                              fontSize: 36.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                CupertinoButton(
+                  child: Icon(
+                    CupertinoIcons.right_chevron,
+                    size: 16.0,
+                    color: CupertinoColors.systemGrey,
+                  ),
+                  padding: EdgeInsets.zero,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 8.0,
+            ),
+            decoration: BoxDecoration(
+              color: CupertinoDynamicColor.withBrightness(
+                color: CupertinoColors.white,
+                darkColor: CupertinoColors.white.withAlpha(30),
+              ).resolveFrom(context),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "GitHub",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .navTitleTextStyle,
+                      ),
+                      Text(
+                        "medz",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(
+                              color: CupertinoColors.systemGrey,
+                            ),
+                      ),
+                      Text(
+                        "123 856",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(
+                              color: CupertinoTheme.of(context).primaryColor,
+                              fontSize: 36.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                CupertinoButton(
+                  child: Icon(
+                    CupertinoIcons.right_chevron,
+                    size: 16.0,
+                    color: CupertinoColors.systemGrey,
+                  ),
+                  padding: EdgeInsets.zero,
+                  onPressed: () {},
+                ),
               ],
             ),
           ),
           CupertinoButton(
-            child: Text("Do you want to setup Authenticator or get help?", style: TextStyle(
-              fontSize: 12.0,
-            ),),
-            onPressed: (){},
+            child: Text(
+              "Do you want to setup Authenticator or get help?",
+              style: TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
+            onPressed: () {},
           ),
         ],
       ),
