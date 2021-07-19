@@ -32,7 +32,7 @@ pub enum CreateOption {
 
 impl<'a> Totp<'a> {
     pub fn secret(secret: &'a str, option: CreateOption) -> Totp<'a> {
-        let hotp = Hotp(secret);
+        let hotp = Hotp::new(secret);
         let (digits, period) = match option {
             CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
             CreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
