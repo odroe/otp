@@ -20,7 +20,7 @@ dependencies = [
 [[package]]
 name = "ootp"
 version = "0.0.5"
-source = "git+https://github.com/bytegem/ootp#75dede123ffbb85698c68fee04de3dcb26ec0071"
+source = "git+https://github.com/bytegem/ootp#35cfe494158bdd89bfa9d85ede9e4346b0be563e"
 dependencies = [
  "hmac-sha1",
 ]
