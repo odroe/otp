@@ -24,7 +24,6 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     if code.len() != (digits as usize) {
         code = "0".repeat((digits - (code.len() as u32)) as usize) + &code;
     }
-
     code
 }
 

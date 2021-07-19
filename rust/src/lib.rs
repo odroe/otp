@@ -14,12 +14,12 @@ pub mod totp;
 
 #[cfg(test)]
 mod tests {
+    use crate::constants::*;
+    use crate::totp::{CreateOption, Totp};
+
     #[test]
     fn rust_example_test() {
         use base32;
-
-        use crate::constants::*;
-        use crate::totp::{CreateOption, Totp};
 
         let encoded_secret = "MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q"; // The secret key is a base32 encoded string
         let secret_vec =
@@ -41,5 +41,13 @@ mod tests {
         println!("otp: {:?}", otp);
         println!("uri: {:?}", otp_auth_uri);
         assert!(totp.check(&otp, None))
+    }
+
+    #[test]
+    fn rust_readme_example() {
+        let secret = "Base32 decoded secret";
+        let totp = Totp::secret(secret, CreateOption::Default);
+        let otp = totp.make(); // Generate a one-time password
+        println!("{}", otp); // Print the one-time password
     }
 }

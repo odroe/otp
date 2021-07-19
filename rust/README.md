@@ -21,7 +21,7 @@ Add the following line to your Cargo.toml file:
 
 ```toml
 [dependencies]
-ootp = "0.0.5"
+ootp = "0.0.6"
 ```
 
 ## Get started
