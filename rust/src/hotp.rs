@@ -28,7 +28,7 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     code
 }
 
-/// The Options for the HOTP's `make` function.
+/// The Options for the HOTP `make` function.
 pub enum MakeOption {
     /// The default case. `Counter = 0` and `Digits = 6`.
     Default,
@@ -40,7 +40,7 @@ pub enum MakeOption {
     Full { counter: u64, digits: u32 },
 }
 
-/// The Options for the HOTP and TOTP's `check` function.
+/// The Options for the HOTP and TOTP `check` function.
 pub enum CheckOption {
     /// The default case. `Counter = 0` and `Breadth = 0`.
     Default,

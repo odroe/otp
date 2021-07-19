@@ -10,7 +10,7 @@ fn create_counter(period: u64) -> u64 {
         / period
 }
 
-/// The TOTP is a HOTP-based one-time password algorithm, with a time value as moving factor.
+/// The TOTP is a Time-based one-time password algorithm, with a time value as moving factor.
 ///
 /// It takes three parameter. Am `Hotp` istance, the desired number of digits and a time period.
 pub struct Totp<'a> {
