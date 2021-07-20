@@ -1,29 +1,29 @@
+use std::usize;
+
 use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
 use hmacsha1::hmac_sha1;
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
+#[inline(always)]
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
-    let mut bytes = [0_u8; 8];
-    for (i, item) in bytes.iter_mut().enumerate().take(7) {
-        *item = (input >> (i * 8)) as u8;
-    }
-    bytes.reverse();
-    bytes
+    input.to_be_bytes()
 }
 
 fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     let counter_bytes = u64_to_8_length_u8_array(counter);
     let digest = hmac_sha1(secret, &counter_bytes);
-    let offset = digest[digest.len() - 1] as usize & 0x0f;
+    let offset = usize::from(digest.last().unwrap() & 0xf);
     let value = (u32::from(digest[offset]) & 0x7f) << 24
         | (u32::from(digest[offset + 1]) & 0xff) << 16
         | (u32::from(digest[offset + 2]) & 0xff) << 8
-        | u32::from(digest[offset + 3]) & 0xff;
+        | (u32::from(digest[offset + 3]) & 0xff);
     let mut code = (value % 10_u32.pow(digits)).to_string();
+
     // Check whether the code is digits bits long, if not, use "0" to fill in the front
     if code.len() != (digits as usize) {
         code = "0".repeat((digits - (code.len() as u32)) as usize) + &code;
     }
+
     code
 }
 
@@ -53,9 +53,15 @@ pub enum CheckOption {
 /// The HOTP is a HMAC-based one-time password algorithm.
 ///
 /// It takes one parameter, the shared secret between client and server.
-pub struct Hotp<'a>(pub &'a str);
+pub struct Hotp<'a> {
+    secret: &'a str,
+}
 
-impl Hotp<'_> {
+impl<'a> Hotp<'a> {
+    pub fn new(secret: &'a str) -> Self {
+        Self { secret: secret }
+    }
+
     /**
     Returns the one-time password as a `String`
 
@@ -64,7 +70,7 @@ impl Hotp<'_> {
     ```
     use ootp::hotp::{Hotp, MakeOption};
 
-    let hotp = Hotp("A strong shared secret");
+    let hotp = Hotp::new("A strong shared secret");
     let code = hotp.make(MakeOption::Default);
     ```
 
@@ -72,16 +78,24 @@ impl Hotp<'_> {
 
     ```
     use ootp::hotp::{Hotp, MakeOption};
-    let hotp = Hotp("A strong shared secret");
+    let hotp = Hotp::new("A strong shared secret");
     let code = hotp.make(MakeOption::Digits(8));
     ```
     */
     pub fn make(&self, options: MakeOption) -> String {
         match options {
-            MakeOption::Default => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER),
-            MakeOption::Counter(counter) => make_opt(self.0.as_bytes(), DEFAULT_DIGITS, counter),
-            MakeOption::Digits(digits) => make_opt(self.0.as_bytes(), digits, DEFAULT_COUNTER),
-            MakeOption::Full { counter, digits } => make_opt(self.0.as_bytes(), digits, counter),
+            MakeOption::Default => {
+                make_opt(self.secret().as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER)
+            }
+            MakeOption::Counter(counter) => {
+                make_opt(self.secret().as_bytes(), DEFAULT_DIGITS, counter)
+            }
+            MakeOption::Digits(digits) => {
+                make_opt(self.secret().as_bytes(), digits, DEFAULT_COUNTER)
+            }
+            MakeOption::Full { counter, digits } => {
+                make_opt(self.secret().as_bytes(), digits, counter)
+            }
         }
     }
     /**
@@ -92,7 +106,7 @@ impl Hotp<'_> {
     ```
     use ootp::hotp::{Hotp, MakeOption, CheckOption};
 
-    let hotp = Hotp("A strong shared secret");
+    let hotp = Hotp::new("A strong shared secret");
     let code = hotp.make(MakeOption::Default);
     let check = hotp.check(code.as_str(), CheckOption::Default);
     ```
@@ -101,7 +115,7 @@ impl Hotp<'_> {
 
     ```
     use ootp::hotp::{Hotp, MakeOption, CheckOption};
-    let hotp = Hotp("A strong shared secret");
+    let hotp = Hotp::new("A strong shared secret");
     let code = hotp.make(MakeOption::Counter(2));
     let check = hotp.check(code.as_str(), CheckOption::Counter(2));
     ```
@@ -124,15 +138,20 @@ impl Hotp<'_> {
         }
         false
     }
+
+    /// Get a reference to the hotp's  secret.
+    pub fn secret(&self) -> &&'a str {
+        &self.secret
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{CheckOption, Hotp, MakeOption};
+    use super::{u64_to_8_length_u8_array, CheckOption, Hotp, MakeOption};
 
     #[test]
     fn make_test() {
-        let hotp = Hotp("A strong shared secret");
+        let hotp = Hotp::new("A strong shared secret");
         let code1 = hotp.make(MakeOption::Default);
         let code2 = hotp.make(MakeOption::Default);
         assert_eq!(code1, code2);
@@ -143,7 +162,7 @@ mod tests {
         use hex;
 
         let secret = "12345678901234567890";
-        let hotp = Hotp(secret);
+        let hotp = Hotp::new(secret);
         let hex_string = hex::encode(secret);
         assert_eq!(
             format!("0x{}", hex_string),
@@ -173,7 +192,7 @@ mod tests {
 
     #[test]
     fn check_test() {
-        let hotp = Hotp("A strong shared secret");
+        let hotp = Hotp::new("A strong shared secret");
         let code = hotp.make(MakeOption::Default);
         let check = hotp.check(code.as_str(), CheckOption::Default);
         assert!(check);
@@ -181,7 +200,7 @@ mod tests {
 
     #[test]
     fn check_test_counter() {
-        let hotp = Hotp("A strong shared secret");
+        let hotp = Hotp::new("A strong shared secret");
         let code = hotp.make(MakeOption::Counter(42));
         let check = hotp.check(code.as_str(), CheckOption::Counter(42));
         assert!(check);
@@ -189,7 +208,7 @@ mod tests {
 
     #[test]
     fn check_test_breadth() {
-        let hotp = Hotp("A strong shared secret");
+        let hotp = Hotp::new("A strong shared secret");
         let code = hotp.make(MakeOption::Counter(42));
         let check = hotp.check(
             code.as_str(),
@@ -203,7 +222,7 @@ mod tests {
 
     #[test]
     fn check_test_counter_and_breadth() {
-        let hotp = Hotp("A strong shared secret");
+        let hotp = Hotp::new("A strong shared secret");
         let code = hotp.make(MakeOption::Counter(42));
         let check = hotp.check(
             code.as_str(),
@@ -213,5 +232,23 @@ mod tests {
             },
         );
         assert!(check);
+    }
+
+    #[test]
+    fn check_u64_to_8_length_u8_array() {
+        let value = 1024_u64;
+        let result = u64_to_8_length_u8_array(value);
+        let expected = [00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 04_u8, 00_u8];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_max_u64_to_8_length_u8_array() {
+        let value = u64::MAX;
+        let result = u64_to_8_length_u8_array(value);
+        let expected = [
+            255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8,
+        ];
+        assert_eq!(result, expected)
     }
 }
