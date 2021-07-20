@@ -249,9 +249,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
-name = "hmac-sha1"
-version = "0.1.3"
-source = "git+https://github.com/lrazovic/rust-hmac-sha1#d118511f8c890809e0cdb410b7fc66acac07f06e"
+name = "hmac-sha"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "265ca1ea8ffab7a915bba023b2e3533cb489837ce4ddf2d51c9d873d5c1db21f"
 dependencies = [
  "sha-1",
  "sha2",
@@ -365,7 +366,7 @@ dependencies = [
  "base32",
  "criterion",
  "hex",
- "hmac-sha1",
+ "hmac-sha",
 ]
 
 [[package]]

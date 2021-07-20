@@ -1,7 +1,7 @@
 use std::usize;
 
 use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
-use hmacsha1::hmac_sha1;
+use hmacsha::hmac_sha1;
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
 #[inline(always)]
