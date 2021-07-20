@@ -20,8 +20,9 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     let value = (u32::from(digest[offset]) & 0x7f) << 24
         | (u32::from(digest[offset + 1]) & 0xff) << 16
         | (u32::from(digest[offset + 2]) & 0xff) << 8
-        | u32::from(digest[offset + 3]) & 0xff;
+        | (u32::from(digest[offset + 3]) & 0xff);
     let mut code = (value % 10_u32.pow(digits)).to_string();
+
     // Check whether the code is digits bits long, if not, use "0" to fill in the front
     if code.len() != (digits as usize) {
         code = "0".repeat((digits - (code.len() as u32)) as usize) + &code;
