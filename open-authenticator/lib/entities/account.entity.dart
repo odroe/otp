@@ -22,7 +22,7 @@ class AccountEntity {
   late String issuer;
 
   @HiveField(2, defaultValue: null)
-  late String name;
+  String? name;
 
   @HiveField(3)
   late String secret;
