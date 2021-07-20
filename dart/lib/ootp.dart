@@ -1,4 +1,3 @@
-// ignore: library_names
 library OOTP;
 
 export 'src/hotp.dart';
