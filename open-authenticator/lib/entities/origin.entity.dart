@@ -13,6 +13,8 @@ enum OriginType {
 
 @HiveType(typeId: 1)
 class OriginEntity {
+  static String entityName = "OriginEntities";
+
   @HiveField(0, defaultValue: OriginType.TOTP)
   late OriginType type;
 
