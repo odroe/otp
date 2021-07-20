@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
+import 'widgets/help.dart';
 import 'widgets/progress-timer.indicator.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -69,15 +70,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          CupertinoButton(
-            child: Text(
-              "Do you want to setup Authenticator or get help?",
-              style: TextStyle(
-                fontSize: 12.0,
-              ),
-            ),
-            onPressed: () {},
-          ),
+          const Help(),
         ],
       ),
       navigationBar: CupertinoNavigationBar(
