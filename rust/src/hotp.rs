@@ -23,6 +23,7 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     if code.len() != (digits as usize) {
         code = "0".repeat((digits - (code.len() as u32)) as usize) + &code;
     }
+
     code
 }
 
@@ -245,7 +246,9 @@ mod tests {
     fn check_max_u64_to_8_length_u8_array() {
         let value = u64::MAX;
         let result = u64_to_8_length_u8_array(value);
-        let expected = [255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8];
+        let expected = [
+            255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8,
+        ];
         assert_eq!(result, expected)
     }
 }

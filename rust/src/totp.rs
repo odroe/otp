@@ -53,7 +53,7 @@ impl<'a> Totp<'a> {
     ```rust
     use ootp::totp::{Totp, CreateOption};
 
-    let secret = "Base32 decoded secret";
+    let secret = "A strong shared secrett";
     let totp = Totp::secret(
         secret,
         CreateOption::Default
@@ -68,6 +68,32 @@ impl<'a> Totp<'a> {
     pub fn make(&self) -> String {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
+            digits: self.digits,
+        })
+    }
+
+    /**
+    This function returns a string of the one-time password, valid a `period` from `time` seconds since the UNIX epoch
+
+    # Example
+
+    ```rust
+    use ootp::totp::{Totp, CreateOption};
+
+    let secret = "A strong shared secrett";
+    let totp = Totp::secret(
+        secret,
+        CreateOption::Default
+    );
+
+    let otp = totp.make_time(59); // Generate a one-time password, valid a `DEFAULT_PERIOD from `59` seconds since the UNIX epoch
+    println!("{}", otp); // Print the one-time password
+    ```
+
+    */
+    pub fn make_time(&self, time: u64) -> String {
+        self.hotp.make(MakeOption::Full {
+            counter: time / self.period,
             digits: self.digits,
         })
     }
@@ -128,8 +154,39 @@ mod tests {
 
     /// Taken from [RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238#appendix-B)
     #[test]
-    #[ignore = "Still To-do"]
     fn make_test_correcteness() {
-        todo!()
+        let secret = "12345678901234567890";
+        let totp = Totp::secret(secret, CreateOption::Digits(8));
+        let code = totp.make_time(59);
+        assert_eq!(code, "94287082");
+        let code = totp.make_time(1111111109);
+        assert_eq!(code, "07081804");
+        let code = totp.make_time(1111111111);
+        assert_eq!(code, "14050471");
+        let code = totp.make_time(1234567890);
+        assert_eq!(code, "89005924");
+        let code = totp.make_time(2000000000);
+        assert_eq!(code, "69279037");
+        let code = totp.make_time(20000000000);
+        assert_eq!(code, "65353130");
+    }
+
+    #[test]
+    fn check_test() {
+        let secret = "A strong shared secret";
+        let totp = Totp::secret(secret, CreateOption::Default);
+        let code = totp.make();
+        assert!(totp.check(code.as_str(), None))
+    }
+
+    #[test]
+    fn rapid_make_test() {
+        let secret = "A strong shared secret";
+        let totp = Totp::secret(secret, CreateOption::Default);
+        let code1 = totp.make();
+        let code2 = totp.make();
+        assert!(totp.check(code1.as_str(), None));
+        assert!(totp.check(code2.as_str(), None));
+        assert_eq!(code1, code2);
     }
 }
