@@ -1,34 +1,34 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'origin.entity.dart';
+part of 'account.entity.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class OriginTypeAdapter extends TypeAdapter<OriginType> {
+class AccountTypeAdapter extends TypeAdapter<AccountType> {
   @override
   final int typeId = 0;
 
   @override
-  OriginType read(BinaryReader reader) {
+  AccountType read(BinaryReader reader) {
     switch (reader.readByte()) {
       case 0:
-        return OriginType.HOTP;
+        return AccountType.HOTP;
       case 1:
-        return OriginType.TOTP;
+        return AccountType.TOTP;
       default:
-        return OriginType.HOTP;
+        return AccountType.HOTP;
     }
   }
 
   @override
-  void write(BinaryWriter writer, OriginType obj) {
+  void write(BinaryWriter writer, AccountType obj) {
     switch (obj) {
-      case OriginType.HOTP:
+      case AccountType.HOTP:
         writer.writeByte(0);
         break;
-      case OriginType.TOTP:
+      case AccountType.TOTP:
         writer.writeByte(1);
         break;
     }
@@ -40,32 +40,32 @@ class OriginTypeAdapter extends TypeAdapter<OriginType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OriginTypeAdapter &&
+      other is AccountTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
 
-class OriginEntityAdapter extends TypeAdapter<OriginEntity> {
+class AccountEntityAdapter extends TypeAdapter<AccountEntity> {
   @override
   final int typeId = 1;
 
   @override
-  OriginEntity read(BinaryReader reader) {
+  AccountEntity read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return OriginEntity()
-      ..type = fields[0] == null ? OriginType.TOTP : fields[0] as OriginType
+    return AccountEntity()
+      ..type = fields[0] == null ? AccountType.TOTP : fields[0] as AccountType
       ..issuer = fields[1] as String
-      ..account = fields[2] as String
+      ..name = fields[2] as String
       ..secret = fields[3] as String
       ..digits = fields[4] == null ? 6 : fields[4] as int
       ..period = fields[5] == null ? 30 : fields[5] as int;
   }
 
   @override
-  void write(BinaryWriter writer, OriginEntity obj) {
+  void write(BinaryWriter writer, AccountEntity obj) {
     writer
       ..writeByte(6)
       ..writeByte(0)
@@ -73,7 +73,7 @@ class OriginEntityAdapter extends TypeAdapter<OriginEntity> {
       ..writeByte(1)
       ..write(obj.issuer)
       ..writeByte(2)
-      ..write(obj.account)
+      ..write(obj.name)
       ..writeByte(3)
       ..write(obj.secret)
       ..writeByte(4)
@@ -88,7 +88,7 @@ class OriginEntityAdapter extends TypeAdapter<OriginEntity> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OriginEntityAdapter &&
+      other is AccountEntityAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -25,7 +25,7 @@ class _ProgressTimerIndicatorState extends State<ProgressTimerIndicator> {
   void updateHalfMinuteSeconds() {
     final value = DateTime.now().millisecondsSinceEpoch / 1000 % widget.period;
     setState(() {
-      this.currentHalfMinuteSeconds = widget.period - value.floor();
+      currentHalfMinuteSeconds = widget.period - value.floor();
     });
   }
 
@@ -35,7 +35,7 @@ class _ProgressTimerIndicatorState extends State<ProgressTimerIndicator> {
     updateHalfMinuteSeconds();
     timer = Timer.periodic(
       duration,
-      (_timer) => this.updateHalfMinuteSeconds(),
+      (_timer) => updateHalfMinuteSeconds(),
     );
     super.initState();
   }

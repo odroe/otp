@@ -1,9 +1,9 @@
 import 'package:hive/hive.dart';
 
-part 'origin.entity.g.dart';
+part 'account.entity.g.dart';
 
 @HiveType(typeId: 0)
-enum OriginType {
+enum AccountType {
   @HiveField(0)
   HOTP,
 
@@ -12,17 +12,17 @@ enum OriginType {
 }
 
 @HiveType(typeId: 1)
-class OriginEntity {
-  static String entityName = "OriginEntities";
+class AccountEntity {
+  static String entityName = "accounts";
 
-  @HiveField(0, defaultValue: OriginType.TOTP)
-  late OriginType type;
+  @HiveField(0, defaultValue: AccountType.TOTP)
+  late AccountType type;
 
   @HiveField(1)
   late String issuer;
 
   @HiveField(2, defaultValue: null)
-  late String account;
+  late String name;
 
   @HiveField(3)
   late String secret;
