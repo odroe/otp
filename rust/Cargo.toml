@@ -24,3 +24,7 @@ criterion = "0.3"
 [[bench]]
 name = "hotp_bench"
 harness = false
+
+[[bench]]
+name = "totp_bench"
+harness = false
