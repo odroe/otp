@@ -12,17 +12,6 @@ Future<void> initHive() async {
   // Init and open box
   await Hive.initFlutter();
   await Hive.openBox<AccountEntity>(AccountEntity.entityName);
-
-  // final account = AccountEntity();
-  // account.digits = 6;
-  // account.secret = 'MU2TSNRZG5TGKMBYGAZDCMJTMM3GIMJVMZRTINDFGI3WGZRVMQ4Q';
-  // account.period = 30;
-  // account.type = AccountType.TOTP;
-  // account.issuer = "GitHub";
-  // account.name = "medz";
-  // // account.
-  // print(box.length);
-  // // box.add(account);
 }
 
 Future<void> main() async {

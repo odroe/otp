@@ -58,7 +58,7 @@ class AccountEntityAdapter extends TypeAdapter<AccountEntity> {
     return AccountEntity()
       ..type = fields[0] == null ? AccountType.TOTP : fields[0] as AccountType
       ..issuer = fields[1] as String
-      ..name = fields[2] as String
+      ..name = fields[2] as String?
       ..secret = fields[3] as String
       ..digits = fields[4] == null ? 6 : fields[4] as int
       ..period = fields[5] == null ? 30 : fields[5] as int;

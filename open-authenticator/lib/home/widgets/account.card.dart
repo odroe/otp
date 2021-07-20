@@ -94,9 +94,9 @@ class _AccountCardState extends State<AccountCard> {
                   widget.account.issuer,
                   style: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
                 ),
-                if (widget.account.name.isNotEmpty)
+                if (widget.account.name!.isNotEmpty)
                   Text(
-                    widget.account.name,
+                    widget.account.name!,
                     style:
                         CupertinoTheme.of(context).textTheme.textStyle.copyWith(
                               color: CupertinoColors.systemGrey,
