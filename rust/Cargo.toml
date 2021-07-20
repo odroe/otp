@@ -14,7 +14,7 @@ include = ["src/**/*", "LICENSE", "README.md"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-hmac-sha1 = "0.1"
+hmac-sha1 = {git = "https://github.com/lrazovic/rust-hmac-sha1"}
 
 [dev-dependencies]
 hex = "0.4"

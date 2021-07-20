@@ -11,7 +11,8 @@ fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
 
 fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
     let counter_bytes = u64_to_8_length_u8_array(counter);
-    let digest = hmac_sha1(secret, &counter_bytes);
+    let mut digest = [0u8; 20];
+    hmac_sha1(secret, &counter_bytes, &mut digest);
     let offset = usize::from(digest.last().unwrap() & 0xf);
     let value = (u32::from(digest[offset]) & 0x7f) << 24
         | (u32::from(digest[offset + 1]) & 0xff) << 16
