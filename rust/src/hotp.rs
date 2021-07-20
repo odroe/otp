@@ -4,13 +4,9 @@ use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
 use hmacsha1::hmac_sha1;
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
+#[inline(always)]
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
-    let mut bytes = [0_u8; 8];
-    for (i, item) in bytes.iter_mut().enumerate().take(7) {
-        *item = (input >> (i * 8)) as u8;
-    }
-    bytes.reverse();
-    bytes
+    input.to_be_bytes()
 }
 
 fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
@@ -57,12 +53,12 @@ pub enum CheckOption {
 ///
 /// It takes one parameter, the shared secret between client and server.
 pub struct Hotp<'a> {
-    _secret: &'a str,
+    secret: &'a str,
 }
 
 impl<'a> Hotp<'a> {
-    pub fn new(_secret: &'a str) -> Self {
-        Self { _secret }
+    pub fn new(secret: &'a str) -> Self {
+        Self { secret: secret }
     }
 
     /**
@@ -144,13 +140,13 @@ impl<'a> Hotp<'a> {
 
     /// Get a reference to the hotp's  secret.
     pub fn secret(&self) -> &&'a str {
-        &self._secret
+        &self.secret
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{CheckOption, Hotp, MakeOption};
+    use super::{u64_to_8_length_u8_array, CheckOption, Hotp, MakeOption};
 
     #[test]
     fn make_test() {
@@ -235,5 +231,21 @@ mod tests {
             },
         );
         assert!(check);
+    }
+
+    #[test]
+    fn check_u64_to_8_length_u8_array() {
+        let value = 1024_u64;
+        let result = u64_to_8_length_u8_array(value);
+        let expected = [00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 04_u8, 00_u8];
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn check_max_u64_to_8_length_u8_array() {
+        let value = u64::MAX;
+        let result = u64_to_8_length_u8_array(value);
+        let expected = [255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8, 255_u8];
+        assert_eq!(result, expected)
     }
 }
