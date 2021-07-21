@@ -14,7 +14,7 @@ include = ["src/**/*", "LICENSE", "README.md"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-hmac-sha1 = "0.1"
+hmac-sha = "0.2"
 
 [dev-dependencies]
 hex = "0.4"
@@ -23,4 +23,8 @@ criterion = "0.3"
 
 [[bench]]
 name = "hotp_bench"
+harness = false
+
+[[bench]]
+name = "totp_bench"
 harness = false
