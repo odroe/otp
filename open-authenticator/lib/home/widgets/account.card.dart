@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:base32/base32.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:ootp/ootp.dart';
 
 import '../../entities/account.entity.dart';
@@ -65,8 +66,11 @@ class _AccountCardState extends State<AccountCard> {
     }
   }
 
-  /// Get a make OTP code.
-  String get otpCodeValue => totp.make().replaceAllMapped(
+  /// Get a make OTP value
+  String get otpCode => totp.make();
+
+  /// Get a make OTP code for formatted.
+  String get formattedOtpCode => totp.make().replaceAllMapped(
       RegExp(r"(.{3})"), (Match match) => "${match.group(0)} ");
 
   @override
@@ -102,14 +106,39 @@ class _AccountCardState extends State<AccountCard> {
                               color: CupertinoColors.systemGrey,
                             ),
                   ),
-                Text(
-                  otpCodeValue,
-                  style:
-                      CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                            color: CupertinoTheme.of(context).primaryColor,
-                            fontSize: 36.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                GestureDetector(
+                  child: Text(
+                    formattedOtpCode,
+                    style:
+                        CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                              color: CupertinoTheme.of(context).primaryColor,
+                              fontSize: 36.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: otpCode))
+                        .then((_void) {
+                      SystemSound.play(SystemSoundType.alert);
+                      showCupertinoDialog(
+                        useRootNavigator: true,
+                        context: context,
+                        builder: (context) => CupertinoAlertDialog(
+                          title: Text("Copied"),
+                          content: Text("One-time password copied: $otpCode"),
+                          actions: [
+                            CupertinoButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        ),
+                        barrierDismissible: true,
+                      );
+                    });
+                  },
                 ),
               ],
             ),
