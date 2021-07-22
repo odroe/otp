@@ -250,9 +250,9 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "hmac-sha"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "265ca1ea8ffab7a915bba023b2e3533cb489837ce4ddf2d51c9d873d5c1db21f"
+checksum = "b7feb0e5e92ef699baf0477c5ba51e57c3f85fc3ca3d10e55f3fc9b789e3ed28"
 dependencies = [
  "sha-1",
  "sha2",

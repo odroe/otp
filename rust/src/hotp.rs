@@ -1,5 +1,3 @@
-use std::usize;
-
 use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
 use hmacsha::hmac_sha1;
 
