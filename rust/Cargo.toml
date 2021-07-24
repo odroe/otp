@@ -6,6 +6,7 @@ authors = ["Byte, Inc. <service@bytegem.net>"]
 description = "OOTP (Open One-time Password) is a supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!"
 homepage = "https://github.com/bytegem/ootp"
 repository = "https://github.com/bytegem/ootp"
+documentation = "https://docs.rs/ootp"
 license = "MIT"
 keywords = ["ootp", "totp", "hotp", "rust", "rfc6238"]
 readme = "README.md"
