@@ -24,8 +24,10 @@ criterion = "0.3"
 
 [[bench]]
 name = "hotp_bench"
+path = "benches/hotp_bench.rs"
 harness = false
 
 [[bench]]
 name = "totp_bench"
+path = "benches/totp_bench.rs"
 harness = false
