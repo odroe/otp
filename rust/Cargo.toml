@@ -10,6 +10,7 @@ license = "MIT"
 keywords = ["ootp", "totp", "hotp", "rust", "rfc6238"]
 readme = "README.md"
 include = ["src/**/*", "LICENSE", "README.md"]
+categories = ["cryptography"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
