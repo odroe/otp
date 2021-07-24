@@ -1,6 +1,6 @@
 [package]
 name = "ootp"
-version = "0.0.6"
+version = "0.0.7"
 edition = "2018"
 authors = ["Byte, Inc. <service@bytegem.net>"]
 description = "OOTP (Open One-time Password) is a supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!"
@@ -14,7 +14,7 @@ include = ["src/**/*", "LICENSE", "README.md"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-hmac-sha = "0.2"
+hmac-sha = "0.4"
 
 [dev-dependencies]
 hex = "0.4"

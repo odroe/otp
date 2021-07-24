@@ -1,5 +1,5 @@
-use crate::constants::{DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
-use hmacsha::hmac_sha1;
+use crate::constants::{DEFAULT_ALGORITHM, DEFAULT_BREADTH, DEFAULT_COUNTER, DEFAULT_DIGITS};
+use hmacsha::{HmacSha, ShaTypes};
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
 #[inline(always)]
@@ -7,10 +7,10 @@ fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
     input.to_be_bytes()
 }
 
-fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
+fn make_opt(secret: &[u8], digits: u32, counter: u64, algorithm: &ShaTypes) -> String {
     let counter_bytes = u64_to_8_length_u8_array(counter);
-    let mut digest = [0u8; 20];
-    hmac_sha1(secret, &counter_bytes, &mut digest);
+    let mut hash = HmacSha::new(secret, &counter_bytes, algorithm);
+    let digest = hash.compute_digest();
     let offset = usize::from(digest.last().unwrap() & 0xf);
     let value = (u32::from(digest[offset]) & 0x7f) << 24
         | (u32::from(digest[offset + 1]) & 0xff) << 16
@@ -27,28 +27,41 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64) -> String {
 }
 
 /// The Options for the HOTP `make` function.
-pub enum MakeOption {
+pub enum MakeOption<'a> {
     /// The default case. `Counter = 0` and `Digits = 6`.
     Default,
     /// Specify the `Counter`.
     Counter(u64),
     /// Specify the desired number of `Digits`.
     Digits(u32),
+    /// Specify the SHA algorihm
+    Algorithm(&'a ShaTypes),
     /// Specify both the `Counter` and the desired number of `Digits`.
-    Full { counter: u64, digits: u32 },
+    Full {
+        counter: u64,
+        digits: u32,
+        algorithm: &'a ShaTypes,
+    },
 }
 
 /// The Options for the HOTP and TOTP `check` function.
-pub enum CheckOption {
+pub enum CheckOption<'a> {
     /// The default case. `Counter = 0` and `Breadth = 0`.
     Default,
     /// Specify the `Counter`.
     Counter(u64),
     /// Specify the desired number of digits.
     Breadth(u64),
-    /// Specify both the `Counter` and the desired `Breadth`.
-    Full { counter: u64, breadth: u64 },
+    /// Specify both the `Counter`, the desired `Breadth` and the `Algorithm`.
+    Full {
+        counter: u64,
+        breadth: u64,
+        algorithm: &'a ShaTypes,
+    },
+    /// Specify the SHA algorihm
+    Algorithm(&'a ShaTypes),
 }
+
 /// The HOTP is a HMAC-based one-time password algorithm.
 ///
 /// It takes one parameter, the shared secret between client and server.
@@ -58,7 +71,7 @@ pub struct Hotp<'a> {
 
 impl<'a> Hotp<'a> {
     pub fn new(secret: &'a str) -> Self {
-        Self { secret: secret }
+        Self { secret }
     }
 
     /**
@@ -80,21 +93,47 @@ impl<'a> Hotp<'a> {
     let hotp = Hotp::new("A strong shared secret");
     let code = hotp.make(MakeOption::Digits(8));
     ```
+
+    # Example #3
+
+    ```
+    use ootp::hotp::{Hotp, MakeOption};
+    use ootp::hmacsha::ShaTypes;
+    let hotp = Hotp::new("A strong shared secret");
+    let code = hotp.make(MakeOption::Algorithm(&ShaTypes::Sha2_256));
+    ```
     */
     pub fn make(&self, options: MakeOption) -> String {
         match options {
-            MakeOption::Default => {
-                make_opt(self.secret().as_bytes(), DEFAULT_DIGITS, DEFAULT_COUNTER)
-            }
-            MakeOption::Counter(counter) => {
-                make_opt(self.secret().as_bytes(), DEFAULT_DIGITS, counter)
-            }
-            MakeOption::Digits(digits) => {
-                make_opt(self.secret().as_bytes(), digits, DEFAULT_COUNTER)
-            }
-            MakeOption::Full { counter, digits } => {
-                make_opt(self.secret().as_bytes(), digits, counter)
-            }
+            MakeOption::Default => make_opt(
+                self.secret().as_bytes(),
+                DEFAULT_DIGITS,
+                DEFAULT_COUNTER,
+                &DEFAULT_ALGORITHM,
+            ),
+            MakeOption::Counter(counter) => make_opt(
+                self.secret().as_bytes(),
+                DEFAULT_DIGITS,
+                counter,
+                &DEFAULT_ALGORITHM,
+            ),
+            MakeOption::Digits(digits) => make_opt(
+                self.secret().as_bytes(),
+                digits,
+                DEFAULT_COUNTER,
+                &DEFAULT_ALGORITHM,
+            ),
+            MakeOption::Full {
+                counter,
+                digits,
+                algorithm,
+            } => make_opt(self.secret().as_bytes(), digits, counter, &algorithm),
+            MakeOption::Algorithm(algorithm) => make_opt(
+                self.secret().as_bytes(),
+                DEFAULT_DIGITS,
+                DEFAULT_COUNTER,
+                &algorithm,
+            ),
         }
     }
     /**
@@ -119,17 +158,24 @@ impl<'a> Hotp<'a> {
     let check = hotp.check(code.as_str(), CheckOption::Counter(2));
     ```
     */
+
     pub fn check(&self, otp: &str, options: CheckOption) -> bool {
-        let (counter, breadth) = match options {
-            CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH),
-            CheckOption::Counter(counter) => (counter, DEFAULT_BREADTH),
-            CheckOption::Breadth(breadth) => (DEFAULT_COUNTER, breadth),
-            CheckOption::Full { counter, breadth } => (counter, breadth),
+        let (counter, breadth, algorithm) = match options {
+            CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH, DEFAULT_ALGORITHM),
+            CheckOption::Counter(counter) => (counter, DEFAULT_BREADTH, DEFAULT_ALGORITHM),
+            CheckOption::Breadth(breadth) => (DEFAULT_COUNTER, breadth, DEFAULT_ALGORITHM),
+            CheckOption::Full {
+                counter,
+                breadth,
+                algorithm,
+            } => (counter, breadth, algorithm),
+            CheckOption::Algorithm(algorithm) => (DEFAULT_COUNTER, DEFAULT_BREADTH, algorithm),
         };
         for i in (counter - breadth)..=(counter + breadth) {
             let code = self.make(MakeOption::Full {
                 counter: i,
                 digits: otp.len() as u32,
+                algorithm: &algorithm,
             });
             if code == otp {
                 return true;
@@ -146,13 +192,24 @@ impl<'a> Hotp<'a> {
 
 #[cfg(test)]
 mod tests {
+    use hmacsha::ShaTypes;
+
     use super::{u64_to_8_length_u8_array, CheckOption, Hotp, MakeOption};
+    use crate::constants::*;
 
     #[test]
     fn make_test() {
         let hotp = Hotp::new("A strong shared secret");
         let code1 = hotp.make(MakeOption::Default);
         let code2 = hotp.make(MakeOption::Default);
+        assert_eq!(code1, code2);
+    }
+
+    #[test]
+    fn make_test_sha2() {
+        let hotp = Hotp::new("A strong shared secret");
+        let code1 = hotp.make(MakeOption::Algorithm(&ShaTypes::Sha2_256));
+        let code2 = hotp.make(MakeOption::Algorithm(&ShaTypes::Sha2_256));
         assert_eq!(code1, code2);
     }
     /// Taken from [RFC 4226](https://datatracker.ietf.org/doc/html/rfc4226#appendix-D)
@@ -198,6 +255,14 @@ mod tests {
     }
 
     #[test]
+    fn check_test_sha2() {
+        let hotp = Hotp::new("A strong shared secret");
+        let code = hotp.make(MakeOption::Algorithm(&ShaTypes::Sha2_256));
+        let check = hotp.check(code.as_str(), CheckOption::Algorithm(&ShaTypes::Sha2_256));
+        assert!(check);
+    }
+
+    #[test]
     fn check_test_counter() {
         let hotp = Hotp::new("A strong shared secret");
         let code = hotp.make(MakeOption::Counter(42));
@@ -214,6 +279,7 @@ mod tests {
             CheckOption::Full {
                 counter: 42,
                 breadth: 6,
+                algorithm: DEFAULT_ALGORITHM,
             },
         );
         assert!(check);
@@ -228,6 +294,7 @@ mod tests {
             CheckOption::Full {
                 counter: 42,
                 breadth: 6,
+                algorithm: DEFAULT_ALGORITHM,
             },
         );
         assert!(check);
@@ -237,7 +304,7 @@ mod tests {
     fn check_u64_to_8_length_u8_array() {
         let value = 1024_u64;
         let result = u64_to_8_length_u8_array(value);
-        let expected = [00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 04_u8, 00_u8];
+        let expected = [00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 00_u8, 4_u8, 00_u8];
         assert_eq!(result, expected)
     }
 

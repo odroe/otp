@@ -1,5 +1,6 @@
-use crate::constants::{DEFAULT_DIGITS, DEFAULT_PERIOD};
+use crate::constants::{DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_ALGORITHM};
 use crate::hotp::{CheckOption, Hotp, MakeOption};
+use hmacsha::ShaTypes;
 use std::time::SystemTime;
 
 fn create_counter(period: u64) -> u64 {
@@ -12,14 +13,15 @@ fn create_counter(period: u64) -> u64 {
 
 /// The TOTP is a HOTP-based one-time password algorithm, with a time value as moving factor.
 ///
-/// It takes three parameter. Am `Hotp` istance, the desired number of digits and a time period.
+/// It takes four parameter. An `Hotp` istance, the desired number of digits, a time period and the SHA algorithm.
 pub struct Totp<'a> {
     pub hotp: Hotp<'a>,
     pub digits: u32,
     pub period: u64,
+    pub algorithm: &'a ShaTypes,
 }
 /// The Options for the TOTP's `make` function.
-pub enum CreateOption {
+pub enum CreateOption<'a> {
     /// The default case. `Period = 30` seconds and `Digits = 6`.
     Default,
     /// Specify the desired number of `Digits`.
@@ -27,23 +29,41 @@ pub enum CreateOption {
     /// Specify the desired time `Period`.
     Period(u64),
     /// Specify both the desired time `Period` and the number of `Digits`.
-    Full { digits: u32, period: u64 },
+    Full {
+        digits: u32,
+        period: u64,
+        algorithm: &'a ShaTypes,
+    },
+    /// Specify the SHA algorihm
+    Algorithm(&'a ShaTypes),
 }
 
 impl<'a> Totp<'a> {
-    pub fn secret(secret: &'a str, option: CreateOption) -> Totp<'a> {
-        let hotp = Hotp::new(secret);
-        let (digits, period) = match option {
-            CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD),
-            CreateOption::Digits(digits) => (digits, DEFAULT_PERIOD),
-            CreateOption::Period(period) => (DEFAULT_DIGITS, period),
-            CreateOption::Full { digits, period } => (digits, period),
-        };
-        Totp {
+    /// TOTP instance "private" constructor
+    fn new(hotp: Hotp<'a>, digits: u32, period: u64, algorithm: &'a ShaTypes) -> Self {
+        Self {
             hotp,
             digits,
             period,
+            algorithm,
         }
+    }
+
+    /// TOTP instance constructor
+    pub fn secret(secret: &'a str, option: CreateOption<'a>) -> Totp<'a> {
+        let hotp = Hotp::new(secret);
+        let (digits, period, algorithm) = match option {
+            CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_ALGORITHM),
+            CreateOption::Digits(digits) => (digits, DEFAULT_PERIOD, DEFAULT_ALGORITHM),
+            CreateOption::Period(period) => (DEFAULT_DIGITS, period, DEFAULT_ALGORITHM),
+            CreateOption::Full {
+                digits,
+                period,
+                algorithm,
+            } => (digits, period, algorithm),
+            CreateOption::Algorithm(algorithm) => (DEFAULT_DIGITS, DEFAULT_PERIOD, algorithm),
+        };
+        Totp::new(hotp, digits, period, algorithm)
     }
     /**
     This function returns a string of the one-time password
@@ -69,6 +89,7 @@ impl<'a> Totp<'a> {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
             digits: self.digits,
+            algorithm: self.algorithm,
         })
     }
 
@@ -95,6 +116,7 @@ impl<'a> Totp<'a> {
         self.hotp.make(MakeOption::Full {
             counter: time / self.period,
             digits: self.digits,
+            algorithm: self.algorithm,
         })
     }
     /**
@@ -134,6 +156,7 @@ impl<'a> Totp<'a> {
             CheckOption::Full {
                 counter: create_counter(self.period),
                 breadth: breadth.unwrap_or(DEFAULT_PERIOD),
+                algorithm: self.algorithm,
             },
         )
     }
@@ -142,7 +165,7 @@ impl<'a> Totp<'a> {
 #[cfg(test)]
 mod tests {
     use super::{CreateOption, Totp};
-    use crate::constants::DEFAULT_DIGITS;
+    use crate::constants::{self, DEFAULT_DIGITS};
 
     #[test]
     fn it_works() {
@@ -169,6 +192,33 @@ mod tests {
         assert_eq!(code, "69279037");
         let code = totp.make_time(20000000000);
         assert_eq!(code, "65353130");
+    }
+
+    /// Taken from [RFC 6238](https://datatracker.ietf.org/doc/html/rfc6238#appendix-B)
+    /// Errata for [RFC 6238]](https://www.rfc-editor.org/errata_search.php?rfc=6238&rec_status=0)
+    #[test]
+    fn make_test_correcteness_sha256() {
+        let secret = "12345678901234567890123456789012";
+        let totp = Totp::secret(
+            secret,
+            CreateOption::Full {
+                digits: 8,
+                period: constants::DEFAULT_PERIOD,
+                algorithm: &hmacsha::ShaTypes::Sha2_256,
+            },
+        );
+        let code = totp.make_time(59);
+        assert_eq!(code, "46119246");
+        let code = totp.make_time(1111111109);
+        assert_eq!(code, "68084774");
+        let code = totp.make_time(1111111111);
+        assert_eq!(code, "67062674");
+        let code = totp.make_time(1234567890);
+        assert_eq!(code, "91819424");
+        let code = totp.make_time(2000000000);
+        assert_eq!(code, "90698825");
+        let code = totp.make_time(20000000000);
+        assert_eq!(code, "77737706");
     }
 
     #[test]

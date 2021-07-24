@@ -11,6 +11,8 @@ pub mod constants;
 pub mod hotp;
 /// TOTP is a Time-based one-time password algorithm, with a time value as moving factor.
 pub mod totp;
+// Re-export hmacsha to handle different SHA algorithms.
+pub use hmacsha as hmacsha;
 
 #[cfg(test)]
 mod tests {
