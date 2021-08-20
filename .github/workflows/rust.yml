@@ -16,9 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Enter rust package dir
-      run: cd rust
     - name: Build
       run: cargo build --verbose
+      working-directory: rust
     - name: Run tests
       run: cargo test --verbose
+      working-directory: rust
