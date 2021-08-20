@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bytegem/ootp.git",
+    "url": "git+https://github.com/odroe/ootp.git",
     "directory": "typescript"
   },
   "keywords": [
@@ -21,12 +21,12 @@
     "RFC6238",
     "RFC4226"
   ],
-  "author": "ByteGem, Inc. <service@bytegem.net>",
+  "author": "Odroe, Inc. <hello@odroe.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bytegem/ootp/issues"
+    "url": "https://github.com/odroe/ootp/issues"
   },
-  "homepage": "https://github.com/bytegem/ootp#readme",
+  "homepage": "https://github.com/odroe/ootp#readme",
   "scripts": {
     "build": "tsc --build",
     "prepublish": "tsc --build"

@@ -1,4 +1,4 @@
-package bytegem.ootp.authenticator
+package odroe.ootp.authenticator
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -3,7 +3,7 @@ description: >-
   OOTP(Open One-time Password) generated one-time passwords are fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). 🚀It's easy to use!
 
 version: 0.0.5
-homepage: https://github.com/bytegem/ootp#readme
+homepage: https://github.com/odroe/ootp#readme
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

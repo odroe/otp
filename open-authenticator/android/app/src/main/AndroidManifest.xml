@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="bytegem.ootp.authenticator">
+    package="odroe.ootp.authenticator">
    <application
         android:label="Authenticator"
         android:icon="@mipmap/ic_launcher">

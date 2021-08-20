@@ -4,7 +4,7 @@ OOTP (Open One-time Password) is a supports multiple programming languages. The 
 
 ## Introduction
 
-The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://www.rust-lang.org/) implementation of the [OOTP](https://github.com/bytegem/ootp) library.
+The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://www.rust-lang.org/) implementation of the [OOTP](https://github.com/Odroe/ootp) library.
 
 ## Features
 
@@ -42,7 +42,7 @@ fn main() {
 
 ## Examples
 
-- [OOTP for Rust example](https://github.com/bytegem/ootp/tree/main/examples/rust-example)
+- [OOTP for Rust example](https://github.com/Odroe/ootp/tree/main/examples/rust-example)
 
 ## Documentation
 
@@ -50,4 +50,4 @@ fn main() {
 
 ## License
 
-The OOTP for Rust library is licensed under the [MIT license](https://github.com/bytegem/ootp/blob/main/LICENSE).
+The OOTP for Rust library is licensed under the [MIT license](https://github.com/Odroe/ootp/blob/main/LICENSE).

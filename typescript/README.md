@@ -4,7 +4,7 @@ OOTP (Open One-time Password) is a supports multiple programming languages. The 
 
 ## Introduction
 
-The [OOTP for Node.js](https://npmjs.com/package/ootp) module is a TypeScript implementation of the [OOTP](https://github.com/bytegem/ootp) library.
+The [OOTP for Node.js](https://npmjs.com/package/ootp) module is a TypeScript implementation of the [OOTP](https://github.com/odroe/ootp) library.
 
 ## Features
 
@@ -47,7 +47,7 @@ console.log(otp);
 
 ## Examples
 
-  * [TOTP - Node.js using TypeScript example](https://github.com/bytegem/ootp/tree/main/examples/node-typescript-example)
+  * [TOTP - Node.js using TypeScript example](https://github.com/odroe/ootp/tree/main/examples/node-typescript-example)
 
 ## Documentation
 
@@ -60,4 +60,4 @@ console.log(otp);
 
 ## License
 
-The OOTP is licensed under the [MIT license](https://github.com/bytegem/ootp/blob/main/LICENSE).
+The OOTP is licensed under the [MIT license](https://github.com/odroe/ootp/blob/main/LICENSE).

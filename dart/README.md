@@ -4,7 +4,7 @@ OOTP (Open One-time Password) is a supports multiple programming languages. The 
 
 ## Intruduction
 
-The [OOTP for Dart](https://pub.dev/packages/ootp) is a [Dart](https://dart.dev) implementation of the [OOTP](https://github.com/bytegem/ootp).
+The [OOTP for Dart](https://pub.dev/packages/ootp) is a [Dart](https://dart.dev) implementation of the [OOTP](https://github.com/odroe/ootp).
 
 ## Features
 
@@ -30,4 +30,4 @@ More information about installation 👉 [here](https://pub.dev/packages/ootp/in
 
 ## License
 
-The OOTP for Dart library is licensed under the [MIT license](https://github.com/bytegem/ootp/blob/main/LICENSE).
+The OOTP for Dart library is licensed under the [MIT license](https://github.com/Odroe/ootp/blob/main/LICENSE).
