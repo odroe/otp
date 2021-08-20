@@ -9,31 +9,31 @@ updates:
     directory: "/typescript" # Location of package manifests
     schedule:
       interval: "daily"
-      labels:
-        - "npm"
-        - "typescript"
-        - "dependencies"
+    labels:
+      - "npm"
+      - "typescript"
+      - "dependencies"
   - package-ecosystem: "npm"
     directory: "/examples/node-typescript-example/"
     schedule:
       interval: "daily"
-      labels:
-        - "npm"
-        - "typescript"
-        - "dependencies"
+    labels:
+      - "npm"
+      - "typescript"
+      - "dependencies"
   - package-ecosystem: "cargo"
     directory: "/rust"
     schedule:
       interval: "daily"
-      labels:
-        - "npm"
-        - "rust"
-        - "dependencies"
+    labels:
+      - "npm"
+      - "rust"
+      - "dependencies"
   - package-ecosystem: "cargo"
     directory: "/examples/rust-example"
     schedule:
       interval: "daily"
-      labels:
-        - "npm"
-        - "rust"
-        - "dependencies"
+    labels:
+      - "npm"
+      - "rust"
+      - "dependencies"
