@@ -2,6 +2,9 @@
 
 OOTP (Open One-time Password) is a supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
 
+[![Rust](https://github.com/odroe/ootp/actions/workflows/rust.yml/badge.svg)](https://github.com/odroe/ootp/actions/workflows/rust.yml)
+![crates.io version](https://img.shields.io/crates/v/ootp?style=flat-square)
+
 ## Introduction
 
 The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://www.rust-lang.org/) implementation of the [OOTP](https://github.com/Odroe/ootp) library.
