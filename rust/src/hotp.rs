@@ -2,7 +2,6 @@ use crate::constants::{DEFAULT_ALGORITHM, DEFAULT_BREADTH, DEFAULT_COUNTER, DEFA
 use hmacsha::{HmacSha, ShaTypes};
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
-#[inline(always)]
 fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
     input.to_be_bytes()
 }
