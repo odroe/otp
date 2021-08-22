@@ -108,30 +108,30 @@ impl<'a> Hotp<'a> {
                 self.secret().as_bytes(),
                 DEFAULT_DIGITS,
                 DEFAULT_COUNTER,
-                &DEFAULT_ALGORITHM,
+                DEFAULT_ALGORITHM,
             ),
             MakeOption::Counter(counter) => make_opt(
                 self.secret().as_bytes(),
                 DEFAULT_DIGITS,
                 counter,
-                &DEFAULT_ALGORITHM,
+                DEFAULT_ALGORITHM,
             ),
             MakeOption::Digits(digits) => make_opt(
                 self.secret().as_bytes(),
                 digits,
                 DEFAULT_COUNTER,
-                &DEFAULT_ALGORITHM,
+                DEFAULT_ALGORITHM,
             ),
             MakeOption::Full {
                 counter,
                 digits,
                 algorithm,
-            } => make_opt(self.secret().as_bytes(), digits, counter, &algorithm),
+            } => make_opt(self.secret().as_bytes(), digits, counter, algorithm),
             MakeOption::Algorithm(algorithm) => make_opt(
                 self.secret().as_bytes(),
                 DEFAULT_DIGITS,
                 DEFAULT_COUNTER,
-                &algorithm,
+                algorithm,
             ),
         }
     }
@@ -174,7 +174,7 @@ impl<'a> Hotp<'a> {
             let code = self.make(MakeOption::Full {
                 counter: i,
                 digits: otp.len() as u32,
-                algorithm: &algorithm,
+                algorithm,
             });
             if code == otp {
                 return true;
