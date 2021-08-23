@@ -342,9 +342,9 @@ dependencies = [
 
 [[package]]
 name = "hmac-sha"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c443618dc19378580e861a673b671347a7ec32365c2a61085fb1eb646759798d"
+checksum = "ead6afe233bba4d22fbf8949174978b406b230e1b1c94d6f9c2940ab0e2f24b3"
 dependencies = [
  "heapless",
  "hmac",
