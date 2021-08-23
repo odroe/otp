@@ -192,9 +192,9 @@ checksum = "546c37ac5d9e56f55e73b677106873d9d9f5190605e41a856503623648488cae"
 
 [[package]]
 name = "ootp"
-version = "0.0.7"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77a30ef00782fc4fd456cb14a2fb2fff2c00c7e46f5062372e139bc4f9cfa635"
+checksum = "753ed5e8f7b77d92af9f6d3fe12292f430a7d8e16dabc14fca7e10ad052d08a3"
 dependencies = [
  "hmac-sha",
 ]
