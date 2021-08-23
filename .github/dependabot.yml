@@ -10,23 +10,20 @@ updates:
     schedule:
       interval: "daily"
     labels:
-      - "npm"
-      - "typescript"
+      - "javascript"
       - "dependencies"
   - package-ecosystem: "npm"
     directory: "/examples/node-typescript-example/"
     schedule:
       interval: "daily"
     labels:
-      - "npm"
-      - "typescript"
+      - "javascript"
       - "dependencies"
   - package-ecosystem: "cargo"
     directory: "/rust"
     schedule:
       interval: "daily"
     labels:
-      - "npm"
       - "rust"
       - "dependencies"
   - package-ecosystem: "cargo"
@@ -34,6 +31,5 @@ updates:
     schedule:
       interval: "daily"
     labels:
-      - "npm"
       - "rust"
       - "dependencies"
