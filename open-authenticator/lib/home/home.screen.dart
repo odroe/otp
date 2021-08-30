@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../entities/account.entity.dart';
@@ -6,6 +8,8 @@ import 'widgets/account.card.dart';
 import 'widgets/help.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -31,6 +35,70 @@ class _HomeScreenState extends State<HomeScreen> {
             element.name!.toLowerCase().contains(keywords.toLowerCase());
       });
 
+  void showAlert(String content) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        content: Text(content),
+        actions: [
+          CupertinoDialogAction(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> scanQR() async {
+    try {
+      String response = await FlutterBarcodeScanner.scanBarcode(
+        '#00a152',
+        'Cancel',
+        true,
+        ScanMode.QR,
+      );
+      if (response == '-1') {
+        return;
+      }
+
+      final Uri result = Uri.parse(response);
+      final account = new AccountEntity()
+        ..type = AccountType.TOTP
+        ..name = result.path.split(':').length == 2
+            ? result.path.split(':')[1]
+            : result.path
+        ..issuer = (result.queryParameters['issuer'] != null
+            ? result.queryParameters['issuer']
+            : result.path.split(':').length == 2
+                ? result.path.split(':')[0]
+                : result.path)!
+        ..digits = result.queryParameters['digits'] != null
+            ? int.parse(result.queryParameters['digits'] as String)
+            : 6
+        ..period = result.queryParameters['period'] == null
+            ? 30
+            : int.parse(result.queryParameters['period'] as String)
+        ..secret = result.queryParameters['secret'] as String;
+      if (result.path.split(':').length < 2 &&
+          result.queryParameters['issuer'] != null &&
+          account.name == account.issuer) {
+        account.name = null;
+      }
+
+      if (account.secret.isEmpty) {
+        showAlert('Incorrect QR code');
+      }
+
+      this.accountsBox.add(account);
+      showAlert('Success');
+    } on PlatformException {
+      showAlert('Failed to start the QR code scanner');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -49,9 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
               trailing: CupertinoButton(
                 padding: EdgeInsets.zero,
                 child: Icon(CupertinoIcons.add),
-                onPressed: () {
-                  // TODO: Add a code.
-                },
+                onPressed: scanQR,
               ),
               // _kNavBarEdgePadding
               padding: EdgeInsetsDirectional.only(

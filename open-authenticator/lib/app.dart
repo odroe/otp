@@ -16,7 +16,10 @@ class Application extends StatelessWidget {
             color: CupertinoColors.white.withAlpha(240),
             darkColor: CupertinoColors.black),
       ),
-      home: HomeScreen(),
+      initialRoute: '/',
+      routes: {
+        "/": (context) => const HomeScreen(),
+      },
     );
   }
 }
