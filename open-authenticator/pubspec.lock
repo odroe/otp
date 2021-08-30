@@ -346,7 +346,7 @@ packages:
       name: ootp
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.5"
+    version: "0.1.1"
   package_config:
     dependency: transitive
     description:

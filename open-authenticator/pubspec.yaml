@@ -1,5 +1,5 @@
 name: authenticator
-description: A new Flutter project.
+description: Open Authenticator uses Flutter for development and uses the TOTP dart tool in the current project. The application code is completely open source, supervised by the community, and is an Authenticator with no backdoor security.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -31,7 +31,7 @@ dependencies:
   percent_indicator: ^3.0.1
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  ootp: ^0.0.5
+  ootp: ^0.1.1
   base32: ^2.0.0
 
 dev_dependencies:
