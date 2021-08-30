@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:ootp/ootp.dart';
 
 import '../../entities/account.entity.dart';
+import '../../hive.dart';
 import 'progress-timer.indicator.dart';
 
 class AccountCard extends StatefulWidget {
@@ -143,7 +144,7 @@ class _AccountCardState extends State<AccountCard> {
               ],
             ),
           ),
-          ProgressTimerIndicator(period: 30),
+          ProgressTimerIndicator(period: widget.account.period),
           CupertinoButton(
             child: Icon(
               CupertinoIcons.right_chevron,
@@ -152,7 +153,29 @@ class _AccountCardState extends State<AccountCard> {
             ),
             padding: EdgeInsets.zero,
             onPressed: () {
-              // Hive.box(AccountEntity.entityName);
+              final key = "${widget.account.issuer}:${widget.account.name}";
+              showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                  title: Text('Confirm'),
+                  content: Text('Do you want to delete the current password?'),
+                  actions: [
+                    CupertinoDialogAction(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    CupertinoDialogAction(
+                      child: Text('Delete'),
+                      onPressed: () async {
+                        await box.delete(key);
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ],

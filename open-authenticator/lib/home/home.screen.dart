@@ -4,6 +4,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../entities/account.entity.dart';
+import '../hive.dart';
 import 'widgets/account.card.dart';
 import 'widgets/help.dart';
 
@@ -15,9 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  /// Accounts hive box.
-  final Box<AccountEntity> accountsBox = Hive.box(AccountEntity.entityName);
-
   /// search key.
   String keywords = "";
 
@@ -67,14 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final Uri result = Uri.parse(response);
       final account = new AccountEntity()
         ..type = AccountType.TOTP
-        ..name = result.path.split(':').length == 2
+        ..name = (result.path.split(':').length == 2
             ? result.path.split(':')[1]
-            : result.path
-        ..issuer = (result.queryParameters['issuer'] != null
+            : result.path).replaceAll('/', '')
+        ..issuer = ((result.queryParameters['issuer'] != null
             ? result.queryParameters['issuer']
             : result.path.split(':').length == 2
                 ? result.path.split(':')[0]
-                : result.path)!
+                : result.path)!).replaceAll('/', '')
         ..digits = result.queryParameters['digits'] != null
             ? int.parse(result.queryParameters['digits'] as String)
             : 6
@@ -82,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? 30
             : int.parse(result.queryParameters['period'] as String)
         ..secret = result.queryParameters['secret'] as String;
+      
       if (result.path.split(':').length < 2 &&
           result.queryParameters['issuer'] != null &&
           account.name == account.issuer) {
@@ -92,8 +91,35 @@ class _HomeScreenState extends State<HomeScreen> {
         showAlert('Incorrect QR code');
       }
 
-      this.accountsBox.add(account);
-      showAlert('Success');
+      final key = "${account.issuer}:${account.name}";
+      if (box.containsKey(key)) {
+        return showCupertinoDialog(
+            context: context,
+            builder: (context) {
+              return CupertinoAlertDialog(
+                title: Text('Warn'),
+                content: Text(
+                    'The account already exists, it will be overwritten if it continues.'),
+                actions: [
+                  CupertinoDialogAction(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text('Update'),
+                    onPressed: () async {
+                      await box.put(key, account);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
+      }
+
+      box.put(key, account);
     } on PlatformException {
       showAlert('Failed to start the QR code scanner');
     }
@@ -135,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverPadding(padding: EdgeInsets.only(top: 12.0)),
             SliverToBoxAdapter(
               child: ValueListenableBuilder(
-                valueListenable: accountsBox.listenable(),
+                valueListenable: box.listenable(),
                 builder:
                     (BuildContext context, Box<AccountEntity> box, _widget) {
                   final accounts = searchInBox(box);

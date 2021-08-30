@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app.dart';
 import 'entities/account.entity.dart';
+import 'hive.dart';
 
 Future<void> initHive() async {
   // Register adapter.
@@ -11,7 +12,7 @@ Future<void> initHive() async {
 
   // Init and open box
   await Hive.initFlutter();
-  await Hive.openBox<AccountEntity>(AccountEntity.entityName);
+  box = await Hive.openBox<AccountEntity>(AccountEntity.entityName);
 }
 
 Future<void> main() async {
