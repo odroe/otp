@@ -5,4 +5,4 @@ Open Authenticator uses Flutter for development and uses the TOTP dart tool in t
 ## Installation
 
 - Download APK from [here](https://github.com/odroe/ootp/tree/main/binary)
-- iOS users: 
+- iOS: [View on App Store](https://apps.apple.com/us/app/open-authenticator/id1583588049)
