@@ -45,6 +45,7 @@ pub enum MakeOption<'a> {
 }
 
 /// The Options for the HOTP and TOTP `check` function.
+#[derive(Clone, Copy)]
 pub enum CheckOption<'a> {
     /// The default case. `Counter = 0` and `Breadth = 0`.
     Default,
@@ -70,7 +71,7 @@ pub struct Hotp<'a> {
 }
 
 impl<'a> Hotp<'a> {
-     pub const fn new(secret: &'a str) -> Self {
+    pub const fn new(secret: &'a str) -> Self {
         Self { secret }
     }
 
@@ -103,7 +104,7 @@ impl<'a> Hotp<'a> {
     let code = hotp.make(MakeOption::Algorithm(&ShaTypes::Sha2_256));
     ```
     */
-     pub fn make(&self, options: MakeOption) -> String {
+    pub fn make(&self, options: MakeOption) -> String {
         match options {
             MakeOption::Default => make_opt(
                 self.secret().as_bytes(),
@@ -159,7 +160,7 @@ impl<'a> Hotp<'a> {
     ```
     */
 
-     pub fn check(&self, otp: &str, options: CheckOption) -> bool {
+    pub fn check(&self, otp: &str, options: CheckOption) -> bool {
         let (counter, breadth, algorithm) = match options {
             CheckOption::Default => (DEFAULT_COUNTER, DEFAULT_BREADTH, DEFAULT_ALGORITHM),
             CheckOption::Counter(counter) => (counter, DEFAULT_BREADTH, DEFAULT_ALGORITHM),
@@ -185,7 +186,7 @@ impl<'a> Hotp<'a> {
     }
 
     /// Get a reference to the hotp's  secret.
-     pub const fn secret(&self) -> &&'a str {
+    pub const fn secret(&self) -> &&'a str {
         &self.secret
     }
 }

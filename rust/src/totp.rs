@@ -1,4 +1,4 @@
-use crate::constants::{DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_ALGORITHM};
+use crate::constants::{DEFAULT_ALGORITHM, DEFAULT_DIGITS, DEFAULT_PERIOD};
 use crate::hotp::{CheckOption, Hotp, MakeOption};
 use hmacsha::ShaTypes;
 use std::time::SystemTime;
@@ -21,6 +21,7 @@ pub struct Totp<'a> {
     pub algorithm: &'a ShaTypes,
 }
 /// The Options for the TOTP's `make` function.
+#[derive(Clone, Copy)]
 pub enum CreateOption<'a> {
     /// The default case. `Period = 30` seconds and `Digits = 6`.
     Default,
@@ -40,7 +41,7 @@ pub enum CreateOption<'a> {
 
 impl<'a> Totp<'a> {
     /// TOTP instance "private" constructor
-    fn new(hotp: Hotp<'a>, digits: u32, period: u64, algorithm: &'a ShaTypes) -> Self {
+    const fn new(hotp: Hotp<'a>, digits: u32, period: u64, algorithm: &'a ShaTypes) -> Self {
         Self {
             hotp,
             digits,
@@ -50,7 +51,7 @@ impl<'a> Totp<'a> {
     }
 
     /// TOTP instance constructor
-     pub fn secret(secret: &'a str, option: CreateOption<'a>) -> Totp<'a> {
+    pub const fn secret(secret: &'a str, option: CreateOption<'a>) -> Totp<'a> {
         let hotp = Hotp::new(secret);
         let (digits, period, algorithm) = match option {
             CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_ALGORITHM),
@@ -85,7 +86,7 @@ impl<'a> Totp<'a> {
 
     */
 
-     pub fn make(&self) -> String {
+    pub fn make(&self) -> String {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
             digits: self.digits,
@@ -112,7 +113,7 @@ impl<'a> Totp<'a> {
     ```
 
     */
-     pub fn make_time(&self, time: u64) -> String {
+    pub fn make_time(&self, time: u64) -> String {
         self.hotp.make(MakeOption::Full {
             counter: time / self.period,
             digits: self.digits,
@@ -150,7 +151,7 @@ impl<'a> Totp<'a> {
     let check = totp.check(otp.as_str(), Some(42));
     ```
     */
-     pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
+    pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
         self.hotp.check(
             otp,
             CheckOption::Full {
