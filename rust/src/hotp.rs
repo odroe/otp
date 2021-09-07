@@ -2,7 +2,7 @@ use crate::constants::{DEFAULT_ALGORITHM, DEFAULT_BREADTH, DEFAULT_COUNTER, DEFA
 use hmacsha::{HmacSha, ShaTypes};
 
 /// Convert a `u64` value to an array of 8 elements of 8-bit.
-fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
+const fn u64_to_8_length_u8_array(input: u64) -> [u8; 8] {
     input.to_be_bytes()
 }
 
@@ -26,6 +26,7 @@ fn make_opt(secret: &[u8], digits: u32, counter: u64, algorithm: &ShaTypes) -> S
 }
 
 /// The Options for the HOTP `make` function.
+#[derive(Clone, Copy)]
 pub enum MakeOption<'a> {
     /// The default case. `Counter = 0` and `Digits = 6`.
     Default,
@@ -69,7 +70,7 @@ pub struct Hotp<'a> {
 }
 
 impl<'a> Hotp<'a> {
-    pub fn new(secret: &'a str) -> Self {
+    pub const fn new(secret: &'a str) -> Self {
         Self { secret }
     }
 
@@ -184,7 +185,7 @@ impl<'a> Hotp<'a> {
     }
 
     /// Get a reference to the hotp's  secret.
-    pub fn secret(&self) -> &&'a str {
+    pub const fn secret(&self) -> &&'a str {
         &self.secret
     }
 }
