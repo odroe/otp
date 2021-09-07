@@ -18,7 +18,7 @@ pub use hmacsha;
 
 #[cfg(test)]
 mod tests {
-    use crate::constants::*;
+    use crate::constants::{DEFAULT_DIGITS, DEFAULT_PERIOD};
     use crate::totp::{CreateOption, Totp};
 
     #[test]
