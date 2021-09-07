@@ -50,7 +50,7 @@ impl<'a> Totp<'a> {
     }
 
     /// TOTP instance constructor
-    pub fn secret(secret: &'a str, option: CreateOption<'a>) -> Totp<'a> {
+     pub fn secret(secret: &'a str, option: CreateOption<'a>) -> Totp<'a> {
         let hotp = Hotp::new(secret);
         let (digits, period, algorithm) = match option {
             CreateOption::Default => (DEFAULT_DIGITS, DEFAULT_PERIOD, DEFAULT_ALGORITHM),
@@ -85,7 +85,7 @@ impl<'a> Totp<'a> {
 
     */
 
-    pub fn make(&self) -> String {
+     pub fn make(&self) -> String {
         self.hotp.make(MakeOption::Full {
             counter: create_counter(self.period),
             digits: self.digits,
@@ -112,7 +112,7 @@ impl<'a> Totp<'a> {
     ```
 
     */
-    pub fn make_time(&self, time: u64) -> String {
+     pub fn make_time(&self, time: u64) -> String {
         self.hotp.make(MakeOption::Full {
             counter: time / self.period,
             digits: self.digits,
@@ -150,7 +150,7 @@ impl<'a> Totp<'a> {
     let check = totp.check(otp.as_str(), Some(42));
     ```
     */
-    pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
+     pub fn check(&self, otp: &str, breadth: Option<u64>) -> bool {
         self.hotp.check(
             otp,
             CheckOption::Full {
@@ -182,15 +182,15 @@ mod tests {
         let totp = Totp::secret(secret, CreateOption::Digits(8));
         let code = totp.make_time(59);
         assert_eq!(code, "94287082");
-        let code = totp.make_time(1111111109);
+        let code = totp.make_time(1_111_111_109);
         assert_eq!(code, "07081804");
-        let code = totp.make_time(1111111111);
+        let code = totp.make_time(1_111_111_111);
         assert_eq!(code, "14050471");
-        let code = totp.make_time(1234567890);
+        let code = totp.make_time(1_234_567_890);
         assert_eq!(code, "89005924");
-        let code = totp.make_time(2000000000);
+        let code = totp.make_time(2_000_000_000);
         assert_eq!(code, "69279037");
-        let code = totp.make_time(20000000000);
+        let code = totp.make_time(20_000_000_000);
         assert_eq!(code, "65353130");
     }
 
@@ -209,15 +209,15 @@ mod tests {
         );
         let code = totp.make_time(59);
         assert_eq!(code, "46119246");
-        let code = totp.make_time(1111111109);
+        let code = totp.make_time(1_111_111_109);
         assert_eq!(code, "68084774");
-        let code = totp.make_time(1111111111);
+        let code = totp.make_time(1_111_111_111);
         assert_eq!(code, "67062674");
-        let code = totp.make_time(1234567890);
+        let code = totp.make_time(1_234_567_890);
         assert_eq!(code, "91819424");
-        let code = totp.make_time(2000000000);
+        let code = totp.make_time(2_000_000_000);
         assert_eq!(code, "90698825");
-        let code = totp.make_time(20000000000);
+        let code = totp.make_time(20_000_000_000);
         assert_eq!(code, "77737706");
     }
 
