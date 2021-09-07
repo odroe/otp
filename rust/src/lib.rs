@@ -5,7 +5,7 @@ Fast and easy HOTP and TOTP implementation.
 The [OOTP for Rust](https://crates.io/crates/ootp) library is a [Rust](https://www.rust-lang.org/) implementation of the [OOTP](https://github.com/odroe/ootp) library.
 */
 
-#[forbid(unsafe_code)]
+#![forbid(unsafe_code)]
 
 /// Constants module.
 pub mod constants;
@@ -14,7 +14,7 @@ pub mod hotp;
 /// TOTP is a Time-based one-time password algorithm, with a time value as moving factor.
 pub mod totp;
 // Re-export hmacsha to handle different SHA algorithms.
-pub use hmacsha as hmacsha;
+pub use hmacsha;
 
 #[cfg(test)]
 mod tests {
