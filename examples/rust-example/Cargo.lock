@@ -152,9 +152,9 @@ dependencies = [
 
 [[package]]
 name = "hmac-sha"
-version = "0.4.4"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c443618dc19378580e861a673b671347a7ec32365c2a61085fb1eb646759798d"
+checksum = "92afae4f812e0ca93cda6f56265426c83e27afab0c18896bfb1441fd3963ebf2"
 dependencies = [
  "heapless",
  "hmac",
@@ -192,9 +192,9 @@ checksum = "546c37ac5d9e56f55e73b677106873d9d9f5190605e41a856503623648488cae"
 
 [[package]]
 name = "ootp"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "753ed5e8f7b77d92af9f6d3fe12292f430a7d8e16dabc14fca7e10ad052d08a3"
+checksum = "456a9ab81a1ffb80a4073e1c5484d53b0c538b7f491669d95e42fe663ff08624"
 dependencies = [
  "hmac-sha",
 ]
