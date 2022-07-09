@@ -21,7 +21,7 @@ hmac-sha = "0.5.0"
 [dev-dependencies]
 hex = "0.4.3"
 base32 = "0.4.0"
-criterion = "0.3.5"
+criterion = "0.3.6"
 
 [[bench]]
 name = "hotp_bench"
