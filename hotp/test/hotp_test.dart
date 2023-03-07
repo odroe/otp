@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   late Hotp hotp;
   setUpAll(() {
-    hotp = Hotp.fromSecret(
+    hotp = Hotp(
       secret: '12345678901234567890'.codeUnits,
       hash: sha1,
       digits: 6,
@@ -27,7 +27,7 @@ void main() {
 
   test('generate', () {
     final generaged = Iterable.generate(
-        passwords.length, (counter) => hotp.generage(counter));
+        passwords.length, (counter) => hotp.generate(counter));
     expect(generaged, passwords);
   });
 
