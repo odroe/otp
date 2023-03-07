@@ -6,7 +6,7 @@ version: 0.1.1
 homepage: https://github.com/odroe/ootp#readme
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.17.0 <3.0.0"
 
-dependencies: 
+dependencies:
   crypto: ^3.0.1

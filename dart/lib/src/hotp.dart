@@ -87,3 +87,8 @@ class HOTP {
         .toList();
   }
 }
+
+void main() {
+  final hotp = HOTP('12345678901234567890'.codeUnits);
+  print(List.generate(10, (index) => hotp.make(counter: index)));
+}

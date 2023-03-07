@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'hotp.dart';
 
 /// The RFC 6238 algorithm implementation.
@@ -84,4 +86,10 @@ class TOTP {
         counter: _create_counter(),
         breadth: breadth,
       );
+}
+
+void main(List<String> args) {
+  print(0xf);
+  print(0xf);
+  print(pow(10, 6));
 }
