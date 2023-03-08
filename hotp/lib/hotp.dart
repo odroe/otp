@@ -55,16 +55,16 @@ class Hotp {
   ///
   /// Refer to [RFC 4226](https://tools.ietf.org/html/rfc4226) for more details.
   Hotp({
-    required this.algorithm,
     required this.secret,
+    this.algorithm = Algorithm.sha1,
     this.digits = 6,
   })  : assert(digits >= 6, 'The digits must be at least 6'),
         hmac = crypto.Hmac(algorithm.hash, algorithm.repeat(secret));
 
   /// Create a HOTP instance from [secret] as a base32 encoded string.
   factory Hotp.fromBase32({
-    required Algorithm algorithm,
     required String secret,
+    Algorithm algorithm = Algorithm.sha1,
     int digits = 6,
     Encoding encoding = Encoding.standardRFC4648,
   }) =>
