@@ -63,4 +63,8 @@ class Totp {
   /// Generage a new Time-based One-time Password (TOTP) for the
   /// current time.
   String now() => generate(DateTime.now());
+
+  /// Validate a given [password] for the given [dateTime].
+  bool validate(String password, DateTime dateTime) =>
+      generate(dateTime) == password;
 }

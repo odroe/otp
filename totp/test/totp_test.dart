@@ -50,8 +50,12 @@ void main() {
       });
 
       for (final DateTime dateTime in source.keys) {
-        test(dateTime.toIso8601String(), () {
+        test("generate $dateTime", () {
           expect(totp.generate(dateTime), source[dateTime]![algorithm]);
+        });
+
+        test("validate $dateTime", () {
+          expect(totp.validate(source[dateTime]![algorithm]!, dateTime), true);
         });
       }
     });
