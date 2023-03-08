@@ -1,44 +1,17 @@
-# OOTP
+# One-Time Password (OTP)
 
-OOTP (Open One-time Password) is a supports multiple programming languages. The generated one-time passwords are fully compliant with HOTP (HMAC-based One-time Password) and TOTP (Time-based One-time Password). 🚀It's easy to use!
+This repository an implementation of the One-Time Password (OTP) algorithm in [Dart](https://dart.dev/).
 
-## Introduction
+- [RFC 4226](https://tools.ietf.org/html/rfc4226)
+- [RFC 6238](https://tools.ietf.org/html/rfc6238)
 
-The One-time password produced by OOTP(Open One-Time Password) is fully compliant with HOTP(HMAC-based One-time Password) and TOTP(Time-based One-time Password). You can use Google Authenticator, Microsoft Authenticator or other Authenticator To verify!
+## Packages
 
-## Features
-
- * Support Google Authenticator
- * Support Microsoft Authenticator
- * Support other open source Authenticator
- * **100%** Open source
-
-### Languages/Platforms
-
- * JavaScript/TypeScript
- * Node.js
- * Dart
- * Rust
- * Flutter
-
-### Open Authenticator
-
- * Android
- * iOS
-
-Open Authenticator uses Flutter for development and uses the TOTP dart tool in the current project. The application code is completely open source, supervised by the community, and is an Authenticator with **no backdoor security**.
-
-## Ecosystem
-
-| Project | Status | Description |
-|---------|--------|-------------|
-| [OOTP for Node.js](https://www.npmjs.com/package/ootp) | ![npm](https://img.shields.io/npm/v/ootp?style=flat-square) | TypeScript implementation of OOTP |
-| [OOTP for Rust](https://crates.io/crates/ootp) | ![crates.io version](https://img.shields.io/crates/v/ootp?style=flat-square) | Rust implementation of OOTP |
-| [OOTP for Dart](https://pub.dev/packages/ootp) | ![Pub Version](https://img.shields.io/pub/v/ootp?label=pub.dev&style=flat-square) | Dart implementation of OOTP |
-| Open Authenticator | [here](open-authenticator#installation) | A 100% open source Authenticator |
-
-> More tooling and libraries are being added to the project.
+| Package                               | version                                                                                | description                                   |
+| ------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [hotp](https://pub.dev/packages/hotp) | [![pub package](https://img.shields.io/pub/v/hotp.svg)](https://pub.dev/packages/hotp) | HOTP (HMAC-Based One-Time Password Algorithm) |
+| [totp](https://pub.dev/packages/totp) | [![pub package](https://img.shields.io/pub/v/totp.svg)](https://pub.dev/packages/totp) | TOTP (Time-Based One-Time Password Algorithm) |
 
 ## License
 
-The OOTP project uses the [MIT license](LICENSE) to open source.
+[MIT](LICENSE)
