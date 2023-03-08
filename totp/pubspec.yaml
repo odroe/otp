@@ -1,13 +1,13 @@
 name: totp
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: An implementation of the Time-based One-time Password (TOTP).
+version: 0.0.1
+repository: https://github.com/odroe/otp
+homepage: https://github.com/odroe/otp/tree/main/totp
 
 environment:
-  sdk: ">=2.19.2 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  crypto: ^3.0.2
   hotp: ^0.0.1
 
 dev_dependencies:
