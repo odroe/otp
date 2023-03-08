@@ -36,7 +36,7 @@ void main() {
     },
   };
 
-  final hashs = source.values.expand((element) => element.keys);
+  final hashs = source.values.expand((element) => element.keys).toSet();
   late Totp totp;
 
   for (final hash in hashs) {

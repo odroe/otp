@@ -1,41 +1,10 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/typescript" # Location of package manifests
+  - package-ecosystem: pub
+    directory: hotp
     schedule:
-      interval: "daily"
-    labels:
-      - "javascript"
-      - "dependencies"
-  - package-ecosystem: "npm"
-    directory: "/examples/node-typescript-example/"
+      interval: daily
+  - package-ecosystem: pub
+    directory: totp
     schedule:
-      interval: "daily"
-    labels:
-      - "javascript"
-      - "dependencies"
-  - package-ecosystem: "cargo"
-    directory: "/rust"
-    schedule:
-      interval: "daily"
-    labels:
-      - "rust"
-      - "dependencies"
-  - package-ecosystem: "cargo"
-    directory: "/examples/rust-example"
-    schedule:
-      interval: "daily"
-    labels:
-      - "rust"
-      - "dependencies"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-      - "dependencies"
+      interval: daily

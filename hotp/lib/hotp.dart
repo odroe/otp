@@ -1,76 +1,86 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library hotp;
+import 'dart:math' as math;
 
-import 'dart:math';
+import 'package:base32/base32.dart' show base32;
+import 'package:base32/encodings.dart' show Encoding;
+import 'package:crypto/crypto.dart' as crypto;
 
-import 'package:crypto/crypto.dart';
+export 'package:base32/base32.dart' show base32;
+export 'package:base32/encodings.dart' show Encoding;
 
-extension _PadSecret on List<int> {
-  /// https://www.rfc-editor.org/rfc/rfc6238
-  ///
-  /// sha512 -> 64
-  /// sha256 -> 32
-  /// sha1 -> 20
-  repeat(Hash hash) {
-    final length = findHmacHashLength(hash);
-    final result = List<int>.filled(length, 0);
+/// Counter bytes length.
+const _counterBytesLength = 8;
 
-    for (var i = 0; i < length; i++) {
-      result[i] = this[i % this.length];
-    }
+/// The HMAC-based One-time Password (HOTP) algorithm.
+enum Algorithm {
+  /// The SHA1 algorithm.
+  sha1(crypto.sha1, 20),
 
-    return result;
-  }
+  /// The SHA256 algorithm.
+  sha256(crypto.sha256, 32),
 
-  int findHmacHashLength(Hash hash) {
-    switch (hash) {
-      case sha1:
-        return 20;
-      case sha256:
-        return 32;
-      case sha512:
-        return 64;
-    }
+  /// The SHA512 algorithm.
+  sha512(crypto.sha512, 64);
 
-    throw ArgumentError.value(hash, 'hash', 'Invalid hash algorithm');
-  }
+  /// The algorithm [crypto.Hash].
+  final crypto.Hash hash;
+
+  /// The algorithm bytes length.
+  final int length;
+
+  /// Create a new [Algorithm].
+  const Algorithm(this.hash, this.length);
+
+  /// Repeat the secret key to the algorithm bytes length.
+  List<int> repeat(List<int> secret) =>
+      List<int>.generate(length, (index) => secret[index % secret.length]);
 }
 
+/// An implementation of the HMAC-based One-time Password (HOTP).
+///
+/// [rfc]: https://tools.ietf.org/html/rfc4226
 class Hotp {
   /// Current HMAC instalce.
-  final Hmac hmac;
+  final crypto.Hmac hmac;
 
   /// Password length.
   final int digits;
 
+  /// Hashing algorithm used
+  final Algorithm algorithm;
+
+  /// HMAC-based One-time Password (HOTP) secret key.
+  final List<int> secret;
+
   /// Create a HOTP instance from [secret].
-  ///
-  /// The [digits] must be at least 6.
-  ///
-  /// The [hash] must be one of the following: [sha1], [sha256] or [sha512].
-  ///
-  /// The [secret] must be a list of bytes. minimum length is 128 bits.
   ///
   /// Refer to [RFC 4226](https://tools.ietf.org/html/rfc4226) for more details.
   Hotp({
-    required List<int> secret,
-    Hash hash = sha1,
+    required this.algorithm,
+    required this.secret,
     this.digits = 6,
-  })  : assert(hash == sha1 || hash == sha256 || hash == sha512,
-            'Only SHA1, SHA256 and SHA512 are supported'),
-        assert(digits >= 6, 'The digits must be at least 6'),
-        assert(secret.length >= 16, 'The secret must be at least 128 bits'),
-        hmac = Hmac(hash, secret.repeat(hash));
+  })  : assert(digits >= 6, 'The digits must be at least 6'),
+        hmac = crypto.Hmac(algorithm.hash, algorithm.repeat(secret));
+
+  /// Create a HOTP instance from [secret] as a base32 encoded string.
+  factory Hotp.fromBase32({
+    required Algorithm algorithm,
+    required String secret,
+    int digits = 6,
+    Encoding encoding = Encoding.standardRFC4648,
+  }) =>
+      Hotp(
+        algorithm: algorithm,
+        secret: base32.decode(secret, encoding: encoding),
+        digits: digits,
+      );
 
   /// Generate a HMAC-based One-time Password (HOTP) for the given [counter].
   String generate(int counter) {
     // Generate the counter bytes.
-    final bytes =
-        List<int>.generate(8, (index) => (counter >> (8 * index)) & 0xff)
-            .reversed
-            .toList();
+    final bytes = List<int>.generate(_counterBytesLength,
+            (index) => (counter >> (_counterBytesLength * index)) & 0xff)
+        .reversed
+        .toList();
 
     // Convert the counter bytes to a HMAC digest bytes.
     final digest = hmac.convert(bytes).bytes;
@@ -85,7 +95,7 @@ class Hotp {
         (digest[offset + 3] & 0xff);
 
     // Generate One-Time Password (OTP) string.
-    final password = (binary % pow(10, digits)).toString();
+    final password = (binary % math.pow(10, digits)).toString();
 
     // Return the One-Time Password (OTP) string.
     //

@@ -1,39 +1,71 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# HMAC-based One-time Password (HOTP)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+This is an implementation of the HOTP algorithm as specified in [RFC 4226](https://tools.ietf.org/html/rfc4226).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+[![pub version](https://img.shields.io/pub/v/hotp.svg)](https://pub.dev/packages/hotp)
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Installation
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+```bash
+dart pub add hotp
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
 ```dart
-const like = 'sample';
+final hotp = Hotp(secret: '12345678901234567890'.codeUnits);
+
+// Generate a HOTP
+final password = hotp.generate(counter: 0); // 755224
 ```
 
-## Additional information
+### Base32 encoding
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+```dart
+final hotp = Hotp.fromBase32('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
+
+print(hotp.generate(counter: 0)); // 755224
+```
+
+## Supported algorithms
+
+- SHA1 - default, as specified in RFC 4226
+- SHA256
+- SHA512
+
+## APIs
+
+### Constructor parameters
+
+| Name        | Type        | Description                       |
+| ----------- | ----------- | --------------------------------- |
+| `secret`    | `List<int>` | The secret key.                   |
+| `algorithm` | `Algorithm` | The algorithm to use.             |
+| `digits`    | `int`       | The number of digits to generate. |
+
+If you want to use a Base32 encoded secret, use the `fromBase32` constructor.
+
+| Name        | Type        | Description                       |
+| ----------- | ----------- | --------------------------------- |
+| `secret`    | `String`    | The Base32 encoded secret key.    |
+| `digits`    | `int`       | The number of digits to generate. |
+| `algorithm` | `Algorithm` | The algorithm to use.             |
+| `encoding`  | `Encoding`  | The encoding to use.              |
+
+### Methods
+
+| Name       | Return type | Description                             |
+| ---------- | ----------- | --------------------------------------- |
+| `generate` | `int`       | Generates a HOTP for the given counter. |
+| `validate` | `bool`      | Validates a HOTP for the given counter. |
+
+## Exported other package types
+
+| Name       | Type    | Description                       |
+| ---------- | ------- | --------------------------------- |
+| `base32`   | `class` | Base32 encoding and decoding util |
+| `Encoding` | `int`   | Base32 encoding and decoding alg  |
+
+## License
+
+The project is licensed under the MIT license.
