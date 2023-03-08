@@ -1,39 +1,50 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Time-based One-Time Password (TOTP)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+This is an implementation of the TOTP algorithm as specified in [RFC 6238](https://tools.ietf.org/html/rfc6238).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+[![pub version](https://img.shields.io/pub/v/totp.svg)](https://pub.dartlang.org/packages/totp)
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Installation
 
-## Features
+Add the following to your `pubspec.yaml`:
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+```yaml
+dependencies:
+  totp: latest
+```
 
-## Getting started
+Or install it from the command line:
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+```bash
+dart pub add totp
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
 ```dart
-const like = 'sample';
+import 'package:totp/totp.dart';
+
+final totp = Totp(secret: '12345678901234567890'.codeUnits);
+
+print(totp.now());
 ```
 
-## Additional information
+If you want to use a base32 encoded secret, you can use the `fromBase32` constructor:
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+```dart
+final totp = Totp.fromBase32(
+  secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+);
+```
+
+## APIs
+
+| Method     | Return type | Description                                    |
+| ---------- | ----------- | ---------------------------------------------- |
+| `generate` | `String`    | Generates a new password with a `DateTime`     |
+| `now`      | `String`    | Generates a new password with `DateTime.now()` |
+| `validate` | `bool`      | Validates a password with a `DateTime`         |
+
+## License
+
+The project is licensed under the MIT license.

@@ -1,8 +1,8 @@
 name: hotp
 description: An implementation of the HMAC-based One-time Password (HOTP).
-version: 0.0.1
-homepage: https://github.com/odroe/otp
-repository: https://github.com/odroe/otp/tree/main/hotp
+version: 0.0.2
+homepage: https://github.com/odroe/otp/tree/main/hotp
+repository: https://github.com/odroe/otp
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
