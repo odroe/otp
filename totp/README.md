@@ -44,6 +44,7 @@ final totp = Totp.fromBase32(
 | `generate` | `String`    | Generates a new password with a `DateTime`     |
 | `now`      | `String`    | Generates a new password with `DateTime.now()` |
 | `validate` | `bool`      | Validates a password with a `DateTime`         |
+| `remaining` | `int`      | Generate remaining time by calculate from `period` and `DateTime`         |
 
 ## License
 
