@@ -1,6 +1,7 @@
-## 0.0.2
+## 0.1.0
 
-- Support remaing time
+* ⚠️ Update Dart SDK to `^3.4.3`
+* *feat*:Support remaing time
 
 ## 0.0.1
 

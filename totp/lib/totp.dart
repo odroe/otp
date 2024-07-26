@@ -64,7 +64,7 @@ class Totp {
   /// current time.
   String now() => generate(DateTime.now());
 
-// Generate remaining time of the TOTP code by period
+  /// Generate remaining time of the TOTP code by period
   int get remaining {
     // Convert current time to second
     int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
