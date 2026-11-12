@@ -31,37 +31,29 @@ The old OOTP dependency remains version 0.1.1; its discontinued notice is known.
 No HOTP, TOTP or OOTP package source was changed. The final app dependency lock
 updates obsolete transitive packages that no longer compile under modern Dart.
 
-## Android validation boundary
+## Android validation
 
-Android ARM64 release/AOT compilation and runtime checks passed with a local
-Gradle command targeting `:app:assembleRelease` and excluding only
-`lintVitalAnalyzeRelease`, `lintVitalReportRelease`, and `lintVitalRelease`.
-The normal repository lint configuration was not changed. Official Android lint
-tool downloads stalled, so **Android native lint and the unmodified default
-release build command were not fully verified**. This diagnostic APK is not a
-production/store release. Other Android ABIs and the Flutter 3.50 debug APK are
-not verified.
+- `flutter build apk --release --target-platform android-arm64`: passed in
+  22.2 seconds, with no excluded tasks.
+- From `android`, `./gradlew :app:lintRelease -Ptarget-platform=android-arm64
+  --no-daemon`: passed in 19 seconds, with **0 errors and 7 warnings**. These are
+  one newer-Gradle-version suggestion, one redundant `drawable-v21` qualifier,
+  and five existing launcher-icon shape warnings. The supported Flutter template
+  toolchain and existing branding were not changed just to silence warnings.
+- On a dedicated Android 35 ARM64 emulator, the final default-build APK imported
+  three synthetic Hive records, rendered them (including a nullable name), marked
+  migration complete, returned `ok` from SQLite's integrity check, and preserved
+  the original Hive SHA256. Relaunch retained the records.
+- The APK contains ARM64 native SQLite and Flutter AOT code, keeps the application
+  ID, and targets Android API 36. Readback used a same-signature debug build
+  installed while the release app was stopped, without running its older code,
+  then restored the release build. No root access or security changes were used.
 
-On a dedicated Android 35 ARM64 emulator, the final APK imported three synthetic
-Hive records, rendered them (including a nullable name), marked migration
-complete, returned `ok` from SQLite's integrity check, and preserved the original
-Hive SHA256. Relaunch retained the records. The APK contains ARM64 native SQLite
-and Flutter AOT code, keeps the application ID, and targets Android API 36.
-Readback used a same-signature debug build installed while the release app was
-stopped, without running its older code, then restored the release build; no
-root access or device security setting changes were used.
-
-The diagnostic command, from `open-authenticator/android`, was:
-
-```sh
-./gradlew :app:assembleRelease \
-  -Ptarget-platform=android-arm64 -Ptarget=lib/main.dart \
-  -Pbase-application-name=android.app.Application \
-  -Pdart-obfuscation=false -Ptrack-widget-creation=true \
-  -Ptree-shake-icons=true -Penable-hcpp=true \
-  -x lintVitalAnalyzeRelease -x lintVitalReportRelease -x lintVitalRelease \
-  --no-daemon
-```
+Earlier native-lint dependency downloads stalled. That download blocker was
+resolved by fetching the same official artifacts, verifying their official
+checksums, and reusing them in the build cache. Both the unmodified default build
+and explicit native lint subsequently passed; no repository lint setting was
+disabled. Other Android ABIs and Android physical devices remain unverified.
 
 ## Not verified / not released
 
