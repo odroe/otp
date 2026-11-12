@@ -2,7 +2,7 @@ import 'package:base32/base32.dart' as encoding;
 import 'package:crypto/crypto.dart' as crypto;
 
 /// The hash algorithm used to generate a one-time password.
-enum Algorithm {
+enum Algorithm() {
   /// HMAC-SHA1, the RFC 4226 default.
   sha1,
 
@@ -50,7 +50,7 @@ final class Hotp({
   /// ASCII letters are case-insensitive and padding is optional. Invalid
   /// characters, padding, lengths, or nonzero unused bits throw [FormatException]
   /// without including the key. Algorithm and digit validation match [Hotp.new].
-  factory Hotp.fromBase32({
+  factory fromBase32({
     required String secret,
     Algorithm algorithm = .sha1,
     int digits = 6,

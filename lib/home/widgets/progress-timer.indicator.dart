@@ -9,7 +9,7 @@ class const ProgressTimerIndicator({super.key, required final int period})
   _ProgressTimerIndicatorState createState() => _ProgressTimerIndicatorState();
 }
 
-class _ProgressTimerIndicatorState extends State<ProgressTimerIndicator> {
+class _ProgressTimerIndicatorState() extends State<ProgressTimerIndicator> {
   /// Timer
   late Timer timer;
 

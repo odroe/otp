@@ -16,7 +16,7 @@ class const ScanScreen({super.key}) extends StatefulWidget {
   State<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends State<ScanScreen> {
+class _ScanScreenState() extends State<ScanScreen> {
   bool completed = false;
 
   @override

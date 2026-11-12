@@ -14,7 +14,7 @@ class const HomeScreen({super.key}) extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState() extends State<HomeScreen> {
   /// search key.
   String keywords = "";
   bool scanning = false;

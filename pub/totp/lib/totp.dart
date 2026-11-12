@@ -37,7 +37,7 @@ final class Totp({
   /// ASCII letter case is ignored and valid padding is optional. Invalid
   /// characters, padding, lengths, or unused bits throw [FormatException].
   /// Key material is never included in decoding errors.
-  factory Totp.fromBase32({
+  factory fromBase32({
     required String secret,
     Algorithm algorithm = .sha1,
     int digits = 6,

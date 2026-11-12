@@ -19,7 +19,7 @@ class const AccountCard(
   _AccountCardState createState() => _AccountCardState();
 }
 
-class _AccountCardState extends State<AccountCard> {
+class _AccountCardState() extends State<AccountCard> {
   /// Current time create a counter value.
   late int counter;
 
