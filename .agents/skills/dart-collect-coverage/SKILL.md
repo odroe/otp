@@ -35,7 +35,7 @@ Exclude specific lines, blocks, or entire files from coverage metrics using inli
 Follow this sequential workflow to add the coverage package, execute tests, and generate an LCOV report.
 
 **Task Progress Checklist:**
-- [ ] 1. Add `coverage` as a `dev_dependency`.
+- [ ] 1. Select the Dart or Flutter test runner; add `coverage` only when the Dart collection tools are needed.
 - [ ] 2. Execute the automated coverage script.
 - [ ] 3. Validate the LCOV output.
 
@@ -47,23 +47,28 @@ If working in a standard Dart project:
 dart pub add dev:coverage
 ```
 
-If working in a Flutter project:
-```bash
-flutter pub add dev:coverage
-```
+Flutter projects can use the built-in `flutter test --coverage` command without adding a direct `coverage` dependency. Add that dependency only if additional manual collection or formatting tools are needed.
 
 ### 2. Collect Coverage and Generate LCOV
-Use the bundled `test_with_coverage` script. This script automatically runs all tests, collects the JSON coverage data from the Dart VM, and formats it into an LCOV report.
+For pure Dart packages, use the bundled `test_with_coverage` script. This script automatically runs all tests, collects the JSON coverage data from the Dart VM, and formats it into an LCOV report.
 
 ```bash
 dart run coverage:test_with_coverage
 ```
 *Note: If working within a Dart workspace (monorepo), specify the test directories explicitly (e.g., `dart run coverage:test_with_coverage -- pkgs/foo/test pkgs/bar/test`).*
 
+For Flutter application and widget tests, use the engine-backed Flutter runner instead:
+
+```bash
+flutter test --coverage
+```
+
+This produces `coverage/lcov.info`; it does not require `coverage/coverage.json`. In a mixed workspace, run Flutter tests at the app root and pure Dart package tests from their package directories. Do not pass Flutter widget tests to `coverage:test_with_coverage`.
+
 ### 3. Feedback Loop: Validate Output
 **Run validator -> review errors -> fix:**
 1. Verify that the `coverage/` directory was created in the project root.
-2. Ensure `coverage/coverage.json` (raw data) and `coverage/lcov.info` (formatted report) exist.
+2. Ensure `coverage/lcov.info` exists. For the Dart `test_with_coverage` workflow, also check its raw `coverage/coverage.json`; Flutter coverage only requires the LCOV report.
 3. If coverage is missing for specific files, ensure they are imported and executed by your test files, or add `// coverage:ignore-file` if they are intentionally excluded.
 
 ## Workflow: Advanced Manual Coverage Collection
