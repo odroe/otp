@@ -18,6 +18,5 @@ This repository an implementation of the One-Time Password (OTP) algorithm in [D
 
 ## Open Authenticator
 
-The restored Flutter app lives in [open-authenticator](open-authenticator/).
-See its README for local development and the non-destructive Hive-to-SQLite
-migration. HOTP and TOTP package code is unchanged by the app restoration.
+The Flutter app lives in [open-authenticator](open-authenticator/). See its README
+for development and migration guidance.
