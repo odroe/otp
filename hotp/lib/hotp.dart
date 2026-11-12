@@ -59,7 +59,7 @@ class Hotp {
     this.algorithm = Algorithm.sha1,
     this.digits = 6,
   })  : assert(digits >= 6, 'The digits must be at least 6'),
-        hmac = crypto.Hmac(algorithm.hash, algorithm.repeat(secret));
+        hmac = crypto.Hmac(algorithm.hash, secret);
 
   /// Create a HOTP instance from [secret] as a base32 encoded string.
   factory Hotp.fromBase32({
