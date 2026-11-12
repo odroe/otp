@@ -27,11 +27,7 @@ class Totp {
     Algorithm algorithm = Algorithm.sha256,
     int digits = 8,
     this.period = 30,
-  }) : _hotp = Hotp(
-          algorithm: algorithm,
-          secret: secret,
-          digits: digits,
-        );
+  }) : _hotp = Hotp(algorithm: algorithm, secret: secret, digits: digits);
 
   /// Create a new TOTP instance for a given Base32 encoded [secret].
   Totp.fromBase32({
@@ -64,13 +60,18 @@ class Totp {
   /// current time.
   String now() => generate(DateTime.now());
 
-  /// Generate remaining time of the TOTP code by period
-  int get remaining {
-    // Convert current time to second
-    int currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  /// Whole seconds remaining until the current TOTP code expires.
+  ///
+  /// Returns [period] at a period boundary, counting down to one during
+  /// the final second of that period.
+  int get remaining => remainingAt(DateTime.now());
 
-    // Generate the counter value.
-    return currentTime % period;
+  /// Whole seconds remaining at [dateTime] until its TOTP code expires.
+  ///
+  /// Uses the same Unix-epoch time steps as [generate].
+  int remainingAt(DateTime dateTime) {
+    final seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
+    return period - seconds % period;
   }
 
   /// Validate a given [password] for the given [dateTime].
