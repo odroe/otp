@@ -15,16 +15,15 @@ Using Dart 2.19.6 and the historical account adapters / Hive 2.0.4:
   `account.name!.toLowerCase()` on that persisted record threw `_CastError`.
 * The historical scanner intentionally makes `name` null for an issuer-only
   QR label. Thus adding a legitimate item can break the screen while leaving
-  the underlying database intact. This does **not** establish the cause of the
-  owner's historical incident, for which no device file is available.
+  the underlying database intact. This does **not** establish the cause of
+  every historical device incident; the original device file would be needed.
 * Appending three junk bytes to a **synthetic** box and opening with defaults
   caused Hive to print `Recovering corrupted box.` and truncate those bytes.
 * Strict open rejected that deliberately damaged box, but Hive 2.0.4 also
   completes an internal unobserved future with the error. An ordinary outer
   `try/catch` does not by itself handle this extra asynchronous error.
 
-The new pure-Dart parser passed two valid-label cases and eight rejection
-cases. The final Flutter tests and iOS builds were subsequently run on macOS; see
+Parser regression tests cover valid labels and malformed or unsupported inputs. The final Flutter tests and iOS builds were subsequently run on macOS; see
 [validation results](validation.md) for the exact checks and remaining limits.
 
 ## Data preservation constraints

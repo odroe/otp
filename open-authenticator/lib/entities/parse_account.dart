@@ -24,6 +24,9 @@ AccountEntity parseAccount(String value) {
     ..secret = (uri.queryParameters['secret'] ?? '').toUpperCase()
     ..digits = int.tryParse(uri.queryParameters['digits'] ?? '6') ?? 0
     ..period = int.tryParse(uri.queryParameters['period'] ?? '30') ?? 0;
+  if (account.issuer.isEmpty && (account.name?.isEmpty ?? true)) {
+    throw const FormatException('An account label is required.');
+  }
   validateAccount(account);
   return account;
 }
@@ -31,7 +34,6 @@ AccountEntity parseAccount(String value) {
 /// Also used for legacy data: invalid records stay stored, not silently deleted.
 void validateAccount(AccountEntity account) {
   if (account.type != AccountType.TOTP ||
-      account.issuer.isEmpty ||
       account.period <= 0 ||
       account.digits < 6 ||
       account.digits > 8 ||

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
@@ -169,4 +169,31 @@ void main() {
     expect(codeTexts.any((text) => RegExp(r'^\d{8}$').hasMatch(text)), isTrue);
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets('empty legacy issuer with a valid name migrates and generates code', (
+    tester,
+  ) async {
+    final legacy = account('', 'user');
+    await tester.runAsync(() async {
+      await legacyBox.put(':user', legacy);
+      await Hive.close();
+      store = await AccountStore.open(
+        sqlitePath: '${directory.path}/accounts.sqlite3',
+        legacyDirectory: directory.path,
+      );
+      storage.accounts = storage.AccountRepository(store!);
+    });
+    final restored = store!.get(':user')!;
+    expect(restored.issuer, '');
+    expect(restored.name, 'user');
+    expect(restored.secret, legacy.secret);
+    await tester.pumpWidget(CupertinoApp(home: AccountCard(restored)));
+    expect(tester.takeException(), isNull);
+    expect(find.text('Unable to generate code'), findsNothing);
+    expect(find.text('user'), findsOneWidget);
+    final codeTexts = tester.widgetList<Text>(find.byType(Text))
+        .map((text) => (text.data ?? '').replaceAll(' ', ''));
+    expect(codeTexts.any((text) => RegExp(r'^\d{6}$').hasMatch(text)), isTrue);
+    await tester.pumpWidget(const SizedBox());
+  });
+
 }

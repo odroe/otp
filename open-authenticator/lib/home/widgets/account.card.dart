@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:base32/base32.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:ootp/ootp.dart';
 

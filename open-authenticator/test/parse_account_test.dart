@@ -21,7 +21,13 @@ void main() {
     expect(account.issuer, 'Acme');
     expect(account.name, 'alice@example.com');
   });
+  test('empty issuer with a valid account label remains supported', () {
+    final account = parseAccount('otpauth://totp/user?issuer=&secret=$secret');
+    expect(account.issuer, '');
+    expect(account.name, 'user');
+  });
   for (final uri in [
+    'otpauth://totp/?issuer=&secret=$secret',
     'https://example.com/?secret=$secret',
     'otpauth://hotp/Acme?secret=$secret&counter=1',
     'otpauth://totp/Acme?secret=',

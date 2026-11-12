@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class ProgressTimerIndicator extends StatefulWidget {

@@ -5,9 +5,10 @@ remain separate packages; this app update does not restore or redesign OOTP.
 
 ## Development
 
-Use Flutter 3.47.8 (Dart 3.13.7) or a compatible stable toolchain meeting
+Use Flutter 3.50.0 (Dart 3.14.0) or a compatible stable toolchain meeting
 `pubspec.yaml`. This toolchain targets iOS 15+ and Android API 24+ (Android 7).
-See [validation results and limits](docs/validation.md). Run from this directory:
+See [validation results and limits](docs/validation.md) and the
+[dependency audit](docs/dependencies.md). Run from this directory:
 
 ```sh
 flutter pub get
