@@ -39,7 +39,11 @@ leave them until OS cleanup. Physical-device file protection is not audited.
 The root `pubspec.yaml` is both the Flutter application's manifest and the Dart
 workspace definition. Run `flutter pub get` from the repository root to resolve
 all three packages with a single root lockfile. Workspace dependencies resolve to
-the local packages while retaining their published version constraints.
+the local packages while retaining their published version constraints. The app
+uses `totp: ^0.2.0` from `pub/totp`, which uses `hotp: ^0.2.0` from `pub/hotp`;
+no published OOTP implementation is used. After resolution, the root
+`.dart_tool/package_config.json` entries for `totp` and `hotp` must point to
+these workspace directories, not a hosted package cache.
 
 | Package | Source | Description |
 | --- | --- | --- |
