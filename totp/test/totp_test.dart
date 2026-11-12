@@ -42,7 +42,12 @@ void main() {
     group(algorithm, () {
       setUp(() {
         totp = Totp(
-          secret: '12345678901234567890'.codeUnits,
+          // RFC 6238 Appendix B uses different keys for each hash.
+          secret: {
+            Algorithm.sha1: '12345678901234567890',
+            Algorithm.sha256: '12345678901234567890123456789012',
+            Algorithm.sha512: '1234567890123456789012345678901234567890123456789012345678901234',
+          }[algorithm]!.codeUnits,
           digits: 8,
           period: 30,
           algorithm: algorithm,
