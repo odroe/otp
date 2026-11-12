@@ -2,5 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Group updates to each pub dependency across workspace packages without combining unrelated dependencies.",
+      "matchManagers": [
+        "pub"
+      ],
+      "additionalBranchPrefix": "",
+      "groupName": "{{depName}} across workspace"
+    }
   ]
 }
