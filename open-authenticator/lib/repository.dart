@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 import 'entities/account.entity.dart';
@@ -15,6 +17,24 @@ class AccountRepository extends ChangeNotifier {
   int get length => store.length;
   bool containsKey(String key) => store.containsKey(key);
   AccountEntity? get(String key) => store.get(key);
+
+  /// Preserve migrated keys, matching identity by fields rather than delimiters.
+  String keyFor(AccountEntity account) {
+    for (final entry in entries) {
+      if (entry.value.issuer == account.issuer &&
+          entry.value.name == account.name) {
+        return entry.key;
+      }
+    }
+    final base = jsonEncode([account.issuer, account.name]);
+    var key = base;
+    var suffix = 1;
+    // A legacy key is arbitrary text and may itself look like the new encoding.
+    while (containsKey(key)) {
+      key = '$base#${suffix++}';
+    }
+    return key;
+  }
 
   Future<void> put(String key, AccountEntity account) async {
     store.put(key, account);

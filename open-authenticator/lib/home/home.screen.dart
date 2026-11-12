@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final account = parseAccount(response);
 
-      final key = "${account.issuer}:${account.name}";
+      final key = accounts.keyFor(account);
       if (accounts.containsKey(key)) {
         return await showCupertinoDialog(
           context: context,
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 builder: (BuildContext context, _widget) {
                   final matches = searchAccounts().toList();
                   return ListView.builder(
-                    physics: const BouncingScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     itemCount: matches.length,
