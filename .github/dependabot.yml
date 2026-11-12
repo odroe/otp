@@ -5,5 +5,7 @@ updates:
       - "/"
       - "/pub/hotp"
       - "/pub/totp"
+    # Renovate owns pub version updates; retain Dependabot security updates.
+    open-pull-requests-limit: 0
     schedule:
       interval: daily
