@@ -421,14 +421,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.6.4"
-  ootp:
-    dependency: "direct main"
-    description:
-      name: ootp
-      sha256: ed77fcf94006a319d09a00485782fb0062d8ea93b52f3ea35a83e6c412037989
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1"
   package_config:
     dependency: transitive
     description:
