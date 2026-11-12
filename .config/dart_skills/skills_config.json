@@ -112,7 +112,7 @@
           },
           {
             "name": "flutter-add-widget-test",
-            "installedAt": "2026-11-12T16:53:37.760064Z",
+            "installedAt": "2026-11-12T16:59:52.194870Z",
             "contentHash": "FzecKt4J27Rmhl/zaDbaWA==",
             "path": "skills/flutter-add-widget-test"
           },
@@ -124,8 +124,8 @@
           },
           {
             "name": "flutter-build-responsive-layout",
-            "installedAt": "2026-11-12T16:53:37.760067Z",
-            "isInstalled": false,
+            "installedAt": "2026-11-12T16:59:52.195971Z",
+            "contentHash": "gBxqGFG9MvBAZgKyWHKFyQ==",
             "path": "skills/flutter-build-responsive-layout"
           },
           {
@@ -160,8 +160,8 @@
           },
           {
             "name": "flutter-add-widget-preview",
-            "installedAt": "2026-11-12T16:53:37.760068Z",
-            "isInstalled": false,
+            "installedAt": "2026-11-12T16:59:52.196781Z",
+            "contentHash": "yuA9sw2YCZNLbl7bV1AWCw==",
             "path": "skills/flutter-add-widget-preview"
           },
           {
@@ -202,7 +202,7 @@
           },
           {
             "name": "flutter-fix-layout-issues",
-            "installedAt": "2026-11-12T16:53:37.761451Z",
+            "installedAt": "2026-11-12T16:59:52.197592Z",
             "contentHash": "u/ZzEgUP9eg1TFe4v9KmCQ==",
             "path": "skills/flutter-fix-layout-issues"
           },
