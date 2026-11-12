@@ -1,10 +1,9 @@
 version: 2
 updates:
   - package-ecosystem: pub
-    directory: hotp
-    schedule:
-      interval: daily
-  - package-ecosystem: pub
-    directory: totp
+    directories:
+      - "/"
+      - "/pub/hotp"
+      - "/pub/totp"
     schedule:
       interval: daily

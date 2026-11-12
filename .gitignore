@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local dependency overrides; workspace resolution is configured in pubspec.yaml.
+**/pubspec_overrides.yaml

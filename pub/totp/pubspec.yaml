@@ -1,11 +1,13 @@
 name: totp
 description: An implementation of the Time-based One-time Password (TOTP).
 version: 0.1.0
-repository: https://github.com/odroe/otp
-homepage: https://github.com/odroe/otp/tree/main/totp
+repository: https://github.com/odroe/authenticator
+homepage: https://github.com/odroe/authenticator/tree/main/pub/totp
 
 environment:
-  sdk: ^3.4.3
+  sdk: ^3.6.0
+
+resolution: workspace
 
 dependencies:
   hotp: ^0.1.0

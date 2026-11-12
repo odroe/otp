@@ -21,6 +21,10 @@ environment:
   sdk: ">=3.14.0 <4.0.0"
   flutter: ">=3.50.0"
 
+workspace:
+  - pub/hotp
+  - pub/totp
+
 dependencies:
   flutter:
     sdk: flutter
@@ -48,7 +52,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: ../design/ootp.png
+  image_path: design/ootp.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
