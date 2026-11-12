@@ -19,7 +19,7 @@ void main() {
   for (final entry in vectors.entries) {
     test('encodes all eight bytes of counter ${entry.key}', () {
       expect(hotp.generate(entry.key), entry.value);
-      expect(hotp.validate(entry.value, entry.key), isTrue);
+      expect(hotp.verify(entry.value, entry.key), entry.key);
     });
   }
 }
