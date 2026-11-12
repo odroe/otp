@@ -49,18 +49,21 @@ void main() {
             Algorithm.sha512: '1234567890123456789012345678901234567890123456789012345678901234',
           }[algorithm]!.codeUnits,
           digits: 8,
-          period: 30,
+          period: const Duration(seconds: 30),
           algorithm: algorithm,
         );
       });
 
       for (final DateTime dateTime in source.keys) {
         test("generate $dateTime", () {
-          expect(totp.generate(dateTime), source[dateTime]![algorithm]);
+          expect(totp.generate(at: dateTime), source[dateTime]![algorithm]);
         });
 
-        test("validate $dateTime", () {
-          expect(totp.validate(source[dateTime]![algorithm]!, dateTime), true);
+        test("verify $dateTime", () {
+          expect(
+            totp.verify(source[dateTime]![algorithm]!, at: dateTime),
+            dateTime.millisecondsSinceEpoch ~/ 30000,
+          );
         });
       }
     });

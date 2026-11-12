@@ -2,59 +2,83 @@ import 'package:test/test.dart';
 import 'package:totp/totp.dart';
 
 void main() {
-  final secret = '12345678901234567890'.codeUnits;
-
-  for (final period in [30, 60]) {
-    group('remaining with a $period-second period', () {
-      final totp = Totp(secret: secret, period: period);
-      final boundary = DateTime.fromMillisecondsSinceEpoch(
-        period * 1000 * 100,
-        isUtc: true,
+  test('preserves precision at the largest JavaScript whole-second period', () {
+    const period = Duration(seconds: 9007199254);
+    final totp = Totp(secret: [1], period: period);
+    final epoch = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    expect(totp.remainingAt(epoch), period);
+    for (final elapsed in [
+      const Duration(microseconds: 1),
+      const Duration(milliseconds: 1),
+    ]) {
+      expect(
+        totp.remainingAt(epoch.add(elapsed)).inMicroseconds,
+        9007199254000000 - elapsed.inMicroseconds,
       );
+    }
+  });
 
-      test('starts at the full period and counts down', () {
-        for (var second = 0; second < period; second++) {
-          expect(
-            totp.remainingAt(boundary.add(Duration(seconds: second))),
-            period - second,
-          );
-        }
-      });
-
-      test('rounds partial seconds up and resets on the next boundary', () {
+  test(
+    'rejects inexact JavaScript periods without restricting native Duration',
+    () {
+      const period = Duration(seconds: 9007199255);
+      if (identical(1, 1.0)) {
+        expect(() => Totp(secret: [1], period: period), throwsArgumentError);
         expect(
-          totp.remainingAt(boundary.add(const Duration(milliseconds: 1))),
-          period,
+          () => Totp.fromBase32(secret: 'AA', period: period),
+          throwsArgumentError,
+        );
+      } else {
+        final totp = Totp(secret: [1], period: period);
+        final at = DateTime.fromMicrosecondsSinceEpoch(1, isUtc: true);
+        expect(totp.remainingAt(at), period - const Duration(microseconds: 1));
+      }
+    },
+  );
+
+  for (final seconds in [1, 30, 60]) {
+    group('remaining for a $seconds-second period', () {
+      final period = Duration(seconds: seconds);
+      final totp = Totp(secret: [1], period: period);
+      test('preserves subsecond precision and resets at exact boundaries', () {
+        final boundary = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+        expect(totp.remainingAt(boundary), period);
+        expect(
+          totp.remainingAt(boundary.add(const Duration(microseconds: 1))),
+          period - const Duration(microseconds: 1),
         );
         expect(
-          totp.remainingAt(
-            boundary.add(Duration(milliseconds: period * 1000 - 1)),
-          ),
-          1,
+          totp.remainingAt(boundary.add(const Duration(microseconds: 999999))),
+          period - const Duration(microseconds: 999999),
         );
         expect(
-          totp.remainingAt(boundary.add(Duration(seconds: period))),
-          period,
+          totp.remainingAt(boundary.subtract(const Duration(microseconds: 1))),
+          const Duration(microseconds: 1),
         );
       });
-
-      test('uses the same instant for local and UTC DateTime values', () {
-        final instant = boundary.add(const Duration(seconds: 7));
-        expect(totp.remainingAt(instant.toLocal()), totp.remainingAt(instant));
+      test('uses the same instant for local and UTC dates', () {
+        final utc = DateTime.utc(2026, 1, 1, 0, 0, 1, 123, 456);
+        expect(totp.remainingAt(utc), totp.remainingAt(utc.toLocal()));
       });
-
-      test('getter is bounded by the times surrounding the call', () {
+      test('preserves microseconds for large JS epoch timestamps', () {
+        final boundary = DateTime.utc(2603, 10, 11, 11, 33);
+        final at = boundary.add(const Duration(microseconds: 1));
+        expect(totp.remainingAt(at), period - const Duration(microseconds: 1));
+      });
+      test('works at the maximum supported DateTime without overflow', () {
+        final at = DateTime.fromMillisecondsSinceEpoch(8640000000000000);
+        expect(totp.remainingAt(at), period);
+      });
+      test('current remaining lies between surrounding observations', () {
         final before = totp.remainingAt(DateTime.now());
-        final remaining = totp.remaining;
+        final value = totp.remaining;
         final after = totp.remainingAt(DateTime.now());
-        // A second or period boundary may occur during the getter call.
-        final possible = <int>{before};
-        var value = before;
-        while (value != after) {
-          value = value == 1 ? period : value - 1;
-          possible.add(value);
+        expect(value, greaterThan(Duration.zero));
+        expect(value, lessThanOrEqualTo(period));
+        if (after <= before) {
+          expect(value, lessThanOrEqualTo(before));
+          expect(value, greaterThanOrEqualTo(after));
         }
-        expect(remaining, isIn(possible));
       });
     });
   }
