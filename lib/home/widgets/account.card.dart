@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:base32/base32.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:ootp/ootp.dart';
+import 'package:totp/totp.dart';
 
 import '../../entities/account.entity.dart';
 import '../../entities/parse_account.dart';
@@ -27,7 +27,7 @@ class _AccountCardState extends State<AccountCard> {
   Timer? timer;
 
   /// Time-based One-time password
-  TOTP? totp;
+  Totp? totp;
 
   @override
   void initState() {
@@ -47,10 +47,11 @@ class _AccountCardState extends State<AccountCard> {
     try {
       validateAccount(widget.account);
       counter = createCounter();
-      totp = TOTP.secret(
-        base32.decode(widget.account.secret.toUpperCase()),
+      totp = Totp(
+        secret: base32.decode(widget.account.secret.toUpperCase()),
+        algorithm: .sha1,
         digits: widget.account.digits,
-        period: widget.account.period,
+        period: Duration(seconds: widget.account.period),
       );
       timer = Timer.periodic(
         const Duration(seconds: 1),
@@ -84,10 +85,10 @@ class _AccountCardState extends State<AccountCard> {
   }
 
   /// Get a make OTP value
-  String get otpCode => totp!.make();
+  String get otpCode => totp!.generate();
 
   /// Get a make OTP code for formatted.
-  String get formattedOtpCode => totp!.make().replaceAllMapped(
+  String get formattedOtpCode => totp!.generate().replaceAllMapped(
     RegExp(r"(.{3})"),
     (Match match) => "${match.group(0)} ",
   );

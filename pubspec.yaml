@@ -38,12 +38,13 @@ dependencies:
   hive: ^2.2.3
   sqlite3: ^3.9.1
   path_provider: ^2.1.6
-  ootp: ^0.1.1
+  totp: ^0.2.0
   base32: ^2.2.0
   mobile_scanner: ^7.5.0
   url_launcher: ^6.3.3
 
 dev_dependencies:
+  hotp: ^0.2.0
   flutter_test:
     sdk: flutter
 
