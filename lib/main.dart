@@ -15,7 +15,7 @@ class const Startup({super.key}) extends StatefulWidget {
   State<Startup> createState() => _StartupState();
 }
 
-class _StartupState extends State<Startup> {
+class _StartupState() extends State<Startup> {
   bool loading = true;
   bool ready = false;
   bool opening = false;

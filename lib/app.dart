@@ -2,7 +2,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 
 import 'home/home.screen.dart';
 
-class Application extends StatelessWidget {
+class Application() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(

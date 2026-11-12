@@ -1,0 +1,14 @@
+analyzer:
+  exclude:
+    - '**/*.g.dart'
+    - build/**
+    - android/**
+    - ios/**
+
+linter:
+  rules:
+    comment_references: true
+    unnecessary_primary_constructor_body: true
+    unnecessary_type_name_in_constructor: true
+    use_declaring_parameters: true
+    use_primary_constructors: true

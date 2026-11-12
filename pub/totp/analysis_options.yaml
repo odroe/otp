@@ -13,6 +13,14 @@
 
 include: package:lints/recommended.yaml
 
+linter:
+  rules:
+    comment_references: true
+    unnecessary_primary_constructor_body: true
+    unnecessary_type_name_in_constructor: true
+    use_declaring_parameters: true
+    use_primary_constructors: true
+
 # Uncomment the following section to specify additional rules.
 
 # linter:

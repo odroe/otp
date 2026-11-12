@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'account.entity.g.dart';
 
 @HiveType(typeId: 0)
-enum AccountType {
+enum AccountType() {
   @HiveField(0)
   HOTP,
 
@@ -12,7 +12,7 @@ enum AccountType {
 }
 
 @HiveType(typeId: 1)
-class AccountEntity {
+class AccountEntity() {
   static String entityName = "accounts";
 
   @HiveField(0, defaultValue: AccountType.TOTP)
