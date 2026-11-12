@@ -5,7 +5,7 @@ repository: https://github.com/odroe/authenticator
 homepage: https://github.com/odroe/authenticator/tree/main/pub/totp
 
 environment:
-  sdk: ^3.6.0
+  sdk: ^3.13.0
 
 resolution: workspace
 

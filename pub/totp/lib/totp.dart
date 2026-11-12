@@ -5,12 +5,16 @@ export 'package:hotp/hotp.dart' show Algorithm, Encoding, base32;
 /// An implementation of the Time-based One-time Password (TOTP).
 ///
 /// See: https://tools.ietf.org/html/rfc6238
-class Totp {
-  /// The underlying HMAC-based One-time Password (HOTP) instance.
-  final Hotp _hotp;
+class Totp({
+  required List<int> secret,
+  Algorithm algorithm = .sha256,
+  int digits = 8,
 
-  /// period of TOTP password
-  final int period;
+  /// Period of the TOTP password in seconds.
+  final int period = 30,
+}) {
+  /// The underlying HMAC-based One-time Password (HOTP) instance.
+  final Hotp _hotp = Hotp(algorithm: algorithm, secret: secret, digits: digits);
 
   /// Return the TOTP secret key.
   List<int> get secret => _hotp.secret;
@@ -21,27 +25,19 @@ class Totp {
   /// Return the TOTP hashing algorithm.
   Algorithm get algorithm => _hotp.algorithm;
 
-  /// Create a new TOTP instance for a given [secret].
-  Totp({
-    required List<int> secret,
-    Algorithm algorithm = Algorithm.sha256,
-    int digits = 8,
-    this.period = 30,
-  }) : _hotp = Hotp(algorithm: algorithm, secret: secret, digits: digits);
-
   /// Create a new TOTP instance for a given Base32 encoded [secret].
   Totp.fromBase32({
     required String secret,
-    Algorithm algorithm = Algorithm.sha256,
+    Algorithm algorithm = .sha256,
     int digits = 8,
-    this.period = 30,
-    Encoding encoding = Encoding.standardRFC4648,
-  }) : _hotp = Hotp.fromBase32(
-          secret: secret,
-          algorithm: algorithm,
-          digits: digits,
-          encoding: encoding,
-        );
+    int period = 30,
+    Encoding encoding = .standardRFC4648,
+  }) : this(
+         secret: base32.decode(secret, encoding: encoding),
+         algorithm: algorithm,
+         digits: digits,
+         period: period,
+       );
 
   /// Generate a new Time-based One-time Password (TOTP) for the
   /// given [dateTime].
