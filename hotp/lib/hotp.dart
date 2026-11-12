@@ -75,12 +75,20 @@ class Hotp {
       );
 
   /// Generate a HMAC-based One-time Password (HOTP) for the given [counter].
+  ///
+  /// On JavaScript, keep [counter] within the exact integer range
+  /// (zero through 2^53 - 1).
   String generate(int counter) {
     // Generate the counter bytes.
-    final bytes = List<int>.generate(_counterBytesLength,
-            (index) => (counter >> (_counterBytesLength * index)) & 0xff)
-        .reversed
-        .toList();
+    // Arithmetic division preserves upper bits on JavaScript, where bitwise
+    // operators narrow their inputs to 32 bits.
+    var remaining = counter;
+    final bytes = List<int>.filled(_counterBytesLength, 0);
+    for (var index = bytes.length - 1; index >= 0; index--) {
+      final byte = remaining & 0xff;
+      bytes[index] = byte;
+      remaining = (remaining - byte) ~/ 256;
+    }
 
     // Convert the counter bytes to a HMAC digest bytes.
     final digest = hmac.convert(bytes).bytes;
