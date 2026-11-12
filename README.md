@@ -15,3 +15,8 @@ This repository an implementation of the One-Time Password (OTP) algorithm in [D
 ## License
 
 [MIT](LICENSE)
+
+## Open Authenticator
+
+The Flutter app lives in [open-authenticator](open-authenticator/). See its README
+for development and migration guidance.
