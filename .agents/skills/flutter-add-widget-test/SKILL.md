@@ -53,11 +53,12 @@ Apply the following conditional logic based on the type of interaction or state 
 *   **If testing standard state changes (e.g., button taps):** 
     1. Call `await tester.tap(finder)`.
     2. Call `await tester.pump()` to trigger a single frame rebuild.
-*   **If testing animations, transitions, or asynchronous UI updates:** 
+*   **If testing finite animations or transitions:**
     1. Trigger the action (e.g., `await tester.drag(finder, Offset(500, 0))`).
     2. Call `await tester.pumpAndSettle()` to repeatedly pump frames until no more frames are scheduled (animation completes).
+*   **If testing asynchronous UI updates:** Complete or control the asynchronous operation first, then pump its resulting frame. `pumpAndSettle()` does not wait for unfinished network responses or timers; indefinite progress animations can make it time out.
 *   **If testing text input:** Call `await tester.enterText(textFieldFinder, 'Input string')`.
-*   **If testing items in a dynamic or long list:** Call `await tester.scrollUntilVisible(itemFinder, 500.0, scrollable: listFinder)` to ensure the target widget is rendered before interacting with it.
+*   **If testing items in a dynamic or long list:** Call `await tester.scrollUntilVisible(itemFinder, 500.0, scrollable: scrollableFinder)` to ensure the target widget is rendered before interacting with it. The finder must locate the `Scrollable` inside the list, not the `ListView` itself; omit `scrollable` when there is only one scrollable.
 
 ## Examples
 

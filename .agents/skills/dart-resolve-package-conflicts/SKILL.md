@@ -17,6 +17,8 @@ metadata:
 
 ## Core Concepts
 
+The commands below use the Dart CLI for pure Dart projects. For Flutter projects, including this repository's root workspace, use `flutter pub` in place of `dart pub`, `flutter analyze` in place of `dart analyze`, and `flutter test` in place of `dart test`.
+
 Dart enforces a strict single-version rule for dependencies: a project and all its transitive dependencies must resolve to a single, shared version of any given package. This prevents runtime type mismatches but introduces the risk of "version lock."
 
 To mitigate version lock, Dart relies on version constraints rather than pinned versions in the `pubspec.yaml`. The `pubspec.lock` file maintains the exact resolved versions for reproducible builds.
@@ -29,7 +31,7 @@ Understand the output columns of `dart pub outdated`:
 
 ## Version Constraints
 
-*   **Use Caret Syntax:** Always use caret syntax (e.g., `^1.2.3`) for dependencies in `pubspec.yaml`. This allows `pub` to select newer, non-breaking versions (up to, but not including, the next major version) during resolution.
+*   **Use Caret Syntax:** Always use caret syntax (e.g., `^1.2.3`) for dependencies in `pubspec.yaml`. This allows `pub` to select newer, compatible versions during resolution: below the next major version for versions at or above 1.0, or below the next minor version for pre-1.0 versions (for example, `^0.1.2` means `>=0.1.2 <0.2.0`).
 *   **Tighten Dev Dependencies:** Set the lower bound of `dev_dependencies` to the exact version currently used. This reduces resolution complexity and prevents older, incompatible dev tools from being selected.
 *   **Enforce Lockfiles in CI:** Use `dart pub get --enforce-lockfile` in CI/CD pipelines to ensure the exact versions tested locally are used in production.
 
@@ -60,18 +62,20 @@ Use conditional logic based on the audit results to upgrade dependencies.
 
 ## Workflow: Resolving Version Conflicts
 
-When `pub` cannot find a set of concrete versions that satisfy all constraints, or when dealing with a retracted package version, manipulate the lockfile surgically.
+When `pub` cannot satisfy all version constraints, use the solver output to identify the responsible direct dependency or SDK constraint and adjust it in `pubspec.yaml`. Deleting lockfile entries cannot resolve incompatible constraints. If the conflict comes from a transitive dependency, select a compatible version of the direct dependency that introduces it.
+
+For a retracted version with a compatible replacement, update only the affected package; the surgical lockfile workflow below preserves unrelated locked versions where possible.
 
 **NEVER** delete the entire `pubspec.lock` file and run `dart pub get`. This causes uncontrolled upgrades across the entire dependency graph.
 
 **Task Progress:**
 - [ ] Open `pubspec.lock`.
-- [ ] Locate the specific YAML block for the conflicting or retracted package.
+- [ ] Locate the specific YAML block for the retracted package after verifying that a compatible replacement exists.
 - [ ] Delete ONLY that package's entry from the lockfile.
-- [ ] Run `dart pub get` to fetch the newest compatible, non-retracted version for that specific package.
+- [ ] Run `dart pub get` to resolve a compatible, non-retracted replacement; review the lockfile diff for any required transitive changes.
 - [ ] **Feedback Loop:**
   - [ ] Run `dart pub deps` -> verify the dependency graph resolves correctly.
-  - [ ] If resolution fails, identify the transitive dependency causing the lock, update its constraint in `pubspec.yaml`, and retry.
+  - [ ] If resolution fails, use the solver output to adjust the responsible direct dependency or SDK constraint in `pubspec.yaml`, and retry.
 
 ## Examples
 
@@ -96,7 +100,7 @@ dependencies:
 ```
 
 ### Surgical Lockfile Removal
-If `package_a` is retracted or locked in a conflict, remove only its block from `pubspec.lock`.
+If `package_a` is retracted and the constraints allow a replacement, remove only its block from `pubspec.lock`.
 
 **Before (`pubspec.lock`):**
 ```yaml

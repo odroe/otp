@@ -62,7 +62,7 @@ Use this workflow to resolve outdated API usages, apply quick fixes, and migrate
 ### Comprehensive `analysis_options.yaml`
 
 ```yaml
-include: package:flutter_lints/recommended.yaml
+include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
@@ -95,10 +95,10 @@ formatter:
 // ignore_for_file: unused_local_variable, dead_code
 
 void processData() {
-  // Suppress for a specific line
-  // ignore: invalid_assignment
-  int x = '';
-  
-  const y = 10; // ignore: constant_identifier_names
+  // Suppress a lint for a specific line, not a compile-time type error.
+  // ignore: avoid_print
+  print('Diagnostic output');
+
+  const LEGACY_VALUE = 10; // ignore: constant_identifier_names
 }
 ```

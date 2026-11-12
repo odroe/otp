@@ -45,7 +45,7 @@ Follow this sequential workflow when implementing new test suites. Copy the chec
 
 ### Task Progress
 - [ ] 1. Create the test file in the `test/` directory, ensuring the `_test.dart` suffix.
-- [ ] 2. Import `package:test/test.dart` and the target library.
+- [ ] 2. Import `package:test/test.dart` (or `package:flutter_test/flutter_test.dart` for Flutter projects) and the target library.
 - [ ] 3. Define a `main()` function.
 - [ ] 4. Initialize shared resources or mocks using `setUp()`.
 - [ ] 5. Write `test()` cases grouped by functionality using `group()`.
@@ -84,6 +84,8 @@ void main() {
 
 ### Mocking with Mockito
 Demonstrates configuring a mock object for dependency injection testing.
+
+Add both `mockito` and `build_runner` as development dependencies before generating mocks. Use `dart pub add dev:mockito dev:build_runner` for Dart packages, or `flutter pub add dev:mockito dev:build_runner` for Flutter projects.
 
 ```dart
 import 'package:test/test.dart';

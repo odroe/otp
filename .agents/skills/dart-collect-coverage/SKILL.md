@@ -93,7 +93,7 @@ Extract the coverage data from the running VM service and output it to a JSON fi
 ```bash
 dart run coverage:collect_coverage --wait-paused --uri=http://127.0.0.1:8181/ -o coverage/coverage.json --resume-isolates
 ```
-*Optional: Append `--function-coverage` and `--branch-coverage` to gather deeper metrics (requires Dart VM 2.17.0+).*
+*Optional: Pass `--function-coverage` to the collector for function coverage. For branch coverage, pass `--branch-coverage` to both the test VM invocation and the collector; the collector flag alone does not enable VM instrumentation (requires Dart VM 2.17.0+).*
 
 ### 3. Format to LCOV
 Convert the raw JSON data into the standard LCOV format.

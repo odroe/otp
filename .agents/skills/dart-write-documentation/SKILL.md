@@ -51,7 +51,7 @@ When asked to write or update documentation for Dart code, you must strictly fol
 
 ## 6. Verification
 After writing or updating doc comments:
-1. Run `dart analyze` to ensure all bracketed references resolve properly without triggering `comment_references` warnings.
+1. Ensure the `comment_references` lint is enabled under `linter: rules:` in the relevant `analysis_options.yaml`, then run `dart analyze` (or `flutter analyze` for Flutter projects) to check unresolved bracketed references.
 2. (Optional) Run `dart doc` to verify the generated documentation renders cleanly.
 
 ## Examples

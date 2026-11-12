@@ -32,9 +32,9 @@ Copy and use this checklist to systematically resolve layout constraint violatio
 - [ ] Run the application in debug mode to capture the exact layout exception in the console.
 - [ ] Identify the primary error message (ignore cascading "RenderBox was not laid out" errors).
 - [ ] Apply the conditional fix based on the specific error type:
-  - **If "Vertical viewport was given unbounded height"**: Wrap the scrollable child (`ListView`, `GridView`) in an `Expanded` widget to consume remaining space, or wrap it in a `SizedBox` to provide an absolute height constraint.
+  - **If "Vertical viewport was given unbounded height"**: When the enclosing `Column` has bounded height, wrap the scrollable child (`ListView`, `GridView`) in `Expanded` to consume remaining space. Inside a vertical scrollable, do not add flex to an unbounded `Column`; provide an explicit bounded height or choose a suitable shrink-wrapped layout.
   - **If "An InputDecorator...cannot have an unbounded width"**: Wrap the `TextField` or `TextFormField` in an `Expanded` or `Flexible` widget.
-  - **If "RenderFlex overflowed"**: Constrain the overflowing child by wrapping it in an `Expanded` widget (to force it to fit) or a `Flexible` widget (to allow it to be smaller than the allocated space).
+  - **If "RenderFlex overflowed"**: Use `Expanded` or `Flexible` only where fitting or shrinking the child is appropriate. For long content in a bounded `Column`, use a scrollable layout when all content must remain accessible; clipping text is not an overflow fix.
   - **If "Incorrect use of ParentData widget"**: Move the `ParentDataWidget` to be a direct child of its required parent. Ensure `Expanded`/`Flexible` are direct children of `Row`/`Column`/`Flex`. Ensure `Positioned` is a direct child of `Stack`.
 - [ ] Execute Flutter hot reload.
 - [ ] Run validator -> review errors -> fix: Inspect the UI to verify the red/grey error screen or yellow/black overflow stripes are resolved. If new layout errors appear, repeat the workflow.
