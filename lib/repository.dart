@@ -7,10 +7,7 @@ import 'storage/account_store.dart';
 
 late AccountRepository accounts;
 
-class AccountRepository extends ChangeNotifier {
-  final AccountStore store;
-  AccountRepository(this.store);
-
+class AccountRepository(final AccountStore store) extends ChangeNotifier {
   Iterable<MapEntry<String, AccountEntity>> get entries =>
       store.accounts.entries;
   Iterable<AccountEntity> get values => store.values;

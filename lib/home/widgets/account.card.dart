@@ -10,13 +10,11 @@ import '../../entities/parse_account.dart';
 import '../../repository.dart';
 import 'progress-timer.indicator.dart';
 
-class AccountCard extends StatefulWidget {
-  final AccountEntity account;
-  final String? accountKey;
-
-  const AccountCard(this.account, {Key? key, this.accountKey})
-    : super(key: key);
-
+class const AccountCard(
+  final AccountEntity account, {
+  super.key,
+  final String? accountKey,
+}) extends StatefulWidget {
   @override
   _AccountCardState createState() => _AccountCardState();
 }
@@ -127,7 +125,7 @@ class _AccountCardState extends State<AccountCard> {
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   widget.account.issuer,
@@ -146,7 +144,7 @@ class _AccountCardState extends State<AccountCard> {
                         .copyWith(
                           color: CupertinoTheme.of(context).primaryColor,
                           fontSize: 36.0,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
                   ),
                   onTap: totp == null
@@ -163,7 +161,7 @@ class _AccountCardState extends State<AccountCard> {
                             return;
                           }
                           if (!mounted) return;
-                          SystemSound.play(SystemSoundType.alert);
+                          SystemSound.play(.alert);
                           showCupertinoDialog(
                             useRootNavigator: true,
                             context: context,

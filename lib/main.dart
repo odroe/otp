@@ -10,9 +10,7 @@ void main() {
   runApp(const Startup());
 }
 
-class Startup extends StatefulWidget {
-  const Startup({super.key});
-
+class const Startup({super.key}) extends StatefulWidget {
   @override
   State<Startup> createState() => _StartupState();
 }

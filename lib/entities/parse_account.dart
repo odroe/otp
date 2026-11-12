@@ -21,7 +21,7 @@ AccountEntity parseAccount(String value) {
       (separator < 0 ? label : label.substring(0, separator));
   final name = separator < 0 ? label : label.substring(separator + 1);
   final account = AccountEntity()
-    ..type = AccountType.TOTP
+    ..type = .TOTP
     ..issuer = issuer
     ..name = (name.isEmpty || (separator < 0 && name == issuer)) ? null : name
     ..secret = (uri.queryParameters['secret'] ?? '').toUpperCase()
@@ -37,7 +37,7 @@ AccountEntity parseAccount(String value) {
 /// Also used for legacy data: invalid records stay stored, not silently deleted.
 void validateAccount(AccountEntity account) {
   final unpaddedLength = account.secret.replaceFirst(RegExp(r'=+$'), '').length;
-  if (account.type != AccountType.TOTP ||
+  if (account.type != .TOTP ||
       account.period <= 0 ||
       account.digits < 6 ||
       account.digits > 8 ||

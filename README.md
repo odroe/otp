@@ -46,7 +46,7 @@ the local packages while retaining their published version constraints.
 | [hotp](https://pub.dev/packages/hotp) | [pub/hotp](pub/hotp/) | HMAC-based one-time passwords ([RFC 4226](https://www.rfc-editor.org/rfc/rfc4226)) |
 | [totp](https://pub.dev/packages/totp) | [pub/totp](pub/totp/) | Time-based one-time passwords ([RFC 6238](https://www.rfc-editor.org/rfc/rfc6238)) |
 
-The library packages require Dart 3.6 or newer for workspace resolution. Working
+The library packages require Dart 3.13 or newer. Working
 on the complete workspace requires the Flutter/Dart versions listed above.
 Node.js is required for the package JavaScript tests.
 

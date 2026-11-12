@@ -4,16 +4,14 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 /// Ignore other barcode types even when a capture also contains a QR code.
 String? qrCodeValue(BarcodeCapture capture) {
   for (final barcode in capture.barcodes) {
-    if (barcode.format == BarcodeFormat.qrCode && barcode.rawValue != null) {
+    if (barcode.format == .qrCode && barcode.rawValue != null) {
       return barcode.rawValue;
     }
   }
   return null;
 }
 
-class ScanScreen extends StatefulWidget {
-  const ScanScreen({super.key});
-
+class const ScanScreen({super.key}) extends StatefulWidget {
   @override
   State<ScanScreen> createState() => _ScanScreenState();
 }

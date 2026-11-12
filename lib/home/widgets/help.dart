@@ -4,9 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 final url = Uri.parse('https://github.com/odroe/authenticator/issues');
 
-class Help extends StatelessWidget {
-  const Help({Key? key}) : super(key: key);
-
+class const Help({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
@@ -16,7 +14,7 @@ class Help extends StatelessWidget {
       ),
       onPressed: () async {
         try {
-          if (await launchUrl(url, mode: LaunchMode.externalApplication)) {
+          if (await launchUrl(url, mode: .externalApplication)) {
             return;
           }
         } on PlatformException {
