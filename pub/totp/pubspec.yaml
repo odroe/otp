@@ -1,6 +1,6 @@
 name: totp
 description: An implementation of the Time-based One-time Password (TOTP).
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/odroe/authenticator
 homepage: https://github.com/odroe/authenticator/tree/main/pub/totp
 
@@ -11,7 +11,6 @@ resolution: workspace
 
 dependencies:
   hotp: ^0.2.0
-  base32: ^2.1.3
 
 dev_dependencies:
   lints: 6.1.0
