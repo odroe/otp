@@ -9,9 +9,7 @@ import '../repository.dart';
 import 'widgets/account.card.dart';
 import 'widgets/help.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
+class const HomeScreen({super.key}) extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }

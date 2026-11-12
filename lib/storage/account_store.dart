@@ -7,11 +7,7 @@ typedef LegacyAccountLoader = Future<Map<String, AccountEntity>> Function();
 
 /// SQLite becomes authoritative only after the complete legacy import has been
 /// committed and verified. Hive originals are retained, never renamed/deleted.
-class AccountStore {
-  AccountStore._(this._database);
-
-  final Database _database;
-
+class AccountStore._(final Database _database) {
   static Future<AccountStore> open({
     required String sqlitePath,
     required String legacyDirectory,

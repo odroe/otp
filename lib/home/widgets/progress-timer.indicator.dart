@@ -3,12 +3,8 @@ import 'dart:async';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class ProgressTimerIndicator extends StatefulWidget {
-  final int period;
-
-  const ProgressTimerIndicator({Key? key, required this.period})
-    : super(key: key);
-
+class const ProgressTimerIndicator({super.key, required final int period})
+    extends StatefulWidget {
   @override
   _ProgressTimerIndicatorState createState() => _ProgressTimerIndicatorState();
 }
@@ -29,7 +25,7 @@ class _ProgressTimerIndicatorState extends State<ProgressTimerIndicator> {
 
   @override
   void initState() {
-    const duration = const Duration(seconds: 1);
+    const duration = Duration(seconds: 1);
     updateHalfMinuteSeconds();
     timer = Timer.periodic(duration, (_timer) => updateHalfMinuteSeconds());
     super.initState();
@@ -54,10 +50,8 @@ class _ProgressTimerIndicatorState extends State<ProgressTimerIndicator> {
           : CupertinoColors.destructiveRed,
       center: Text(
         currentHalfMinuteSeconds.toString(),
-        style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-          fontSize: 12.0,
-          fontWeight: FontWeight.w200,
-        ),
+        style: CupertinoTheme.of(context).textTheme.textStyle
+            .copyWith(fontSize: 12.0, fontWeight: .w200),
       ),
     );
   }
