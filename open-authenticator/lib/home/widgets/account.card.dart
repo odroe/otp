@@ -94,6 +94,23 @@ class _AccountCardState extends State<AccountCard> {
     (Match match) => "${match.group(0)} ",
   );
 
+  void showCopyFailure() {
+    if (!mounted) return;
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Could not copy'),
+        content: const Text('Unable to copy the code. Please try again.'),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -136,7 +153,15 @@ class _AccountCardState extends State<AccountCard> {
                       ? null
                       : () async {
                           final code = otpCode;
-                          await Clipboard.setData(ClipboardData(text: code));
+                          try {
+                            await Clipboard.setData(ClipboardData(text: code));
+                          } on PlatformException {
+                            showCopyFailure();
+                            return;
+                          } on MissingPluginException {
+                            showCopyFailure();
+                            return;
+                          }
                           if (!mounted) return;
                           SystemSound.play(SystemSoundType.alert);
                           showCupertinoDialog(

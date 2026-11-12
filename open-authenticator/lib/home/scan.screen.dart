@@ -22,17 +22,25 @@ class _ScanScreenState extends State<ScanScreen> {
   bool completed = false;
 
   @override
-  Widget build(BuildContext context) => CupertinoPageScaffold(
-    navigationBar: const CupertinoNavigationBar(middle: Text('Scan QR code')),
-    child: SafeArea(
-      child: MobileScanner(
-        onDetect: (capture) {
-          if (completed) return;
-          final value = qrCodeValue(capture);
-          if (value == null) return;
-          completed = true;
-          Navigator.of(context).pop(value);
-        },
+  Widget build(BuildContext context) => PopScope<String>(
+    onPopInvokedWithResult: (didPop, result) {
+      if (didPop) completed = true;
+    },
+    child: CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(middle: Text('Scan QR code')),
+      child: SafeArea(
+        child: MobileScanner(
+          onDetect: (capture) {
+            if (!mounted ||
+                completed ||
+                ModalRoute.of(context)?.isCurrent != true)
+              return;
+            final value = qrCodeValue(capture);
+            if (value == null) return;
+            completed = true;
+            Navigator.of(context).pop(value);
+          },
+        ),
       ),
     ),
   );
