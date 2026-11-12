@@ -2,7 +2,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final url = Uri.parse('https://github.com/odroe/otp/issues');
+final url = Uri.parse('https://github.com/odroe/authenticator/issues');
 
 class Help extends StatelessWidget {
   const Help({Key? key}) : super(key: key);
