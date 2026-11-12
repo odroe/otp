@@ -1,6 +1,10 @@
+import 'package:base32/base32.dart' show base32;
+import 'package:base32/encodings.dart' show Encoding;
 import 'package:hotp/hotp.dart';
 
-export 'package:hotp/hotp.dart' show Algorithm, Encoding, base32;
+export 'package:base32/base32.dart' show base32;
+export 'package:base32/encodings.dart' show Encoding;
+export 'package:hotp/hotp.dart' show Algorithm;
 
 /// An implementation of the Time-based One-time Password (TOTP).
 ///

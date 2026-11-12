@@ -5,8 +5,8 @@ void main() {
   test('preserves a common 10-byte Base32 secret', () {
     final hotp = Hotp.fromBase32(secret: 'JBSWY3DPEHPK3PXP');
     expect(hotp.generate(1), '996554');
-    expect(hotp.validate('996554', 1), isTrue);
-    expect(hotp.validate('503347', 1), isFalse);
+    expect(hotp.verify('996554', 1), 1);
+    expect(hotp.verify('503347', 1), isNull);
   });
 
   // Independently generated with Python's standard-library hmac, using
@@ -83,8 +83,8 @@ void main() {
           expect(hotp.generate(i), passwords[i]);
         });
 
-        test('validate counter $i', () {
-          expect(hotp.validate(passwords[i], i), isTrue);
+        test('verify counter $i', () {
+          expect(hotp.verify(passwords[i], i), i);
         });
       }
     });

@@ -1,71 +1,63 @@
-# HMAC-based One-time Password (HOTP)
+# HOTP
 
-This is an implementation of the HOTP algorithm as specified in [RFC 4226](https://tools.ietf.org/html/rfc4226).
-
-[![pub version](https://img.shields.io/pub/v/hotp.svg)](https://pub.dev/packages/hotp)
-
-## Installation
-
-```bash
-dart pub add hotp
-```
+An immutable [RFC 4226](https://www.rfc-editor.org/rfc/rfc4226) generator for Dart,
+with SHA1, SHA256, and SHA512 support. Requires Dart 3.13 or later.
 
 ## Usage
 
-```dart
-final hotp = Hotp(secret: '12345678901234567890'.codeUnits);
-
-// Generate a HOTP
-final password = hotp.generate(counter: 0); // 755224
+```sh
+dart pub add hotp
 ```
 
-### Base32 encoding
-
 ```dart
-final hotp = Hotp.fromBase32('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
+import 'package:hotp/hotp.dart';
 
-print(hotp.generate(counter: 0)); // 755224
+void main() {
+  final hotp = Hotp.fromBase32(secret: 'JBSWY3DPEHPK3PXP');
+  print(hotp.generate(1)); // 996554
+  print(hotp.verify('996554', 1)); // 1
+  print(hotp.verify('996554', 0, window: 1)); // 1
+  print(hotp.verify('996554', 0)); // null
+}
 ```
 
-## Supported algorithms
+`Hotp(secret: bytes, algorithm: .sha1, digits: 6)` accepts raw key bytes.
+The key is copied into an unmodifiable list; modifying the input afterward does
+not change generated codes. Keys are never repeated or truncated. Use randomly
+generated keys of at least 128 bits for new accounts; shorter existing keys are
+supported. Never log or expose secret bytes.
 
-- SHA1 - default, as specified in RFC 4226
-- SHA256
-- SHA512
+`fromBase32` accepts RFC 4648 ASCII letters in either case, with or without valid
+padding. Whitespace, invalid alphabet characters, noncanonical trailing bits,
+and invalid lengths or padding throw `FormatException`.
 
-## APIs
+## Counters and verification
 
-### Constructor parameters
+- `generate(int counter)` returns a zero-padded decimal `String`.
+- `verify(String code, int counter, {int window = 0})` returns the first matching
+  counter or `null`. It searches `counter` through `counter + window`, inclusive.
+- Defaults are SHA1 and six digits; supported digit counts are 6, 7, and 8.
+- Counters range from zero through `Hotp.maxCounter`: 2^63 - 1 on native runtimes
+  and 2^53 - 1 on JavaScript. The full unsigned 64-bit range is not supported.
+- Empty or non-byte keys throw `ArgumentError`. Invalid digits, counters, or
+  verification windows throw `RangeError`, including windows that overflow.
+- Malformed codes return `null`, but do not bypass counter/window validation.
 
-| Name        | Type        | Description                       |
-| ----------- | ----------- | --------------------------------- |
-| `secret`    | `List<int>` | The secret key.                   |
-| `algorithm` | `Algorithm` | The algorithm to use.             |
-| `digits`    | `int`       | The number of digits to generate. |
+Neither method changes or persists counters. After verification, the application
+must atomically persist advancement beyond the matched counter to prevent replay.
+At `Hotp.maxCounter`, no next counter is representable: retire or replace that
+credential instead of overflowing. Enforce attempt limits and use a small,
+application-controlled window. A larger window increases work and guessing risk.
 
-If you want to use a Base32 encoded secret, use the `fromBase32` constructor.
+## Migrating from 0.1
 
-| Name        | Type        | Description                       |
-| ----------- | ----------- | --------------------------------- |
-| `secret`    | `String`    | The Base32 encoded secret key.    |
-| `digits`    | `int`       | The number of digits to generate. |
-| `algorithm` | `Algorithm` | The algorithm to use.             |
-| `encoding`  | `Encoding`  | The encoding to use.              |
-
-### Methods
-
-| Name       | Return type | Description                             |
-| ---------- | ----------- | --------------------------------------- |
-| `generate` | `int`       | Generates a HOTP for the given counter. |
-| `validate` | `bool`      | Validates a HOTP for the given counter. |
-
-## Exported other package types
-
-| Name       | Type    | Description                       |
-| ---------- | ------- | --------------------------------- |
-| `base32`   | `class` | Base32 encoding and decoding util |
-| `Encoding` | `int`   | Base32 encoding and decoding alg  |
-
-## License
-
-The project is licensed under the MIT license.
+- Replace `validate(code, counter, breadth: n)` with
+  `verify(code, counter, window: n)`. Check `!= null` for a boolean result, or use
+  the returned counter to advance application state.
+- `Hotp` is final and cannot be subclassed; its key snapshot is immutable.
+- `Algorithm` contains only `sha1`, `sha256`, and `sha512`. The `hash`, `length`,
+  and `repeat` members and public `Hotp.hmac` implementation detail are removed.
+- Base32 helpers and `Encoding` are no longer re-exported. `fromBase32` handles
+  RFC 4648 only; decode other formats explicitly before supplying raw bytes.
+- Configuration errors now throw at runtime instead of relying on assertions.
+  The digit range is restricted to 6–8 and Base32 input is checked strictly.
