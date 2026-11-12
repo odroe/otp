@@ -134,31 +134,26 @@ class _AccountCardState extends State<AccountCard> {
                   ),
                   onTap: totp == null
                       ? null
-                      : () {
-                          Clipboard.setData(ClipboardData(text: otpCode)).then((
-                            _void,
-                          ) {
-                            SystemSound.play(SystemSoundType.alert);
-                            showCupertinoDialog(
-                              useRootNavigator: true,
-                              context: context,
-                              builder: (context) => CupertinoAlertDialog(
-                                title: Text("Copied"),
-                                content: Text(
-                                  "One-time password copied: $otpCode",
+                      : () async {
+                          final code = otpCode;
+                          await Clipboard.setData(ClipboardData(text: code));
+                          if (!mounted) return;
+                          SystemSound.play(SystemSoundType.alert);
+                          showCupertinoDialog(
+                            useRootNavigator: true,
+                            context: context,
+                            builder: (context) => CupertinoAlertDialog(
+                              title: Text("Copied"),
+                              content: Text("One-time password copied: $code"),
+                              actions: [
+                                CupertinoButton(
+                                  child: Text("OK"),
+                                  onPressed: () => Navigator.of(context).pop(),
                                 ),
-                                actions: [
-                                  CupertinoButton(
-                                    child: Text("OK"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                              barrierDismissible: true,
-                            );
-                          });
+                              ],
+                            ),
+                            barrierDismissible: true,
+                          );
                         },
                 ),
               ],
@@ -173,6 +168,7 @@ class _AccountCardState extends State<AccountCard> {
             child: Icon(
               CupertinoIcons.right_chevron,
               size: 16.0,
+              semanticLabel: 'Delete account',
               color: CupertinoColors.systemGrey,
             ),
             padding: EdgeInsets.zero,

@@ -56,9 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (scanning) return;
     setState(() => scanning = true);
     try {
-      final response = await Navigator.of(
-        context,
-      ).push<String>(CupertinoPageRoute(builder: (_) => const ScanScreen()));
+      final response = await Navigator.of(context)
+          .push<String>(CupertinoPageRoute(builder: (_) => const ScanScreen()));
       if (!mounted || response == null) return;
 
       final account = parseAccount(response);
@@ -125,13 +124,12 @@ class _HomeScreenState extends State<HomeScreen> {
               automaticallyImplyTitle: true,
               automaticallyImplyLeading: true,
               alwaysShowMiddle: false,
-              backgroundColor: CupertinoTheme.of(
-                context,
-              ).scaffoldBackgroundColor,
+              backgroundColor: CupertinoTheme.of(context)
+                  .scaffoldBackgroundColor,
               middle: Text("Authenticator"),
               trailing: CupertinoButton(
                 padding: EdgeInsets.zero,
-                child: Icon(CupertinoIcons.add),
+                child: Icon(CupertinoIcons.add, semanticLabel: 'Add account'),
                 onPressed: scanning ? null : scanQR,
               ),
               // _kNavBarEdgePadding

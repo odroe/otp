@@ -1,6 +1,16 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+/// Ignore other barcode types even when a capture also contains a QR code.
+String? qrCodeValue(BarcodeCapture capture) {
+  for (final barcode in capture.barcodes) {
+    if (barcode.format == BarcodeFormat.qrCode && barcode.rawValue != null) {
+      return barcode.rawValue;
+    }
+  }
+  return null;
+}
+
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
 
@@ -18,14 +28,10 @@ class _ScanScreenState extends State<ScanScreen> {
       child: MobileScanner(
         onDetect: (capture) {
           if (completed) return;
-          for (final barcode in capture.barcodes) {
-            final value = barcode.rawValue;
-            if (value != null) {
-              completed = true;
-              Navigator.of(context).pop(value);
-              break;
-            }
-          }
+          final value = qrCodeValue(capture);
+          if (value == null) return;
+          completed = true;
+          Navigator.of(context).pop(value);
         },
       ),
     ),

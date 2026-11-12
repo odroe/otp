@@ -26,8 +26,50 @@ void main() {
     expect(account.issuer, '');
     expect(account.name, 'user');
   });
+  test(
+    'explicit name equal to issuer stays distinct from issuer-only label',
+    () {
+      final explicit = parseAccount(
+        'otpauth://totp/Acme:Acme?issuer=Acme&secret=$secret',
+      );
+      final issuerOnly = parseAccount(
+        'otpauth://totp/Acme?issuer=Acme&secret=$secret',
+      );
+      expect(explicit.name, 'Acme');
+      expect(issuerOnly.name, isNull);
+      expect(
+        '${explicit.issuer}:${explicit.name}',
+        isNot('${issuerOnly.issuer}:${issuerOnly.name}'),
+      );
+    },
+  );
+  for (final secretLength in [1, 3, 6, 9, 11, 14, 33, 35, 38]) {
+    test('reject impossible Base32 length $secretLength', () {
+      final invalid = List.filled(secretLength, 'A').join();
+      expect(
+        () => parseAccount('otpauth://totp/Acme?secret=$invalid'),
+        throwsFormatException,
+      );
+    });
+  }
+  for (final value in [
+    'MY',
+    'MY======',
+    'MZXQ',
+    'MZXQ====',
+    'MZXW6',
+    'MZXW6===',
+    'MZXW6YQ',
+    'MZXW6YQ=',
+    'MZXW6YTB',
+  ]) {
+    test('accept supported Base32 length and padding: $value', () {
+      expect(parseAccount('otpauth://totp/Acme?secret=$value').secret, value);
+    });
+  }
   for (final uri in [
     'otpauth://totp/?issuer=&secret=$secret',
+    'otpauth://totp/?issuer=Acme&secret=$secret',
     'https://example.com/?secret=$secret',
     'otpauth://hotp/Acme?secret=$secret&counter=1',
     'otpauth://totp/Acme?secret=',

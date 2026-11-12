@@ -5,7 +5,7 @@
 Toolchain: Flutter 3.50.0 stable, Dart 3.14.0, Xcode 27.2, CocoaPods 1.17.0.
 
 - `flutter analyze`: no issues.
-- `flutter test`: all 35 tests passed on the final source and dependency lock.
+- `flutter test`: all 61 tests passed on the final source and dependency lock.
 - `flutter build ios --release --no-codesign`: passed. The unsigned product keeps
   bundle ID `odroe.ootp.authenticator`, requires iOS 15, and includes SQLite's
   native framework.
@@ -34,9 +34,9 @@ updates obsolete transitive packages that no longer compile under modern Dart.
 ## Android validation
 
 - `flutter build apk --release --target-platform android-arm64`: passed in
-  22.2 seconds, with no excluded tasks.
+  15.2 seconds, with no excluded tasks.
 - From `android`, `./gradlew :app:lintRelease -Ptarget-platform=android-arm64
-  --no-daemon`: passed in 19 seconds, with **0 errors and 7 warnings**. These are
+  --no-daemon`: passed in 6 seconds, with **0 errors and 7 warnings**. These are
   one newer-Gradle-version suggestion, one redundant `drawable-v21` qualifier,
   and five existing launcher-icon shape warnings. The supported Flutter template
   toolchain and existing branding were not changed just to silence warnings.
@@ -68,3 +68,13 @@ No new entitlements, custom file-protection settings or backup exclusions were
 added. Hardware file protection was not audited on a physical iPhone. See the
 README's security boundaries; this is not an encrypted-vault or secure-erasure
 implementation.
+
+## Code review follow-up
+
+The final parser/UI review fixes were revalidated with all 61 tests, clean
+analysis, iOS unsigned release (21.7 seconds), Android default ARM64 release
+(15.2 seconds), and explicit native lint (0 errors, 7 existing warnings).
+No tasks were skipped. Android backup and device transfer remain unchanged by
+explicit owner choice. See [finding-by-finding disposition](review-follow-up.md).
+The earlier simulator migration evidence above covers the unchanged storage
+implementation; this review build was not installed over the user's phone app.

@@ -15,8 +15,12 @@ class Help extends StatelessWidget {
         style: TextStyle(fontSize: 12.0),
       ),
       onPressed: () async {
-        if (await launchUrl(url, mode: LaunchMode.externalApplication)) {
-          return;
+        try {
+          if (await launchUrl(url, mode: LaunchMode.externalApplication)) {
+            return;
+          }
+        } on PlatformException {
+          // A rejected platform launch uses the same recoverable fallback.
         }
 
         if (!context.mounted) return;

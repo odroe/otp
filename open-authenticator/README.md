@@ -51,7 +51,9 @@ secrets or device databases. Tests use public RFC test vectors only.
 SQLite and retained Hive files are not application-level encrypted. They rely
 on the device's app sandbox and operating-system data protection. This change
 does not add a cloud-sync service or change the original Documents storage
-location; normal device backup policy still applies. Device-level file
+location; normal device backup policy still applies. Android system backup and device
+transfer are deliberately not disabled, so they can include active and retained
+OTP seeds; protect those backups and destination devices. Device-level file
 protection has not been audited on a physical iPhone in this iteration.
 
 Deleting an account removes its active SQLite row, not the retained Hive
