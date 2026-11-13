@@ -210,8 +210,8 @@ class _AccountCardState()
               Semantics(
                 button: valid,
                 label: valid
-                    ? 'Code $formattedOtpCode. Double tap to copy.'
-                    : 'Unable to generate code',
+                    ? '${widget.account.issuer}${(widget.account.name ?? '').isEmpty ? '' : ', ${widget.account.name}'}. Code $formattedOtpCode. Double tap to copy.'
+                    : '${widget.account.issuer}. Unable to generate code',
                 excludeSemantics: true,
                 onTap: valid ? copyCode : null,
                 child: CupertinoButton(

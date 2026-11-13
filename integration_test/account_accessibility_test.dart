@@ -33,7 +33,9 @@ void main() {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(const CupertinoApp(home: HomeScreen()));
     await tester.pumpAndSettle();
-    final code = find.bySemanticsLabel(RegExp(r'Code .* Double tap to copy\.'));
+    final code = find.bySemanticsLabel(
+      RegExp(r'.*Code .* Double tap to copy\.'),
+    );
     expect(code, findsOneWidget);
     expect(
       tester

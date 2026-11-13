@@ -64,7 +64,9 @@ void main() {
     await tester.pump();
     final semantics = tester.ensureSemantics();
     await tester.pump();
-    final code = find.bySemanticsLabel(RegExp(r'Code .* Double tap to copy\.'));
+    final code = find.bySemanticsLabel(
+      RegExp(r'.*Code .* Double tap to copy\.'),
+    );
     expect(code, findsOneWidget);
     expect(
       tester
