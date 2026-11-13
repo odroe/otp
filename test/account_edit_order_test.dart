@@ -166,4 +166,41 @@ void main() {
     store.close();
     await dir.delete(recursive: true);
   });
+  test(
+    'replacement rejects an account changed while confirmation was open',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('auth-replace-stale-');
+      final store = await AccountStore.open(
+        sqlitePath: '${dir.path}/db.sqlite3',
+        legacyDirectory: dir.path,
+        legacyLoader: () async => {},
+      );
+      final original = accountFromFields(
+        type: .HOTP,
+        issuer: 'Service',
+        name: 'alice',
+        counter: '7',
+        secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+      );
+      store.put('id', original);
+      store.advanceHotp('id', 7, expectedAccount: original);
+      final replacement = accountFromFields(
+        type: .TOTP,
+        issuer: 'Service',
+        name: 'alice',
+        secret: 'JBSWY3DPEHPK3PXP',
+      );
+      expect(
+        () => store.replaceIfUnchanged('id', original, replacement),
+        throwsStateError,
+      );
+      expect(store.get('id')!.counter, 8);
+      expect(store.get('id')!.secret, original.secret);
+      final current = store.get('id')!;
+      store.replaceIfUnchanged('id', current, replacement);
+      expect(store.get('id')!.secret, replacement.secret);
+      store.close();
+      await dir.delete(recursive: true);
+    },
+  );
 }

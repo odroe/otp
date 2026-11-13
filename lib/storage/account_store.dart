@@ -258,6 +258,44 @@ class AccountStore._(final Database _database) {
     );
   }
 
+  /// Replace only the account the user confirmed, without creating a new one.
+  void replaceIfUnchanged(
+    String key,
+    AccountEntity expected,
+    AccountEntity value,
+  ) {
+    _database.execute(
+      'UPDATE accounts SET account_type = ?, issuer = ?, name = ?, secret = ?, '
+      'digits = ?, period = ?, algorithm = ?, counter = ?, format = ? '
+      'WHERE account_key = ? AND account_type = ? AND issuer = ? AND name IS ? '
+      'AND secret = ? AND digits = ? AND period = ? AND algorithm = ? '
+      'AND counter IS ? AND format = ?',
+      [
+        value.type.index,
+        value.issuer,
+        value.name,
+        value.secret,
+        value.digits,
+        value.period,
+        value.algorithm.name,
+        value.counter,
+        value.format.name,
+        key,
+        expected.type.index,
+        expected.issuer,
+        expected.name,
+        expected.secret,
+        expected.digits,
+        expected.period,
+        expected.algorithm.name,
+        expected.counter,
+        expected.format.name,
+      ],
+    );
+    if (_database.updatedRows != 1)
+      throw StateError('Account changed; reload before replacing.');
+  }
+
   /// Changes only labels, keeping the stable identity and OTP state intact.
   void updateLabels(
     String key,

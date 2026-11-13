@@ -138,7 +138,8 @@ class _HomeScreenState() extends State<HomeScreen> {
       }
       return;
     }
-    if (accounts.containsKey(key)) {
+    final existing = accounts.get(key);
+    if (existing != null) {
       final replace = await showCupertinoDialog<bool>(
         context: context,
         builder: (context) => CupertinoAlertDialog(
@@ -159,7 +160,11 @@ class _HomeScreenState() extends State<HomeScreen> {
       if (!mounted || replace != true) return;
     }
     try {
-      await accounts.put(key, account);
+      if (existing == null) {
+        await accounts.addNew(key, account);
+      } else {
+        await accounts.replaceIfUnchanged(key, existing, account);
+      }
     } catch (_) {
       if (mounted) showAlert('Could not save the account. Please try again.');
     }

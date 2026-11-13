@@ -59,6 +59,20 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addNew(String key, AccountEntity account) async {
+    store.insertNewBatch({key: account});
+    notifyListeners();
+  }
+
+  Future<void> replaceIfUnchanged(
+    String key,
+    AccountEntity expected,
+    AccountEntity account,
+  ) async {
+    store.replaceIfUnchanged(key, expected, account);
+    notifyListeners();
+  }
+
   Future<void> updateLabels(
     String key,
     String issuer,
