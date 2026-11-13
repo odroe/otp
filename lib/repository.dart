@@ -38,6 +38,19 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     notifyListeners();
   }
 
+  final Set<String> _advancing = {};
+
+  Future<void> advanceHotp(String key, int expectedCounter) async {
+    if (!_advancing.add(key)) throw StateError('Advancement already pending.');
+    try {
+      store.advanceHotp(key, expectedCounter);
+      notifyListeners();
+      await Future<void>.value();
+    } finally {
+      _advancing.remove(key);
+    }
+  }
+
   Future<void> delete(String key) async {
     store.delete(key);
     notifyListeners();

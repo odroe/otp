@@ -1,4 +1,5 @@
 import 'package:sqlite3/sqlite3.dart';
+import 'package:hotp/hotp.dart';
 
 import '../entities/account.entity.dart';
 import 'legacy_hive_reader.dart';
@@ -85,6 +86,25 @@ class AccountStore._(final Database _database) {
       digits INTEGER NOT NULL,
       period INTEGER NOT NULL
     )''');
+    database.execute('BEGIN IMMEDIATE');
+    try {
+      final columns = database
+          .select('PRAGMA table_info(accounts)')
+          .map((row) => row['name'])
+          .toSet();
+      if (!columns.contains('algorithm')) {
+        database.execute(
+          "ALTER TABLE accounts ADD COLUMN algorithm TEXT NOT NULL DEFAULT 'sha1'",
+        );
+      }
+      if (!columns.contains('counter')) {
+        database.execute('ALTER TABLE accounts ADD COLUMN counter INTEGER');
+      }
+      database.execute('COMMIT');
+    } catch (_) {
+      database.execute('ROLLBACK');
+      rethrow;
+    }
     database.execute('''CREATE TABLE IF NOT EXISTS storage_metadata (
       key TEXT PRIMARY KEY NOT NULL,
       value TEXT NOT NULL
@@ -107,8 +127,8 @@ class AccountStore._(final Database _database) {
   static void _insert(Database database, String key, AccountEntity account) {
     database.execute(
       '''INSERT INTO accounts
-      (account_key, account_type, issuer, name, secret, digits, period)
-      VALUES (?, ?, ?, ?, ?, ?, ?)''',
+      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
       [
         key,
         account.type.index,
@@ -117,6 +137,8 @@ class AccountStore._(final Database _database) {
         account.secret,
         account.digits,
         account.period,
+        account.algorithm.name,
+        account.counter,
       ],
     );
   }
@@ -127,7 +149,9 @@ class AccountStore._(final Database _database) {
     ..name = row['name'] as String?
     ..secret = row['secret'] as String
     ..digits = row['digits'] as int
-    ..period = row['period'] as int;
+    ..period = row['period'] as int
+    ..algorithm = Algorithm.values.byName(row['algorithm'] as String)
+    ..counter = row['counter'] as int?;
 
   static void _verifyRecords(
     Database database,
@@ -145,7 +169,9 @@ class AccountStore._(final Database _database) {
           row['name'] != value.name ||
           row['secret'] != value.secret ||
           row['digits'] != value.digits ||
-          row['period'] != value.period) {
+          row['period'] != value.period ||
+          row['algorithm'] != value.algorithm.name ||
+          row['counter'] != value.counter) {
         throw StateError('Migration record verification failed.');
       }
     }
@@ -176,12 +202,12 @@ class AccountStore._(final Database _database) {
   void put(String key, AccountEntity value) {
     _database.execute(
       '''INSERT INTO accounts
-      (account_key, account_type, issuer, name, secret, digits, period)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(account_key) DO UPDATE SET
       account_type=excluded.account_type, issuer=excluded.issuer,
       name=excluded.name, secret=excluded.secret, digits=excluded.digits,
-      period=excluded.period''',
+      period=excluded.period, algorithm=excluded.algorithm, counter=excluded.counter''',
       [
         key,
         value.type.index,
@@ -190,8 +216,25 @@ class AccountStore._(final Database _database) {
         value.secret,
         value.digits,
         value.period,
+        value.algorithm.name,
+        value.counter,
       ],
     );
+  }
+
+  /// Atomically advances only the counter the caller actually observed.
+  void advanceHotp(String key, int expectedCounter) {
+    if (expectedCounter < 0 || expectedCounter >= Hotp.maxCounter) {
+      throw StateError('Counter cannot be advanced.');
+    }
+    _database.execute(
+      'UPDATE accounts SET counter = counter + 1 WHERE account_key = ? '
+      'AND account_type = ? AND counter = ?',
+      [key, AccountType.HOTP.index, expectedCounter],
+    );
+    if (_database.updatedRows != 1) {
+      throw StateError('Account changed; reload before advancing.');
+    }
   }
 
   void delete(String key) {

@@ -71,13 +71,11 @@ void main() {
     'otpauth://totp/?issuer=&secret=$secret',
     'otpauth://totp/?issuer=Acme&secret=$secret',
     'https://example.com/?secret=$secret',
-    'otpauth://hotp/Acme?secret=$secret&counter=1',
     'otpauth://totp/Acme?secret=',
     'otpauth://totp/Acme?secret=not-a-secret',
     'otpauth://totp/Acme?secret=$secret&period=0',
     'otpauth://totp/Acme?secret=$secret&period=-1',
     'otpauth://totp/Acme?secret=$secret&digits=0',
-    'otpauth://totp/Acme?secret=$secret&algorithm=SHA256',
   ]) {
     test(
       'reject malformed or unsupported QR (${uri.split('?').first}, case ${uri.hashCode})',
@@ -86,4 +84,41 @@ void main() {
       },
     );
   }
+  test('supports HOTP counters and configured algorithms', () {
+    final account = parseAccount(
+      'otpauth://hotp/Acme:user?secret=$secret&counter=7&algorithm=SHA256&digits=8',
+    );
+    expect(account.type.name, 'HOTP');
+    expect(account.counter, 7);
+    expect(account.algorithm.name, 'sha256');
+    expect(account.digits, 8);
+  });
+  test('surfaces conflicting label and issuer', () {
+    final result = parseProvisioning(
+      'otpauth://totp/Old:user?secret=$secret&issuer=New',
+    );
+    expect(result.issuerMismatch, isTrue);
+    expect(result.labelIssuer, 'Old');
+    expect(result.account.issuer, 'New');
+  });
+  for (final query in [
+    'counter=1&counter=2',
+    'counter=-1',
+    'algorithm=SHA3&counter=1',
+    'period=30&counter=1',
+    '',
+  ]) {
+    test('rejects invalid HOTP fields: $query', () {
+      expect(
+        () => parseAccount('otpauth://hotp/Acme?secret=$secret&$query'),
+        throwsFormatException,
+      );
+    });
+  }
+  test('rejects non-ASCII keys before normalization', () {
+    expect(
+      () => parseAccount('otpauth://totp/Acme?secret=ıA'),
+      throwsFormatException,
+    );
+  });
 }

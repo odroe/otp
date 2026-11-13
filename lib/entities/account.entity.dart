@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:hotp/hotp.dart';
 
 part 'account.entity.g.dart';
 
@@ -32,4 +33,8 @@ class AccountEntity() {
 
   @HiveField(5, defaultValue: 30)
   late int period;
+
+  // These fields are stored in SQLite, not the historical Hive adapter.
+  Algorithm algorithm = .sha1;
+  int? counter;
 }

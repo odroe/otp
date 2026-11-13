@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:base32/base32.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:totp/totp.dart';
 
 import '../../entities/account.entity.dart';
+import '../../entities/account_code.dart';
 import '../../entities/parse_account.dart';
 import '../../repository.dart';
 import 'progress-timer.indicator.dart';
@@ -26,8 +25,8 @@ class _AccountCardState() extends State<AccountCard> {
   /// Timer
   Timer? timer;
 
-  /// Time-based One-time password
-  Totp? totp;
+  bool valid = false;
+  bool advancing = false;
 
   @override
   void initState() {
@@ -43,20 +42,18 @@ class _AccountCardState() extends State<AccountCard> {
 
   void initializeAccount() {
     timer?.cancel();
-    totp = null;
+    valid = false;
     try {
       validateAccount(widget.account);
-      counter = createCounter();
-      totp = Totp(
-        secret: base32.decode(widget.account.secret.toUpperCase()),
-        algorithm: .sha1,
-        digits: widget.account.digits,
-        period: Duration(seconds: widget.account.period),
-      );
-      timer = Timer.periodic(
-        const Duration(seconds: 1),
-        (_) => updateCounter(),
-      );
+      accountCode(widget.account);
+      valid = true;
+      if (widget.account.type == .TOTP) {
+        counter = createCounter();
+        timer = Timer.periodic(
+          const Duration(seconds: 1),
+          (_) => updateCounter(),
+        );
+      }
     } catch (_) {
       // Keep the original record and show a recoverable error, not a broken list.
     }
@@ -85,10 +82,10 @@ class _AccountCardState() extends State<AccountCard> {
   }
 
   /// Get a make OTP value
-  String get otpCode => totp!.generate();
+  String get otpCode => accountCode(widget.account);
 
   /// Get a make OTP code for formatted.
-  String get formattedOtpCode => totp!.generate().replaceAllMapped(
+  String get formattedOtpCode => otpCode.replaceAllMapped(
     RegExp(r"(.{3})"),
     (Match match) => "${match.group(0)} ",
   );
@@ -140,7 +137,7 @@ class _AccountCardState() extends State<AccountCard> {
                   ),
                 GestureDetector(
                   child: Text(
-                    totp == null ? 'Unable to generate code' : formattedOtpCode,
+                    !valid ? 'Unable to generate code' : formattedOtpCode,
                     style: CupertinoTheme.of(context).textTheme.textStyle
                         .copyWith(
                           color: CupertinoTheme.of(context).primaryColor,
@@ -148,7 +145,7 @@ class _AccountCardState() extends State<AccountCard> {
                           fontWeight: .bold,
                         ),
                   ),
-                  onTap: totp == null
+                  onTap: !valid
                       ? null
                       : () async {
                           final code = otpCode;
@@ -183,7 +180,41 @@ class _AccountCardState() extends State<AccountCard> {
               ],
             ),
           ),
-          if (totp != null)
+          if (valid && widget.account.type == .HOTP)
+            CupertinoButton(
+              onPressed: advancing
+                  ? null
+                  : () async {
+                      final key = widget.accountKey;
+                      final expected = widget.account.counter;
+                      if (key == null || expected == null) return;
+                      setState(() => advancing = true);
+                      try {
+                        await accounts.advanceHotp(key, expected);
+                      } catch (_) {
+                        if (mounted) {
+                          showCupertinoDialog<void>(
+                            context: context,
+                            builder: (context) => CupertinoAlertDialog(
+                              content: const Text(
+                                'Could not advance the counter. Please try again.',
+                              ),
+                              actions: [
+                                CupertinoDialogAction(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      } finally {
+                        if (mounted) setState(() => advancing = false);
+                      }
+                    },
+              child: const Text('Next code'),
+            ),
+          if (valid && widget.account.type == .TOTP)
             ProgressTimerIndicator(
               key: ValueKey(widget.account.period),
               period: widget.account.period,
