@@ -122,6 +122,24 @@ void main() {
     expect(store.get('hotp')!.counter, 7);
   });
 
+  test('advancement rejects a replaced account at the same counter', () async {
+    final store = await open(loader: () async => {});
+    final original = synthetic('Acme')
+      ..type = AccountType.HOTP
+      ..counter = 7;
+    store.put('hotp', original);
+    final replacement = synthetic('Acme')
+      ..type = AccountType.HOTP
+      ..counter = 7
+      ..secret = 'JBSWY3DPEHPK3PXP';
+    store.put('hotp', replacement);
+    expect(
+      () => store.advanceHotp('hotp', 7, expectedAccount: original),
+      throwsStateError,
+    );
+    expect(store.get('hotp')!.counter, 7);
+  });
+
   test('batch insert rolls back if any identity conflicts', () async {
     final store = await open(loader: () async => {});
     store.put('existing', synthetic('Acme', name: 'alice'));

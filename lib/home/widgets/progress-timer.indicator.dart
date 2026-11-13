@@ -9,31 +9,50 @@ class const ProgressTimerIndicator({super.key, required final int period})
   _ProgressTimerIndicatorState createState() => _ProgressTimerIndicatorState();
 }
 
-class _ProgressTimerIndicatorState() extends State<ProgressTimerIndicator> {
+class _ProgressTimerIndicatorState()
+    extends State<ProgressTimerIndicator>
+    with WidgetsBindingObserver {
   /// Timer
-  late Timer timer;
+  Timer? timer;
 
   /// Current half-minute seconds
   late int currentHalfMinuteSeconds;
 
-  void updateHalfMinuteSeconds() {
-    final value = DateTime.now().millisecondsSinceEpoch / 1000 % widget.period;
-    setState(() {
-      currentHalfMinuteSeconds = widget.period - value.floor();
+  int remaining() {
+    final seconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    return widget.period - seconds % widget.period;
+  }
+
+  void scheduleNextTick() {
+    timer?.cancel();
+    final delay = 1000 - DateTime.now().millisecondsSinceEpoch % 1000;
+    timer = Timer(Duration(milliseconds: delay), () {
+      if (!mounted) return;
+      setState(() => currentHalfMinuteSeconds = remaining());
+      scheduleNextTick();
     });
   }
 
   @override
   void initState() {
-    const duration = Duration(seconds: 1);
-    updateHalfMinuteSeconds();
-    timer = Timer.periodic(duration, (_timer) => updateHalfMinuteSeconds());
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    currentHalfMinuteSeconds = remaining();
+    scheduleNextTick();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() => currentHalfMinuteSeconds = remaining());
+      scheduleNextTick();
+    }
   }
 
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

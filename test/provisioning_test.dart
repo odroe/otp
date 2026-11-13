@@ -162,6 +162,16 @@ void main() {
     expect(find.text('942 870 82'), findsOneWidget);
     expect(repository.values.single.counter, 1);
     await tester.tap(find.text('Next code'));
+    await tester.tap(find.text('Next code'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.text('Advance counter?'), findsOneWidget);
+    expect(repository.values.single.counter, 1);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CupertinoAlertDialog),
+        matching: find.text('Next code'),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(repository.values.single.counter, 2);
     await tester.tap(find.bySemanticsLabel('Add account'));

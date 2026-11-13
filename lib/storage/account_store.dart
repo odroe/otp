@@ -253,14 +253,32 @@ class AccountStore._(final Database _database) {
   }
 
   /// Atomically advances only the counter the caller actually observed.
-  void advanceHotp(String key, int expectedCounter) {
+  void advanceHotp(
+    String key,
+    int expectedCounter, {
+    AccountEntity? expectedAccount,
+  }) {
     if (expectedCounter < 0 || expectedCounter >= Hotp.maxCounter) {
       throw StateError('Counter cannot be advanced.');
     }
     _database.execute(
       'UPDATE accounts SET counter = counter + 1 WHERE account_key = ? '
-      'AND account_type = ? AND counter = ?',
-      [key, AccountType.HOTP.index, expectedCounter],
+      'AND account_type = ? AND counter = ?'
+      '${expectedAccount == null ? '' : ' AND issuer = ? AND name IS ? AND secret = ? AND algorithm = ? AND digits = ? AND period = ? AND format = ?'}',
+      [
+        key,
+        AccountType.HOTP.index,
+        expectedCounter,
+        if (expectedAccount != null) ...[
+          expectedAccount.issuer,
+          expectedAccount.name,
+          expectedAccount.secret,
+          expectedAccount.algorithm.name,
+          expectedAccount.digits,
+          expectedAccount.period,
+          expectedAccount.format.name,
+        ],
+      ],
     );
     if (_database.updatedRows != 1) {
       throw StateError('Account changed; reload before advancing.');
