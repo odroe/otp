@@ -223,6 +223,26 @@ void main() {
       );
     },
   );
+  test(
+    'preserves identities generated from maximum-length escaped labels',
+    () async {
+      final issuer = List.filled(1024, '\n').join();
+      final name = List.filled(1024, '\t').join();
+      final id = jsonEncode([issuer, name]);
+      final account = accountFromFields(
+        type: .TOTP,
+        issuer: issuer,
+        name: name,
+        secret: secret,
+      );
+      final restored = await OfflineBackup.decode(
+        await OfflineBackup.encode([BackupEntry(id, account)]),
+      );
+      expect(restored.single.id, id);
+      expect(restored.single.account.issuer, issuer);
+      expect(restored.single.account.name, name);
+    },
+  );
   test('large HOTP counters are encoded as decimal strings', () async {
     final account = accountFromFields(
       type: .HOTP,

@@ -308,7 +308,7 @@ void _checkJsonDepth(String text) {
 void _validateEntry(BackupEntry entry, Set<String> ids) {
   final a = entry.account;
   if (entry.id.isEmpty ||
-      entry.id.length > 1024 ||
+      entry.id.length > 16384 ||
       !_validUnicode(entry.id) ||
       !ids.add(entry.id) ||
       a.issuer.length > 1024 ||
