@@ -133,4 +133,37 @@ void main() {
       await dir.delete(recursive: true);
     },
   );
+  test('existing SQLite accounts retain their order when order metadata is introduced', () async {
+    final dir = await Directory.systemTemp.createTemp('auth-order-legacy-');
+    final path = '${dir.path}/db.sqlite3';
+    final old = sqlite3.open(path);
+    old.execute(
+      'CREATE TABLE accounts (account_key TEXT PRIMARY KEY NOT NULL, account_type INTEGER NOT NULL, issuer TEXT NOT NULL, name TEXT, secret TEXT NOT NULL, digits INTEGER NOT NULL, period INTEGER NOT NULL)',
+    );
+    old.execute(
+      'CREATE TABLE storage_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)',
+    );
+    old.execute(
+      "INSERT INTO storage_metadata VALUES ('hive_import_v1', 'complete')",
+    );
+    for (final key in ['z', 'a']) {
+      old.execute('INSERT INTO accounts VALUES (?, 1, ?, NULL, ?, 6, 30)', [
+        key,
+        key,
+        'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+      ]);
+    }
+    old.close();
+    final store = await AccountStore.open(
+      sqlitePath: path,
+      legacyDirectory: dir.path,
+      legacyLoader: () async => {},
+    );
+    expect(store.keys.toList(), ['z', 'a']);
+    store.reorder(['a', 'z']);
+    expect(store.keys.toList(), ['a', 'z']);
+    expect(store.get('z')!.secret, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
+    store.close();
+    await dir.delete(recursive: true);
+  });
 }
