@@ -199,6 +199,27 @@ class AccountStore._(final Database _database) {
 
   bool containsKey(String key) => get(key) != null;
 
+  /// Inserts a complete batch or leaves every existing account unchanged.
+  void insertNewBatch(Map<String, AccountEntity> records) {
+    _database.execute('BEGIN IMMEDIATE');
+    try {
+      for (final entry in records.entries) {
+        final account = entry.value;
+        if (_database.select(
+          'SELECT 1 FROM accounts WHERE issuer = ? AND name IS ? LIMIT 1',
+          [account.issuer, account.name],
+        ).isNotEmpty) {
+          throw StateError('An account already exists.');
+        }
+        _insert(_database, entry.key, account);
+      }
+      _database.execute('COMMIT');
+    } catch (_) {
+      _database.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   void put(String key, AccountEntity value) {
     _database.execute(
       '''INSERT INTO accounts

@@ -122,6 +122,21 @@ void main() {
     expect(store.get('hotp')!.counter, 7);
   });
 
+  test('batch insert rolls back if any identity conflicts', () async {
+    final store = await open(loader: () async => {});
+    store.put('existing', synthetic('Acme', name: 'alice'));
+    expect(
+      () => store.insertNewBatch({
+        'new': synthetic('Other', name: 'bob'),
+        'conflict': synthetic('Acme', name: 'alice'),
+      }),
+      throwsStateError,
+    );
+    expect(store.length, 1);
+    expect(store.get('new'), isNull);
+    expect(store.get('existing')!.issuer, 'Acme');
+  });
+
   test(
     'migrates actual Hive 2.0.4 fixture without changing source bytes',
     () async {

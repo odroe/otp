@@ -38,6 +38,22 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> importNew(Iterable<AccountEntity> selected) async {
+    final records = <String, AccountEntity>{};
+    for (final account in selected) {
+      final base = jsonEncode([account.issuer, account.name]);
+      var key = base;
+      var suffix = 1;
+      while (containsKey(key) || records.containsKey(key)) {
+        key = '$base#${suffix++}';
+      }
+      records[key] = account;
+    }
+    if (records.isEmpty) return;
+    store.insertNewBatch(records);
+    notifyListeners();
+  }
+
   final Set<String> _advancing = {};
 
   Future<void> advanceHotp(String key, int expectedCounter) async {

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import 'scan.screen.dart';
 import 'manual_account.screen.dart';
+import 'google_import.screen.dart';
+import '../import/google_migration.dart';
 
 import '../entities/account.entity.dart';
 import '../entities/parse_account.dart';
@@ -156,6 +158,16 @@ class _HomeScreenState() extends State<HomeScreen> {
       final response = await Navigator.of(context)
           .push<String>(CupertinoPageRoute(builder: (_) => const ScanScreen()));
       if (!mounted || response == null) return;
+      if (response.startsWith('otpauth-migration:')) {
+        final fragment = parseGoogleMigration(response);
+        if (mounted)
+          await Navigator.of(context).push(
+            CupertinoPageRoute<void>(
+              builder: (_) => GoogleImportScreen(fragment),
+            ),
+          );
+        return;
+      }
       final provisioning = parseProvisioning(response);
       await reviewAndSave(
         provisioning.account,
