@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'scan.screen.dart';
 import 'manual_account.screen.dart';
+import 'export_backup.screen.dart';
 import 'google_import.screen.dart';
 import '../import/google_migration.dart';
 
@@ -238,6 +239,16 @@ class _HomeScreenState() extends State<HomeScreen> {
                     },
                   );
                 },
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: CupertinoButton(
+                onPressed: () => Navigator.of(context).push(
+                  CupertinoPageRoute<void>(
+                    builder: (_) => const ExportBackupScreen(),
+                  ),
+                ),
+                child: const Text('Export backup'),
               ),
             ),
             SliverPadding(
