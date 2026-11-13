@@ -7,6 +7,7 @@ import 'package:authenticator/home/widgets/account.card.dart';
 import 'package:authenticator/repository.dart' as storage;
 import 'package:authenticator/storage/account_store.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -50,6 +51,17 @@ void main() {
     await tester.pump();
     expect(find.text('No matching accounts.'), findsNothing);
     expect(find.text('Example'), findsOneWidget);
+    final search = tester.widget<CupertinoSearchTextField>(
+      find.byType(CupertinoSearchTextField),
+    );
+    search.onChanged!('aLiCe');
+    await tester.pump();
+    expect(find.text('Example'), findsOneWidget);
+    search.onChanged!('unknown');
+    await tester.pump();
+    expect(find.text('No matching accounts.'), findsOneWidget);
+    search.onChanged!('');
+    await tester.pump();
     final semantics = tester.ensureSemantics();
     await tester.pump();
     final code = find.bySemanticsLabel(RegExp(r'Code .* Double tap to copy\.'));
@@ -60,6 +72,22 @@ void main() {
           .getSemanticsData()
           .hasAction(SemanticsAction.tap),
       isTrue,
+    );
+    var copied = false;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') copied = true;
+        return null;
+      },
+    );
+    final node = tester.getSemantics(code);
+    node.owner!.performAction(node.id, SemanticsAction.tap);
+    await tester.pump();
+    expect(copied, isTrue);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
     );
     semantics.dispose();
     await tester.pumpWidget(const SizedBox());
