@@ -41,6 +41,7 @@ dependencies:
   totp: ^0.2.0
   hotp: ^0.2.0
   base32: ^2.2.0
+  protobuf: ^6.0.0
   mobile_scanner: ^7.5.0
   url_launcher: ^6.3.3
 
