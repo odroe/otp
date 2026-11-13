@@ -106,6 +106,22 @@ void main() {
         expect(repository.get('second')!.secret, second.secret);
       },
     );
+    test('empty and missing names cannot bypass ambiguity detection', () async {
+      await repository.put('empty', fixture('Service', ''));
+      expect(repository.keyFor(fixture('Service', null)), 'empty');
+      expect(
+        () =>
+            repository.store.insertNewBatch({'new': fixture('Service', null)}),
+        throwsStateError,
+      );
+      expect(repository.length, 1);
+      await repository.put('missing', fixture('Service', null));
+      expect(
+        () => repository.keyFor(fixture('Service', null)),
+        throwsStateError,
+      );
+      expect(repository.length, 2);
+    });
   });
 
   testWidgets('ambiguous replacement explains how to disambiguate', (

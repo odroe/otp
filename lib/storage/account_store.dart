@@ -220,8 +220,8 @@ class AccountStore._(final Database _database) {
       for (final entry in records.entries) {
         final account = entry.value;
         if (_database.select(
-          'SELECT 1 FROM accounts WHERE issuer = ? AND name IS ? LIMIT 1',
-          [account.issuer, account.name],
+          "SELECT 1 FROM accounts WHERE issuer = ? AND NULLIF(name, '') IS ? LIMIT 1",
+          [account.issuer, account.name == '' ? null : account.name],
         ).isNotEmpty) {
           throw StateError('An account already exists.');
         }

@@ -20,7 +20,7 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     String? matchingKey;
     for (final entry in entries) {
       if (entry.value.issuer == account.issuer &&
-          entry.value.name == account.name) {
+          (entry.value.name ?? '') == (account.name ?? '')) {
         if (matchingKey != null) {
           throw StateError('Multiple accounts share these labels.');
         }
