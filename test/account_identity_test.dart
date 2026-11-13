@@ -114,10 +114,7 @@ void main() {
     });
     storage.accounts = repository;
     await tester.pumpWidget(const CupertinoApp(home: HomeScreen()));
-    expect(
-      tester.widget<ListView>(find.byType(ListView)).physics,
-      isA<NeverScrollableScrollPhysics>(),
-    );
+    expect(find.byType(SliverList), findsOneWidget);
     // Start within the account list and verify the outer page remains scrollable.
     for (var drag = 0; drag < 15; drag++) {
       await tester.dragFrom(const Offset(180, 450), const Offset(0, -500));

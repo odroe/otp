@@ -20,6 +20,14 @@ class const HomeScreen({super.key}) extends StatefulWidget {
 class _HomeScreenState() extends State<HomeScreen> {
   /// search key.
   String keywords = "";
+  final searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   bool scanning = false;
 
   void onChangedKeywords(String keywords) {
@@ -194,57 +202,99 @@ class _HomeScreenState() extends State<HomeScreen> {
         FocusScope.of(context).unfocus();
       },
       child: CupertinoPageScaffold(
-        child: CustomScrollView(
-          slivers: [
-            CupertinoSliverNavigationBar.search(
-              automaticallyImplyTitle: true,
-              automaticallyImplyLeading: true,
-              alwaysShowMiddle: false,
-              backgroundColor: CupertinoTheme.of(context)
-                  .scaffoldBackgroundColor,
-              middle: Text("Authenticator"),
-              trailing: CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: Icon(CupertinoIcons.add, semanticLabel: 'Add account'),
-                onPressed: scanning ? null : chooseAdd,
-              ),
-              // _kNavBarEdgePadding
-              padding: EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
-              largeTitle: const Text('Authenticator'),
-              searchField: Padding(
-                // See _kNavBarEdgePadding
-                padding: EdgeInsets.only(right: 16.0),
-                child: CupertinoSearchTextField(onChanged: onChangedKeywords),
-              ),
-            ),
-            SliverPadding(padding: EdgeInsets.only(top: 12.0)),
-            SliverToBoxAdapter(
-              child: AnimatedBuilder(
-                animation: accounts,
-                builder: (BuildContext context, _widget) {
-                  final matches = searchAccounts().toList();
-                  return ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
+        child: AnimatedBuilder(
+          animation: accounts,
+          builder: (context, _) {
+            final matches = searchAccounts().toList();
+            return CustomScrollView(
+              slivers: [
+                CupertinoSliverNavigationBar.search(
+                  automaticallyImplyTitle: true,
+                  automaticallyImplyLeading: true,
+                  alwaysShowMiddle: false,
+                  backgroundColor: CupertinoTheme.of(context)
+                      .scaffoldBackgroundColor,
+                  middle: Text("Authenticator"),
+                  trailing: CupertinoButton(
                     padding: EdgeInsets.zero,
-                    shrinkWrap: true,
+                    child: Icon(
+                      CupertinoIcons.add,
+                      semanticLabel: 'Add account',
+                    ),
+                    onPressed: scanning ? null : chooseAdd,
+                  ),
+                  // _kNavBarEdgePadding
+                  padding: EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
+                  largeTitle: const Text('Authenticator'),
+                  searchField: Padding(
+                    // See _kNavBarEdgePadding
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: CupertinoSearchTextField(
+                      controller: searchController,
+                      onChanged: onChangedKeywords,
+                    ),
+                  ),
+                ),
+                SliverPadding(padding: EdgeInsets.only(top: 12.0)),
+                if (matches.isEmpty)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Text(
+                            accounts.length == 0
+                                ? 'No accounts yet.'
+                                : 'No matching accounts.',
+                          ),
+                          if (accounts.length == 0)
+                            CupertinoButton(
+                              onPressed: scanning ? null : chooseAdd,
+                              child: const Text('Add an account'),
+                            )
+                          else
+                            CupertinoButton(
+                              onPressed: () {
+                                searchController.clear();
+                                onChangedKeywords('');
+                              },
+                              child: const Text('Clear search'),
+                            ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  SliverList.builder(
                     itemCount: matches.length,
-                    itemBuilder: (BuildContext context, int index) {
+                    findChildIndexCallback: (key) {
+                      if (key is! ValueKey<String>) return null;
+                      final index = matches.indexWhere(
+                        (entry) => entry.key == key.value,
+                      );
+                      return index < 0 ? null : index;
+                    },
+                    itemBuilder: (context, index) {
                       final entry = matches[index];
-                      return AccountCard(
-                        entry.value,
-                        accountKey: entry.key,
+                      return Center(
                         key: ValueKey(entry.key),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 720),
+                          child: AccountCard(
+                            entry.value,
+                            accountKey: entry.key,
+                          ),
+                        ),
                       );
                     },
-                  );
-                },
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(vertical: 12.0),
-              sliver: SliverToBoxAdapter(child: Help()),
-            ),
-          ],
+                  ),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                  sliver: SliverToBoxAdapter(child: Help()),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
