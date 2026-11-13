@@ -164,6 +164,38 @@ void main() {
     await tester.tap(find.text('Next code'));
     await tester.pumpAndSettle();
     expect(repository.values.single.counter, 2);
+    await tester.tap(find.bySemanticsLabel('Add account'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Enter manually'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(CupertinoTextField, 'Service / issuer'),
+      'Acme',
+    );
+    await tester.enterText(
+      find.widgetWithText(CupertinoTextField, 'Base32 secret'),
+      secret,
+    );
+    await tester.ensureVisible(find.text('Review'));
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CupertinoAlertDialog),
+        matching: find.text('Add'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Account already exists'), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CupertinoAlertDialog),
+        matching: find.text('Cancel'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(repository.length, 1);
+    expect(repository.values.single.counter, 2);
     await tester.pumpWidget(const SizedBox());
     repository.dispose();
     repository = (await tester.runAsync(

@@ -103,6 +103,7 @@ class _HomeScreenState() extends State<HomeScreen> {
               'Period: ${account.period} seconds'
             else
               'Counter: ${account.counter}',
+            if (account.type == .HOTP && account.algorithm.name != 'sha1') 'SHA-256 and SHA-512 HOTP are extensions; check service compatibility.',
             if (mismatch)
               'The QR label service ($labelIssuer) differs from its issuer parameter.',
           ].join('\n'),
