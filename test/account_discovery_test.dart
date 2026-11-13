@@ -186,4 +186,47 @@ void main() {
     repo.dispose();
     await tester.runAsync(() => dir.delete(recursive: true));
   });
+  testWidgets('search matches Unicode names and preserves duplicate issuers', (
+    tester,
+  ) async {
+    final dir = (await tester.runAsync(
+      () => Directory.systemTemp.createTemp('account-unicode-'),
+    ))!;
+    final repo = (await tester.runAsync(
+      () async => storage.AccountRepository(
+        await AccountStore.open(
+          sqlitePath: '${dir.path}/accounts.sqlite3',
+          legacyDirectory: dir.path,
+          legacyLoader: () async => {},
+        ),
+      ),
+    ))!;
+    storage.accounts = repo;
+    for (final name in ['小明', '小红']) {
+      await repo.put(
+        name,
+        accountFromFields(
+          type: .TOTP,
+          issuer: '服务',
+          name: name,
+          secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+        ),
+      );
+    }
+    await tester.pumpWidget(const CupertinoApp(home: HomeScreen()));
+    await tester.pump();
+    final field = tester.widget<CupertinoSearchTextField>(
+      find.byType(CupertinoSearchTextField),
+    );
+    field.onChanged!('服务');
+    await tester.pump();
+    expect(find.text('服务'), findsNWidgets(2));
+    field.onChanged!('小明');
+    await tester.pump();
+    expect(find.text('小明'), findsOneWidget);
+    expect(find.text('小红'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    repo.dispose();
+    await tester.runAsync(() => dir.delete(recursive: true));
+  });
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui' show SemanticsAction;
 
 import 'package:authenticator/entities/parse_account.dart';
@@ -14,8 +13,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('account code exposes a copy action on device', (tester) async {
     final temp = await getTemporaryDirectory();
-    final dir = await Directory('${temp.path}/account-accessibility-test')
-        .create(recursive: true);
+    final dir = await temp.createTemp('account-accessibility-test-');
     final repo = storage.AccountRepository(
       await AccountStore.open(
         sqlitePath: '${dir.path}/test.sqlite3',
