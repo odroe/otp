@@ -355,6 +355,44 @@ void main() {
     },
   );
 
+  test(
+    'adds Steam format to the previous schema without changing counters',
+    () async {
+      final db = sqlite3.open(sqlitePath);
+      db.execute('''CREATE TABLE accounts (
+      account_key TEXT PRIMARY KEY NOT NULL, account_type INTEGER NOT NULL,
+      issuer TEXT NOT NULL, name TEXT, secret TEXT NOT NULL, digits INTEGER NOT NULL,
+      period INTEGER NOT NULL, algorithm TEXT NOT NULL, counter INTEGER
+    )''');
+      db.execute(
+        'CREATE TABLE storage_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)',
+      );
+      db.execute(
+        "INSERT INTO storage_metadata VALUES ('hive_import_v1', 'complete')",
+      );
+      db.execute('INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+        'old',
+        AccountType.HOTP.index,
+        'Acme',
+        'alice',
+        'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+        8,
+        30,
+        'sha256',
+        42,
+      ]);
+      db.close();
+      final store = await open(
+        loader: () async => throw StateError('unexpected import'),
+      );
+      final account = store.get('old')!;
+      expect(account.format, OtpFormat.decimal);
+      expect(account.counter, 42);
+      expect(account.algorithm.name, 'sha256');
+      expect(account.digits, 8);
+    },
+  );
+
   test('unknown unmarked SQLite records are never overwritten', () async {
     var store = await open();
     store.put('existing', synthetic('Existing'));

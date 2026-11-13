@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:base32/base32.dart';
 import 'package:hotp/hotp.dart';
 
@@ -6,6 +8,21 @@ import 'account.entity.dart';
 const maxProvisioningLength = 8192;
 const maxSecretLength = 4096;
 int get maxPeriod => identical(1, 1.0) ? 9007199254 : 9223372036854;
+
+/// Converts an explicitly supplied Steam shared secret to the stored encoding.
+String steamSecretFromBase64(String value) {
+  if (value.length > 344 ||
+      !RegExp(r'^[A-Za-z0-9+/]+={0,2}$').hasMatch(value)) {
+    throw const FormatException('Invalid Steam shared secret.');
+  }
+  try {
+    final bytes = base64.decode(base64.normalize(value));
+    if (bytes.isEmpty || bytes.length > 256) throw const FormatException();
+    return base32.encode(bytes);
+  } on FormatException {
+    throw const FormatException('Invalid Steam shared secret.');
+  }
+}
 
 class Provisioning(final AccountEntity account, {final String? labelIssuer}) {
   bool get issuerMismatch =>
@@ -98,6 +115,7 @@ AccountEntity accountFromFields({
   String digits = '6',
   String period = '30',
   String? counter,
+  OtpFormat format = .decimal,
 }) {
   if (issuer.length > 1024 ||
       (name?.length ?? 0) > 1024 ||
@@ -117,13 +135,19 @@ AccountEntity accountFromFields({
     ),
   };
   Hotp.fromBase32(secret: secret);
+  if (format == .steam && (type != .TOTP || hash != .sha1 || period != '30')) {
+    throw const FormatException(
+      'Steam Guard requires SHA1 and a 30-second period.',
+    );
+  }
   return AccountEntity()
     ..type = type
     ..issuer = issuer
     ..name = name == '' ? null : name
     ..secret = secret.toUpperCase()
     ..algorithm = hash
-    ..digits = _decimal(digits, 'Digits', 8, minimum: 6)
+    ..format = format
+    ..digits = format == .steam ? 5 : _decimal(digits, 'Digits', 8, minimum: 6)
     ..period = type == .TOTP
         ? _decimal(period, 'Period', maxPeriod, minimum: 1)
         : 30
@@ -141,8 +165,13 @@ void validateAccount(AccountEntity account) {
           (account.counter == null ||
               account.counter! < 0 ||
               account.counter! > Hotp.maxCounter)) ||
-      account.digits < 6 ||
-      account.digits > 8 ||
+      (account.format == .decimal &&
+          (account.digits < 6 || account.digits > 8)) ||
+      (account.format == .steam &&
+          (account.type != .TOTP ||
+              account.algorithm != .sha1 ||
+              account.period != 30 ||
+              account.digits != 5)) ||
       !RegExp(r'^[A-Z2-7]+={0,6}$').hasMatch(account.secret.toUpperCase()) ||
       const {1, 3, 6}.contains(unpaddedLength % 8) ||
       base32.decode(account.secret.toUpperCase()).isEmpty) {
