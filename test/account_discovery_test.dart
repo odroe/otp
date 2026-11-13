@@ -85,6 +85,13 @@ void main() {
     node.owner!.performAction(node.id, SemanticsAction.tap);
     await tester.pump();
     expect(copied, isTrue);
+    copied = false;
+    final text = find.descendant(of: code, matching: find.byType(Text)).first;
+    Focus.of(tester.element(text)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(copied, isTrue);
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       SystemChannels.platform,
       null,
@@ -138,6 +145,9 @@ void main() {
       await tester.ensureVisible(
         find.text('A very long issuer name 测试测试测试测试测试测试'),
       );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      tester.view.physicalSize = const Size(600, 450);
       await tester.pump();
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
