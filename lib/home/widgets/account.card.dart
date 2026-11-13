@@ -159,6 +159,26 @@ class _AccountCardState()
     );
   }
 
+  Future<void> copyCode() async {
+    final code = otpCode;
+    final account = widget.account;
+    try {
+      await Clipboard.setData(ClipboardData(text: code));
+    } on PlatformException {
+      if (mounted && identical(widget.account, account)) showCopyFailure();
+      return;
+    } on MissingPluginException {
+      if (mounted && identical(widget.account, account)) showCopyFailure();
+      return;
+    }
+    if (!mounted || !identical(widget.account, account)) return;
+    feedbackTimer?.cancel();
+    setState(() => copiedCode = code);
+    feedbackTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) setState(() => copiedCode = null);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -187,40 +207,26 @@ class _AccountCardState()
                   style: CupertinoTheme.of(context).textTheme.textStyle
                       .copyWith(color: CupertinoColors.systemGrey),
                 ),
-              GestureDetector(
-                child: Text(
-                  !valid ? 'Unable to generate code' : formattedOtpCode,
-                  style: CupertinoTheme.of(context).textTheme.textStyle
-                      .copyWith(
-                        color: CupertinoTheme.of(context).primaryColor,
-                        fontSize: 36.0,
-                        fontWeight: .bold,
-                      ),
+              Semantics(
+                button: valid,
+                label: valid
+                    ? '${widget.account.issuer}${(widget.account.name ?? '').isEmpty ? '' : ', ${widget.account.name}'}. Code $formattedOtpCode. Double tap to copy.'
+                    : '${widget.account.issuer}. Unable to generate code',
+                excludeSemantics: true,
+                onTap: valid ? copyCode : null,
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: valid ? copyCode : null,
+                  child: Text(
+                    !valid ? 'Unable to generate code' : formattedOtpCode,
+                    style: CupertinoTheme.of(context).textTheme.textStyle
+                        .copyWith(
+                          color: CupertinoTheme.of(context).primaryColor,
+                          fontSize: 36.0,
+                          fontWeight: .bold,
+                        ),
+                  ),
                 ),
-                onTap: !valid
-                    ? null
-                    : () async {
-                        final code = otpCode;
-                        final account = widget.account;
-                        try {
-                          await Clipboard.setData(ClipboardData(text: code));
-                        } on PlatformException {
-                          if (mounted && identical(widget.account, account))
-                            showCopyFailure();
-                          return;
-                        } on MissingPluginException {
-                          if (mounted && identical(widget.account, account))
-                            showCopyFailure();
-                          return;
-                        }
-                        if (!mounted || !identical(widget.account, account))
-                          return;
-                        feedbackTimer?.cancel();
-                        setState(() => copiedCode = code);
-                        feedbackTimer = Timer(const Duration(seconds: 2), () {
-                          if (mounted) setState(() => copiedCode = null);
-                        });
-                      },
               ),
               if (copiedCode != null)
                 Semantics(
@@ -303,9 +309,11 @@ class _AccountCardState()
                   child: const Text('Next code'),
                 ),
               if (valid && widget.account.type == .TOTP)
-                ProgressTimerIndicator(
-                  key: ValueKey(widget.account.period),
-                  period: widget.account.period,
+                ExcludeSemantics(
+                  child: ProgressTimerIndicator(
+                    key: ValueKey(widget.account.period),
+                    period: widget.account.period,
+                  ),
                 ),
               CupertinoButton(
                 child: Icon(

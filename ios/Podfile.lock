@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
   - mobile_scanner (7.0.0):
     - Flutter
     - FlutterMacOS
@@ -8,12 +10,15 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
   mobile_scanner:
     :path: ".symlinks/plugins/mobile_scanner/darwin"
   url_launcher_ios:
@@ -21,6 +26,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
