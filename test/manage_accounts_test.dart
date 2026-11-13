@@ -71,6 +71,32 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(
       find.widgetWithText(CupertinoTextField, 'Service'),
+      '',
+    );
+    await tester.enterText(
+      find.widgetWithText(CupertinoTextField, 'Account'),
+      '',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    expect(
+      find.text('Enter a label no longer than 1024 characters.'),
+      findsOneWidget,
+    );
+    expect(repo.get('a')!.issuer, 'Alpha');
+    await tester.enterText(
+      find.widgetWithText(CupertinoTextField, 'Service'),
+      'x' * 1025,
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    expect(
+      find.text('Enter a label no longer than 1024 characters.'),
+      findsOneWidget,
+    );
+    expect(repo.get('a')!.issuer, 'Alpha');
+    await tester.enterText(
+      find.widgetWithText(CupertinoTextField, 'Service'),
       'Unsaved',
     );
     nav.currentState!.pop();
