@@ -60,6 +60,69 @@ void main() {
   }
 
   test(
+    'adds OTP fields to existing SQLite without changing old records',
+    () async {
+      final db = sqlite3.open(sqlitePath);
+      db.execute('''CREATE TABLE accounts (
+      account_key TEXT PRIMARY KEY NOT NULL, account_type INTEGER NOT NULL,
+      issuer TEXT NOT NULL, name TEXT, secret TEXT NOT NULL,
+      digits INTEGER NOT NULL, period INTEGER NOT NULL
+    )''');
+      db.execute(
+        'CREATE TABLE storage_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)',
+      );
+      db.execute(
+        "INSERT INTO storage_metadata VALUES ('hive_import_v1', 'complete')",
+      );
+      db.execute('INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?, ?)', [
+        'legacy',
+        AccountType.TOTP.index,
+        'Acme',
+        'alice',
+        'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+        8,
+        60,
+      ]);
+      db.close();
+      final store = await open(
+        loader: () async => throw StateError('unexpected import'),
+      );
+      final account = store.get('legacy')!;
+      expect(account.issuer, 'Acme');
+      expect(account.name, 'alice');
+      expect(account.digits, 8);
+      expect(account.period, 60);
+      expect(account.algorithm.name, 'sha1');
+      expect(account.counter, isNull);
+    },
+  );
+
+  test('HOTP advance persists and rejects a stale counter', () async {
+    final store = await open(loader: () async => {});
+    final account = synthetic('Acme')
+      ..type = AccountType.HOTP
+      ..counter = 7;
+    store.put('hotp', account);
+    store.advanceHotp('hotp', 7);
+    expect(() => store.advanceHotp('hotp', 7), throwsStateError);
+    expect(store.get('hotp')!.counter, 8);
+  });
+
+  test('failed HOTP writes leave the counter unchanged', () async {
+    final store = await open(loader: () async => {});
+    final account = synthetic('Acme')
+      ..type = AccountType.HOTP
+      ..counter = 7;
+    store.put('hotp', account);
+    final other = sqlite3.open(sqlitePath);
+    other.execute('''CREATE TRIGGER reject_advance BEFORE UPDATE ON accounts
+      BEGIN SELECT RAISE(ABORT, 'simulated write failure'); END''');
+    other.close();
+    expect(() => store.advanceHotp('hotp', 7), throwsA(isA<SqliteException>()));
+    expect(store.get('hotp')!.counter, 7);
+  });
+
+  test(
     'migrates actual Hive 2.0.4 fixture without changing source bytes',
     () async {
       // Generated with Hive 2.0.4 + the historical adapters on Dart 2.19.6.
@@ -95,9 +158,8 @@ void main() {
         'Second:null': synthetic('Second'),
         'Third:b': synthetic('Third', name: 'b'),
       });
-      final original = await File(
-        '${directory.path}/accounts.hive',
-      ).readAsBytes();
+      final original = await File('${directory.path}/accounts.hive')
+          .readAsBytes();
       final store = await open();
       expect(store.length, 3);
       expect(store.get('Second:null')!.name, isNull);
@@ -160,30 +222,23 @@ void main() {
     },
   );
 
-  test(
-    'corrupt Hive fails closed, leaves bytes intact, and retries after source repair',
-    () async {
-      await seed({'A:null': synthetic('A')});
-      final source = File('${directory.path}/accounts.hive');
-      final original = await source.readAsBytes();
-      final corrupt = [...original, 1, 2, 3];
-      await source.writeAsBytes(corrupt, flush: true);
-      await expectLater(open(), throwsA(anything));
-      expect(await source.readAsBytes(), corrupt);
-      await source.writeAsBytes(
-        original,
-        flush: true,
-      ); // synthetic fixture only
-      final store = await open();
-      expect(store.length, 1);
-    },
-  );
+  test('corrupt Hive fails closed, leaves bytes intact, and retries after source repair', () async {
+    await seed({'A:null': synthetic('A')});
+    final source = File('${directory.path}/accounts.hive');
+    final original = await source.readAsBytes();
+    final corrupt = [...original, 1, 2, 3];
+    await source.writeAsBytes(corrupt, flush: true);
+    await expectLater(open(), throwsA(anything));
+    expect(await source.readAsBytes(), corrupt);
+    await source.writeAsBytes(original, flush: true); // synthetic fixture only
+    final store = await open();
+    expect(store.length, 1);
+  });
 
   test('both original Hive and compaction files remain untouched', () async {
     await seed({'A:null': synthetic('A')});
-    final original = await File(
-      '${directory.path}/accounts.hive',
-    ).readAsBytes();
+    final original = await File('${directory.path}/accounts.hive')
+        .readAsBytes();
     final compacted = File('${directory.path}/accounts.hivec');
     await compacted.writeAsBytes(original, flush: true);
     await open();
@@ -217,9 +272,8 @@ void main() {
     'non-string legacy keys block rather than silently change identity',
     () async {
       await seed({42: synthetic('A')});
-      final original = await File(
-        '${directory.path}/accounts.hive',
-      ).readAsBytes();
+      final original = await File('${directory.path}/accounts.hive')
+          .readAsBytes();
       await expectLater(open(), throwsStateError);
       expect(
         await File('${directory.path}/accounts.hive').readAsBytes(),
