@@ -85,10 +85,12 @@ class _AccountCardState() extends State<AccountCard> {
   String get otpCode => accountCode(widget.account);
 
   /// Get a make OTP code for formatted.
-  String get formattedOtpCode => otpCode.replaceAllMapped(
-    RegExp(r"(.{3})"),
-    (Match match) => "${match.group(0)} ",
-  );
+  String get formattedOtpCode => widget.account.format == .steam
+      ? otpCode
+      : otpCode.replaceAllMapped(
+          RegExp(r"(.{3})"),
+          (Match match) => "${match.group(0)} ",
+        );
 
   void showCopyFailure() {
     if (!mounted) return;

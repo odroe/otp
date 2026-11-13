@@ -100,6 +100,11 @@ class AccountStore._(final Database _database) {
       if (!columns.contains('counter')) {
         database.execute('ALTER TABLE accounts ADD COLUMN counter INTEGER');
       }
+      if (!columns.contains('format')) {
+        database.execute(
+          "ALTER TABLE accounts ADD COLUMN format TEXT NOT NULL DEFAULT 'decimal'",
+        );
+      }
       database.execute('COMMIT');
     } catch (_) {
       database.execute('ROLLBACK');
@@ -127,8 +132,8 @@ class AccountStore._(final Database _database) {
   static void _insert(Database database, String key, AccountEntity account) {
     database.execute(
       '''INSERT INTO accounts
-      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter, format)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
       [
         key,
         account.type.index,
@@ -139,6 +144,7 @@ class AccountStore._(final Database _database) {
         account.period,
         account.algorithm.name,
         account.counter,
+        account.format.name,
       ],
     );
   }
@@ -151,7 +157,8 @@ class AccountStore._(final Database _database) {
     ..digits = row['digits'] as int
     ..period = row['period'] as int
     ..algorithm = Algorithm.values.byName(row['algorithm'] as String)
-    ..counter = row['counter'] as int?;
+    ..counter = row['counter'] as int?
+    ..format = OtpFormat.values.byName(row['format'] as String);
 
   static void _verifyRecords(
     Database database,
@@ -171,7 +178,8 @@ class AccountStore._(final Database _database) {
           row['digits'] != value.digits ||
           row['period'] != value.period ||
           row['algorithm'] != value.algorithm.name ||
-          row['counter'] != value.counter) {
+          row['counter'] != value.counter ||
+          row['format'] != value.format.name) {
         throw StateError('Migration record verification failed.');
       }
     }
@@ -223,12 +231,12 @@ class AccountStore._(final Database _database) {
   void put(String key, AccountEntity value) {
     _database.execute(
       '''INSERT INTO accounts
-      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (account_key, account_type, issuer, name, secret, digits, period, algorithm, counter, format)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(account_key) DO UPDATE SET
       account_type=excluded.account_type, issuer=excluded.issuer,
       name=excluded.name, secret=excluded.secret, digits=excluded.digits,
-      period=excluded.period, algorithm=excluded.algorithm, counter=excluded.counter''',
+      period=excluded.period, algorithm=excluded.algorithm, counter=excluded.counter, format=excluded.format''',
       [
         key,
         value.type.index,
@@ -239,6 +247,7 @@ class AccountStore._(final Database _database) {
         value.period,
         value.algorithm.name,
         value.counter,
+        value.format.name,
       ],
     );
   }

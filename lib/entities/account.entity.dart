@@ -3,6 +3,11 @@ import 'package:hotp/hotp.dart';
 
 part 'account.entity.g.dart';
 
+enum OtpFormat() {
+  decimal,
+  steam,
+}
+
 @HiveType(typeId: 0)
 enum AccountType() {
   @HiveField(0)
@@ -37,4 +42,5 @@ class AccountEntity() {
   // These fields are stored in SQLite, not the historical Hive adapter.
   Algorithm algorithm = .sha1;
   int? counter;
+  OtpFormat format = .decimal;
 }

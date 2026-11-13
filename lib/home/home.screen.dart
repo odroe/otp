@@ -98,9 +98,12 @@ class _HomeScreenState() extends State<HomeScreen> {
           [
             'Service: ${account.issuer}',
             if (account.name != null) 'Account: ${account.name}',
-            'Type: ${account.type.name}',
+            'Type: ${account.format == .steam ? 'Steam Guard' : account.type.name}',
             'Algorithm: ${account.algorithm.name.toUpperCase()}',
-            'Digits: ${account.digits}',
+            if (account.format == .steam)
+              'Output: 5 Steam characters'
+            else
+              'Digits: ${account.digits}',
             if (account.type == .TOTP)
               'Period: ${account.period} seconds'
             else
