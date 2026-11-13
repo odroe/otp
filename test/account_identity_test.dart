@@ -91,6 +91,59 @@ void main() {
         expect(repository.keyFor(incoming), key);
       },
     );
+    test(
+      'ambiguous matching labels never choose a replacement identity',
+      () async {
+        final first = fixture('Shared', 'same');
+        final second = fixture('Shared', 'same')..secret = 'JBSWY3DPEHPK3PXP';
+        await repository.put('first', first);
+        await repository.put('second', second);
+        expect(
+          () => repository.keyFor(fixture('Shared', 'same')),
+          throwsStateError,
+        );
+        expect(repository.get('first')!.secret, first.secret);
+        expect(repository.get('second')!.secret, second.secret);
+      },
+    );
+  });
+
+  testWidgets('ambiguous replacement explains how to disambiguate', (
+    tester,
+  ) async {
+    final dir = (await tester.runAsync(
+      () => Directory.systemTemp.createTemp('auth-ambiguous-'),
+    ))!;
+    final repo = (await tester.runAsync(
+      () async => storage.AccountRepository(
+        await AccountStore.open(
+          sqlitePath: '${dir.path}/db.sqlite3',
+          legacyDirectory: dir.path,
+          legacyLoader: () async => {},
+        ),
+      ),
+    ))!;
+    storage.accounts = repo;
+    await repo.put('first', fixture('Shared', 'same'));
+    await repo.put(
+      'second',
+      fixture('Shared', 'same')..secret = 'JBSWY3DPEHPK3PXP',
+    );
+    await tester.pumpWidget(const CupertinoApp(home: HomeScreen()));
+    final dynamic state = tester.state(find.byType(HomeScreen));
+    state.reviewAndSave(fixture('Shared', 'same'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Multiple accounts have these labels'),
+      findsOneWidget,
+    );
+    expect(repo.get('first')!.secret, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ');
+    expect(repo.get('second')!.secret, 'JBSWY3DPEHPK3PXP');
+    await tester.pumpWidget(const SizedBox());
+    repo.dispose();
+    await tester.runAsync(() => dir.delete(recursive: true));
   });
 
   testWidgets('dragging a card scrolls the whole page to the last account', (

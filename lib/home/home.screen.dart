@@ -127,7 +127,17 @@ class _HomeScreenState() extends State<HomeScreen> {
       ),
     );
     if (!mounted || accepted != true) return;
-    final key = accounts.keyFor(account);
+    final String key;
+    try {
+      key = accounts.keyFor(account);
+    } on StateError {
+      if (mounted) {
+        showAlert(
+          'Multiple accounts have these labels. Edit their labels to distinguish them before replacing an account.',
+        );
+      }
+      return;
+    }
     if (accounts.containsKey(key)) {
       final replace = await showCupertinoDialog<bool>(
         context: context,
