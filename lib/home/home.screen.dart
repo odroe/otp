@@ -2,6 +2,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 
 import 'scan.screen.dart';
+import 'manage_accounts.screen.dart';
 import 'manual_account.screen.dart';
 import 'google_import.screen.dart';
 import '../import/google_migration.dart';
@@ -198,7 +199,19 @@ class _HomeScreenState() extends State<HomeScreen> {
           slivers: [
             CupertinoSliverNavigationBar.search(
               automaticallyImplyTitle: true,
-              automaticallyImplyLeading: true,
+              automaticallyImplyLeading: false,
+              leading: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.of(context).push(
+                  CupertinoPageRoute<void>(
+                    builder: (_) => const ManageAccountsScreen(),
+                  ),
+                ),
+                child: const Icon(
+                  CupertinoIcons.slider_horizontal_3,
+                  semanticLabel: 'Manage accounts',
+                ),
+              ),
               alwaysShowMiddle: false,
               backgroundColor: CupertinoTheme.of(context)
                   .scaffoldBackgroundColor,

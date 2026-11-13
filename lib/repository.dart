@@ -54,6 +54,21 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateLabels(
+    String key,
+    String issuer,
+    String? name, {
+    required AccountEntity expected,
+  }) async {
+    store.updateLabels(key, issuer, name, expected: expected);
+    notifyListeners();
+  }
+
+  Future<void> reorder(List<String> keys) async {
+    store.reorder(keys);
+    notifyListeners();
+  }
+
   final Set<String> _advancing = {};
 
   Future<void> advanceHotp(
