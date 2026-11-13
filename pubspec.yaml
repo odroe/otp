@@ -41,6 +41,7 @@ dependencies:
   totp: ^0.2.0
   hotp: ^0.2.0
   crypto: ^3.0.3
+  pointycastle: ^4.0.0
   base32: ^2.2.0
   protobuf: ^6.0.0
   mobile_scanner: ^7.5.0
