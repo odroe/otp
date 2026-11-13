@@ -2,6 +2,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 
 import 'scan.screen.dart';
+import 'manage_accounts.screen.dart';
 import 'manual_account.screen.dart';
 import 'google_import.screen.dart';
 import '../import/google_migration.dart';
@@ -126,8 +127,19 @@ class _HomeScreenState() extends State<HomeScreen> {
       ),
     );
     if (!mounted || accepted != true) return;
-    final key = accounts.keyFor(account);
-    if (accounts.containsKey(key)) {
+    final String key;
+    try {
+      key = accounts.keyFor(account);
+    } on StateError {
+      if (mounted) {
+        showAlert(
+          'Multiple accounts have these labels. Edit their labels to distinguish them before replacing an account.',
+        );
+      }
+      return;
+    }
+    final existing = accounts.get(key);
+    if (existing != null) {
       final replace = await showCupertinoDialog<bool>(
         context: context,
         builder: (context) => CupertinoAlertDialog(
@@ -148,7 +160,11 @@ class _HomeScreenState() extends State<HomeScreen> {
       if (!mounted || replace != true) return;
     }
     try {
-      await accounts.put(key, account);
+      if (existing == null) {
+        await accounts.addNew(key, account);
+      } else {
+        await accounts.replaceIfUnchanged(key, existing, account);
+      }
     } catch (_) {
       if (mounted) showAlert('Could not save the account. Please try again.');
     }
@@ -198,7 +214,19 @@ class _HomeScreenState() extends State<HomeScreen> {
           slivers: [
             CupertinoSliverNavigationBar.search(
               automaticallyImplyTitle: true,
-              automaticallyImplyLeading: true,
+              automaticallyImplyLeading: false,
+              leading: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.of(context).push(
+                  CupertinoPageRoute<void>(
+                    builder: (_) => const ManageAccountsScreen(),
+                  ),
+                ),
+                child: const Icon(
+                  CupertinoIcons.slider_horizontal_3,
+                  semanticLabel: 'Manage accounts',
+                ),
+              ),
               alwaysShowMiddle: false,
               backgroundColor: CupertinoTheme.of(context)
                   .scaffoldBackgroundColor,

@@ -110,6 +110,10 @@ class AccountStore._(final Database _database) {
       database.execute('ROLLBACK');
       rethrow;
     }
+    database.execute('''CREATE TABLE IF NOT EXISTS account_order (
+      account_key TEXT PRIMARY KEY NOT NULL,
+      position INTEGER NOT NULL
+    )''');
     database.execute('''CREATE TABLE IF NOT EXISTS storage_metadata (
       key TEXT PRIMARY KEY NOT NULL,
       value TEXT NOT NULL
@@ -186,7 +190,9 @@ class AccountStore._(final Database _database) {
   }
 
   Map<String, AccountEntity> get accounts => {
-    for (final row in _database.select('SELECT * FROM accounts ORDER BY rowid'))
+    for (final row in _database.select(
+      'SELECT accounts.* FROM accounts LEFT JOIN account_order USING(account_key) ORDER BY account_order.position IS NULL, account_order.position, accounts.rowid',
+    ))
       row['account_key'] as String: _decode(row),
   };
 
@@ -214,8 +220,8 @@ class AccountStore._(final Database _database) {
       for (final entry in records.entries) {
         final account = entry.value;
         if (_database.select(
-          'SELECT 1 FROM accounts WHERE issuer = ? AND name IS ? LIMIT 1',
-          [account.issuer, account.name],
+          "SELECT 1 FROM accounts WHERE issuer = ? AND NULLIF(name, '') IS ? LIMIT 1",
+          [account.issuer, account.name == '' ? null : account.name],
         ).isNotEmpty) {
           throw StateError('An account already exists.');
         }
@@ -252,6 +258,107 @@ class AccountStore._(final Database _database) {
     );
   }
 
+  /// Replace only the account the user confirmed, without creating a new one.
+  void replaceIfUnchanged(
+    String key,
+    AccountEntity expected,
+    AccountEntity value,
+  ) {
+    _database.execute(
+      'UPDATE accounts SET account_type = ?, issuer = ?, name = ?, secret = ?, '
+      'digits = ?, period = ?, algorithm = ?, counter = ?, format = ? '
+      'WHERE account_key = ? AND account_type = ? AND issuer = ? AND name IS ? '
+      'AND secret = ? AND digits = ? AND period = ? AND algorithm = ? '
+      'AND counter IS ? AND format = ?',
+      [
+        value.type.index,
+        value.issuer,
+        value.name,
+        value.secret,
+        value.digits,
+        value.period,
+        value.algorithm.name,
+        value.counter,
+        value.format.name,
+        key,
+        expected.type.index,
+        expected.issuer,
+        expected.name,
+        expected.secret,
+        expected.digits,
+        expected.period,
+        expected.algorithm.name,
+        expected.counter,
+        expected.format.name,
+      ],
+    );
+    if (_database.updatedRows != 1)
+      throw StateError('Account changed; reload before replacing.');
+  }
+
+  /// Changes only labels, keeping the stable identity and OTP state intact.
+  void updateLabels(
+    String key,
+    String issuer,
+    String? name, {
+    required AccountEntity expected,
+  }) {
+    if (issuer.length > 1024 ||
+        (name?.length ?? 0) > 1024 ||
+        (issuer.isEmpty && (name?.isEmpty ?? true))) {
+      throw const FormatException('Invalid account label.');
+    }
+    // A concurrent HOTP advance is safe, but do not edit a replacement account.
+    _database.execute(
+      'UPDATE accounts SET issuer = ?, name = ? WHERE account_key = ? '
+      'AND issuer = ? AND name IS ? AND account_type = ? AND secret = ? '
+      'AND algorithm = ? AND digits = ? AND period = ? AND format = ?',
+      [
+        issuer,
+        name == '' ? null : name,
+        key,
+        expected.issuer,
+        expected.name,
+        expected.type.index,
+        expected.secret,
+        expected.algorithm.name,
+        expected.digits,
+        expected.period,
+        expected.format.name,
+      ],
+    );
+    if (_database.updatedRows != 1) {
+      throw StateError('Account changed; reload before editing.');
+    }
+  }
+
+  /// Applies a complete order atomically; stale or duplicate identities fail.
+  void reorder(List<String> keys) {
+    _database.execute('BEGIN IMMEDIATE');
+    try {
+      final current = _database
+          .select('SELECT account_key FROM accounts')
+          .map((row) => row['account_key'] as String)
+          .toSet();
+      if (keys.length != current.length ||
+          keys.toSet().length != keys.length ||
+          !current.containsAll(keys)) {
+        throw StateError('Account list changed; reload before reordering.');
+      }
+      _database.execute('DELETE FROM account_order');
+      for (var i = 0; i < keys.length; i++) {
+        _database.execute(
+          'INSERT INTO account_order (account_key, position) VALUES (?, ?)',
+          [keys[i], i],
+        );
+      }
+      _database.execute('COMMIT');
+    } catch (_) {
+      _database.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   /// Atomically advances only the counter the caller actually observed.
   void advanceHotp(
     String key,
@@ -286,7 +393,17 @@ class AccountStore._(final Database _database) {
   }
 
   void delete(String key) {
-    _database.execute('DELETE FROM accounts WHERE account_key = ?', [key]);
+    _database.execute('BEGIN IMMEDIATE');
+    try {
+      _database.execute('DELETE FROM account_order WHERE account_key = ?', [
+        key,
+      ]);
+      _database.execute('DELETE FROM accounts WHERE account_key = ?', [key]);
+      _database.execute('COMMIT');
+    } catch (_) {
+      _database.execute('ROLLBACK');
+      rethrow;
+    }
   }
 
   void close() => _database.close();

@@ -17,12 +17,17 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
 
   /// Preserve migrated keys, matching identity by fields rather than delimiters.
   String keyFor(AccountEntity account) {
+    String? matchingKey;
     for (final entry in entries) {
       if (entry.value.issuer == account.issuer &&
-          entry.value.name == account.name) {
-        return entry.key;
+          (entry.value.name ?? '') == (account.name ?? '')) {
+        if (matchingKey != null) {
+          throw StateError('Multiple accounts share these labels.');
+        }
+        matchingKey = entry.key;
       }
     }
+    if (matchingKey != null) return matchingKey;
     final base = jsonEncode([account.issuer, account.name]);
     var key = base;
     var suffix = 1;
@@ -51,6 +56,35 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
     }
     if (records.isEmpty) return;
     store.insertNewBatch(records);
+    notifyListeners();
+  }
+
+  Future<void> addNew(String key, AccountEntity account) async {
+    store.insertNewBatch({key: account});
+    notifyListeners();
+  }
+
+  Future<void> replaceIfUnchanged(
+    String key,
+    AccountEntity expected,
+    AccountEntity account,
+  ) async {
+    store.replaceIfUnchanged(key, expected, account);
+    notifyListeners();
+  }
+
+  Future<void> updateLabels(
+    String key,
+    String issuer,
+    String? name, {
+    required AccountEntity expected,
+  }) async {
+    store.updateLabels(key, issuer, name, expected: expected);
+    notifyListeners();
+  }
+
+  Future<void> reorder(List<String> keys) async {
+    store.reorder(keys);
     notifyListeners();
   }
 
