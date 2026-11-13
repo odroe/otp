@@ -104,14 +104,19 @@ void main() {
             home: AccountCard(fixture(), key: const ValueKey('card')),
           ),
         );
-        await tester.tap(find.textContaining(RegExp(r'^\d{3} \d{3}')));
+        final codeFinder = find.textContaining(RegExp(r'^\d{3} \d{3}'));
+        final displayed = tester
+            .widget<Text>(codeFinder)
+            .data!
+            .replaceAll(' ', '');
+        await tester.tap(codeFinder);
         await tester.pump();
         expect(copied, matches(RegExp(r'^\d{6}$')));
+        expect(copied, displayed);
         if (unmount) {
           await tester.pumpWidget(const SizedBox());
         } else {
-          // Changing OTP length while clipboard is pending proves that dialog
-          // text does not regenerate a different code after the await.
+          // Changing OTP while clipboard is pending must not alter the copy.
           await tester.pumpWidget(
             CupertinoApp(
               home: AccountCard(
@@ -126,15 +131,70 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400));
         expect(tester.takeException(), isNull);
         if (!unmount) {
-          expect(
-            find.text('One-time password copied: $copied'),
-            findsOneWidget,
-          );
+          expect(find.textContaining('Copied'), findsNothing);
+          expect(find.byType(CupertinoAlertDialog), findsNothing);
         }
         await tester.pumpWidget(const SizedBox());
       },
     );
   }
+
+  testWidgets('copy uses the displayed code at a time boundary', (
+    tester,
+  ) async {
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData')
+          copied = (call.arguments as Map)['text'] as String;
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    var instant = DateTime.fromMillisecondsSinceEpoch(59000, isUtc: true);
+    await tester.pumpWidget(
+      CupertinoApp(home: AccountCard(fixture(), clock: () => instant)),
+    );
+    expect(find.text('287 082 '), findsOneWidget);
+    instant = DateTime.fromMillisecondsSinceEpoch(60000, isUtc: true);
+    await tester.tap(find.text('287 082 '));
+    await tester.pump();
+    expect(copied, '287082');
+    expect(find.text('Copied 287082'), findsOneWidget);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(find.text('359 152 '), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('HOTP controls remain laid out at large text size', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final account = fixture(digits: 8)
+      ..type = AccountType.HOTP
+      ..counter = 1;
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: AccountCard(account, accountKey: 'hotp'),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    expect(find.text('Next code'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   for (final throws in [false, true]) {
     testWidgets(

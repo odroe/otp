@@ -56,10 +56,14 @@ class AccountRepository(final AccountStore store) extends ChangeNotifier {
 
   final Set<String> _advancing = {};
 
-  Future<void> advanceHotp(String key, int expectedCounter) async {
+  Future<void> advanceHotp(
+    String key,
+    int expectedCounter, {
+    AccountEntity? expectedAccount,
+  }) async {
     if (!_advancing.add(key)) throw StateError('Advancement already pending.');
     try {
-      store.advanceHotp(key, expectedCounter);
+      store.advanceHotp(key, expectedCounter, expectedAccount: expectedAccount);
       notifyListeners();
       await Future<void>.value();
     } finally {
